@@ -8,6 +8,7 @@
 }
 
 .simplebar-wrapper {
+  background-color: rgb(161, 177, 184);
   overflow: hidden;
   width: inherit;
   height: inherit;
@@ -16,6 +17,7 @@
 }
 
 .simplebar-mask {
+  background-color: rgb(161, 177, 184);
   direction: inherit;
   position: absolute;
   overflow: hidden;
@@ -31,6 +33,7 @@
 }
 
 .simplebar-offset {
+  background-color: rgb(161, 177, 184);
   direction: inherit !important;
   box-sizing: inherit !important;
   resize: none !important;

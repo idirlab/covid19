@@ -33,37 +33,10 @@
 
 <body>
   <main>
-    <div class="loader"></div>
-    <div id="mobiledeck">
-      <p>
-        <span class="mobile-title">Aggr. Confirmed</span>
-        <span class="confirmed-count"></span>
-        <span class="confirmed-new-count "></span>
-        <p>
-
-          <p>
-            <span class="mobile-title">Active Confirmed</span>
-            <span class="active-count"></span>
-            <span class="active-new-count"></span>
-            <p>
-
-              <p>
-                <span class="mobile-title">Recovered</span>
-                <span class="recovered-count"></span>
-                <span class="recovered-new-count"></span>
-                <p>
-
-                  <p>
-                    <span class="mobile-title">Death</span>
-                    <span class="death-count"></span>
-                    <span class="death-new-count"></span>
-                    <p>
-    </div>
-
-    <!-- <div id="info" data-simplebar data-simplebar-auto-hide="true">
-      <div id="title" style="font-size:19px"><img src="img/virus_logo.png" width="28px"> COVID19 Pandemic - Public Information</div>
-
-      <p><span id="placename">GLOBAL TREND</span> </p>
+    <!-- <div class="loader"></div> -->
+    <div id="info" data-simplebar data-simplebar-auto-hide="true">
+      <div id="title" style="font-size:30px;text-align: center;background-color: rgb(79, 105, 120);color: rgb(232, 235, 238)">COVID19 Pandemic - Public Information</div>
+      <p style="background-color: rgb(40, 50, 55); text-align: center;"><span id="placename" style="color: rgb(197, 207, 212)">GLOBAL TREND</span> </p>
       <div id="deck-1" class="card-deck counts">
         <div class="card">
           <div class="card-body confirmed">
@@ -99,11 +72,11 @@
             <p class="card-text"><span class="death-count"></span><span class="death-new-count"></span></p>
           </div>
         </div>
-      </div> -->
+      </div>
 
-      <!-- <div id="timeline-chart"></div> -->
-      <!-- <div id="total-chart"></div> -->
-      <!-- <div id="rank-chart"></div> -->
+      <div id="timeline-chart"></div>
+      <div id="total-chart"></div>
+      <div id="rank-chart"></div>
 
     </div> 
     <div id="table">
@@ -238,7 +211,7 @@
       iconCreateFunction: function(cluster) {
         cnt = cluster.getChildCount()
         return L.divIcon({
-            html: '<i class="fas fa-map-marker community community-marker fa-lg idir-map-marker-fill"> <b>' + "" + '</b></i>'
+            html: '<i class="fas fa-map-marker community community-marker fa-3x idir-map-marker-fill"> <b>' + "" + '</b></i>'
           });
         // if (cnt >= 70) {
         //   return L.divIcon({
