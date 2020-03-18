@@ -97,7 +97,8 @@ div#footer>div {
 }
 
 .community {
-  color: #dc3545;
+  /* color: #dc3545; */
+  color: rgb(38,50,56);
   /* font-size: 15px; */
   text-shadow: 0 0 3px #ffffff;
 visibility: visible;
@@ -604,4 +605,8 @@ text {
   color: #3F51B5;
   background-color: #fff;
   font-size: 16px;
+}
+   
+.idir-map-marker-fill > .community{
+  color: rgb(38,50,56);
 }
