@@ -623,6 +623,47 @@ text {
   font-size: 16px;
 }
    
-.idir-map-marker-fill > .community{
+.idir-map-marker-fill > .community {
   color: rgb(38,50,56);
+}
+
+div#info {
+  position:fixed;
+  width:300px;
+  top:103.5px;
+  bottom:0;
+  left:0;
+  overflow: hidden;
+  text-align:center;
+}
+div#banner{
+  position:fixed;
+  height:45.5px;
+  text-align:center;
+  line-height:45.5px;
+  left:0;
+  overflow: hidden;
+  top:0;
+  z-index: 1000;
+  right:0;
+}
+
+div#banner > div#title {
+  font-family:Impact,Haettenschweiler,Franklin Gothic Bold,Charcoal,Helvetica Inserat,Bitstream Vera Sans Bold,Arial Black,sans serif; 
+  font-size:37.5;
+  letter-spacing:2px;
+}
+div#location-information-container {
+  position:fixed;
+  top:45.5px;
+  width:300px;
+  height:58px;
+  line-height:58px;
+  text-align:center;
+  left:0px;
+  z-index:1000;
+}
+
+div#location-information-container > p#placename {
+  font-family: Consolas,monaco,monospace; 
 }
