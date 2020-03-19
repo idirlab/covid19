@@ -17,6 +17,8 @@
   <link rel="stylesheet" href="css/main.css">
   <link href="css/bootstrap4-toggle.min.css" rel="stylesheet">
   <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/leaflet.awesome-markers.css">
+  <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
   <script src="js/d3.js"></script>
   <script src="js/c3.min.js"></script>
   <script src="js/leaflet.js"></script>
@@ -29,6 +31,7 @@
   <script src="js/bootstrap.min.js"></script>
   <script src="js/bootstrap4-toggle.min.js"></script>
   <script src="js/simplebar.min.js"></script>
+  <script src="js/leaflet.awesome-markers.js"></script>
 </head>
 
 <body>
@@ -211,24 +214,10 @@
       iconCreateFunction: function(cluster) {
         cnt = cluster.getChildCount()
         return L.divIcon({
-            html: '<i class="fas fa-map-marker community community-marker fa-3x idir-map-marker-fill"> <b>' + "" + '</b></i>'
+            html: '<i class="fas fa-map-marker community community-marker fa-3x" ><br><span style="text-align: center; margin: 0px; width: 30px; position: absolute; left: -2px; top: 5px;font-size:12px; color:white">'+cnt+'</span></i>',
           });
-        // if (cnt >= 70) {
-        //   return L.divIcon({
-        //     html: '<i class="fas fa-map-marker-alt community community-marker fa-3x "> <b>' + "" + '</b></i>'
-        //   });
-        // } else if (cnt >= 10 && cnt < 70) {
-        //   return L.divIcon({
-        //     html: '<i class="fas fa-map-marker-alt community community-marker fa-2x "> <b>' + "" + '</b></i>'
-        //   });
-        // } else {
-        //   return L.divIcon({
-        //     html: '<i class="fas fa-map-marker-alt community community-marker fa-lg "> <b>' + "" + '</b></i>'
-        //   });
-        // }
       }
     }).addTo(mymap);
-
 
 
     Promise.all([
