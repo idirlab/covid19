@@ -34,6 +34,11 @@
 <body>
   <main>
     <!-- <div class="loader"></div> -->
+
+    <button id="btn-close_bar" class="btn-hidden-sidebar" onclick="closeBar()">
+    </button>
+
+
     <div id="info" data-simplebar data-simplebar-auto-hide="true">
       <div id="title" style="font-size:30px;text-align: center;background-color: rgb(79, 105, 120);color: rgb(232, 235, 238)">COVID19 Pandemic - Public Information</div>
       <p style="background-color: rgb(40, 50, 55); text-align: center;"><span id="placename" style="color: rgb(197, 207, 212)">GLOBAL TREND</span> </p>
@@ -74,11 +79,14 @@
         </div>
       </div>
 
+
       <div id="timeline-chart"></div>
       <div id="total-chart"></div>
       <div id="rank-chart"></div>
 
-    </div> 
+    </div>
+    
+
     <div id="table">
       <div id="table-container" data-simplebar data-simplebar-auto-hide="true">
         <table id="table-container-div" class="table table-bordered">

@@ -186,7 +186,7 @@ visibility: visible;
 }
 
 /* Mobile devices */
-@media only screen and (max-width: 1026px) {
+@media only screen and (max-width: 700px) {
   .legend, .leaflet-control-layers {
     display: none;
   }
@@ -295,14 +295,30 @@ visibility: visible;
 #info {
   position: absolute;
   width: 480px;
-  top: 1%;
-  bottom: 1%;
-  left: .5%;
+  top: 0%;
+  bottom: 0%;
+  left: 0%;
   z-index: 1000;
   background: #343a40;
   color: white;
   opacity: 1;
-  padding: 40px 15px 20px 15px;
+  transition: 0.3s;
+  /* padding: 40px 15px 20px 15px; */
+}
+
+
+.btn-hidden-sidebar {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background: url("../img/back_arrow.jpg");
+  background-size:40px 40px;
+  border: none;
+  position: fixed;
+  left: 500px;
+  top: 20px;
+  z-index: 1000;
+  transition: 0.3s;
 }
 
 .card-deck .card {
