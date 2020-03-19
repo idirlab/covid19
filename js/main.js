@@ -74,6 +74,7 @@ function closeBar() {
     document.getElementById("location-information-container").style.width = "0px"
     var button = document.getElementById("btn-close_bar")
     button.style.left = "20px";
+    button.style.transform = 'rotate('+180+'deg)'
     
     // button.css = "btn-hidden-sidebar"
     // button.style.background = "url(../img/right_arrow.jpg)";
@@ -84,6 +85,7 @@ function closeBar() {
     document.getElementById("location-information-container").style.width = "300px"
     var button = document.getElementById("btn-close_bar")
     button.style.left = "320px";
+    button.style.transform = 'rotate('+360+'deg)'
     // button.css = "btn-open-sidebar"
     // button.style.background = "url(../img/back_arrow.jpg)";
 
