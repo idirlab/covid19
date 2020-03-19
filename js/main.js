@@ -63,3 +63,29 @@ function td(country) {
   }
   return country;
 }
+
+var flag = true
+
+function closeBar() {
+
+  if (flag) {
+    flag = false;
+    document.getElementById("info").style.width = "0px";
+    var button = document.getElementById("btn-close_bar")
+    button.style.left = "20px";
+    button.css = "btn-hidden-sidebar"
+    // button.style.background = "url(../img/right_arrow.jpg)";
+
+  } else {
+    flag = true;
+    document.getElementById("info").style.width = "480px";
+    var button = document.getElementById("btn-close_bar")
+    button.style.left = "500px";
+    button.css = "btn-open-sidebar"
+    // button.style.background = "url(../img/back_arrow.jpg)";
+
+
+  }
+  
+}
+
