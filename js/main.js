@@ -70,8 +70,9 @@ function closeBar() {
 
   if (flag) {
     flag = false;
-    document.getElementById("info").style.width = "0px";
+    document.getElementById("aggregate-date-window").style.width = "0px";
     document.getElementById("location-information-container").style.width = "0px"
+    document.getElementById("hospital-info").style.width = "0px"
     var button = document.getElementById("btn-close_bar")
     button.style.left = "20px";
     button.style.transform = 'rotate('+180+'deg)'
@@ -81,8 +82,9 @@ function closeBar() {
 
   } else {
     flag = true;
-    document.getElementById("info").style.width = "300px";
+    document.getElementById("aggregate-date-window").style.width = "300px";
     document.getElementById("location-information-container").style.width = "300px"
+    document.getElementById("hospital-info").style.width = "300px"
     var button = document.getElementById("btn-close_bar")
     button.style.left = "320px";
     button.style.transform = 'rotate('+360+'deg)'

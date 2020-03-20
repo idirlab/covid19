@@ -463,10 +463,6 @@ text {
   fill: #dc3545 !important;
 }
 
-.name {
-  background-color: black;
-  color: black
-}
 
 .value {
   background-color: black;
@@ -623,7 +619,6 @@ text {
   font-size: 16px;
 
 }
-
    
 .idir-map-marker-fill > .community {
   color: rgb(38,50,56);
@@ -640,9 +635,9 @@ div#info {
 }
 div#banner{
   position:fixed;
-  height:45.5px;
+  height:44px;
   text-align:center;
-  line-height:45.5px;
+  line-height:44px;
   left:0;
   overflow: hidden;
   top:0;
@@ -653,22 +648,269 @@ div#banner{
 div#banner > div#title {
   font-family:Impact,Haettenschweiler,Franklin Gothic Bold,Charcoal,Helvetica Inserat,Bitstream Vera Sans Bold,Arial Black,sans serif; 
   font-size:37.5;
-  letter-spacing:2px;
+  letter-spacing:4px;
 }
 div#location-information-container {
   position:fixed;
-  top:45.5px;
+  top:44px;
   width:300px;
   height:58px;
   line-height:58px;
+  font-size: 40px;
   text-align:center;
   left:0px;
   z-index:1000;
+  border-right: 1px solid rgba(38, 50, 56, 1);
+  border-radius: 0px;
+  box-shadow: 0px 2px 3px 0px rgba(38, 50, 56, 1);
   overflow: hidden;
   transition: 0.3s;
 }
 
-div#location-information-container > p#placename {
+div#location-information-container > p {
+  margin-bottom:0px;
+  height: inherit;
+}
+
+div#location-information-container > p > span#placename {
   font-family: Consolas,monaco,monospace; 
 }
 
+div#aggregate-date-window {
+  top:103.5px;
+  height:calc(50% - 103.5px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: 0.3s;
+}
+div#hospital-info {
+  top:calc(103.5px + (50% - 103.5px));
+  height: 50%;
+  overflow: scroll;
+  transition: 0.3s;
+}
+div.info-pane {
+  text-align:center;
+  position:fixed;
+  width:300px;
+  background-color:rgba(176, 190, 197, 1);
+  line-height:58px;
+  left:0px;
+  z-index:1000;
+  border-right: 1px solid rgba(38, 50, 56, 1);
+  border-radius: 0px;
+  box-shadow: 0px 2px 3px 0px rgba(38, 50, 56, 1);
+}
+div.info-pane.top {
+  border-bottom:0px;
+}
+div.info-pane.top {
+  border-top:0px;
+}
+div.info-header {
+  height:48px;
+  line-height:48px;
+  background-color:rgba(207, 216, 220, 1);
+}
+div#hospital-info > div.info-header {
+  font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif; 
+  font-size:20px;
+  font-weight:bold;
+  color:rgba(38, 50, 56, 1);
+}
+div#aggregate-date-window > div.info-header > div.info-header-element {
+  cursor:pointer;
+  padding:2px;
+  font-size:1.1em;
+}
+div#aggregate-date-window > div.info-header > div.date-element {
+  background-color: rgba(38, 50, 56, 1);
+  border-radius:16px;
+  color: rgba(207, 216, 220, 1);
+  font-family: Consolas,monaco,monospace; 
+  line-height:8px;
+  padding:2px;
+  font-size:8px;
+  font-weight:bold;
+  border: 3px solid rgba(38, 50, 56, 1);
+}
+div#aggregate-date-window > div.info-header > div.arrow {
+  /* line-height:1.0em;
+  font-size:1.0em; */
+  width: 17px;
+  height: 17px;
+}
+div#aggregate-date-window > div.info-header > div.date-element#pos-2,div.date-element#pos-4  {
+  transform: translate(2px, -20%);
+}
+div#aggregate-date-window > div.info-header > div.date-element#pos-3 {
+  font-size: 12px;
+  line-height: 12px;
+  color:rgba(236, 239, 241, 1);
+  background-color:rgba(96, 125, 139, 1);
+  padding:6px;
+  border: 2px solid rgba(38, 50, 56, 1);
+  transform: translate(2px, -10%);
+  /* margin:0 0.5em 0 0.5em; */
+}
+div#aggregate-date-window > div.info-header > div.info-header-element {
+  display:inline-flex;
+}
+div.variable-toggle {
+  height: 20px;
+  font-size:8px;
+  line-height: 20px;
+  margin-top: 12px;
+  width: 300px;
+  font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif; 
+  font-weight:bold;
+  color:rgba(38, 50, 56, 1);
+}
+div.variable-toggle > div.variable-button {
+  display:inline-block;
+  background-color: rgba(38, 50, 56, 1);
+  border: 1px solid rgba(207, 216, 220, 1);
+  color:rgba(207, 216, 220, 1);
+  border-radius: 10px;
+  /* padding:0 6px 0 6px; */
+  width: 80px;
+  height: 20px;
+  
+}
+div.variable-display {
+  width:300px;
+  margin-top: 12px;
+  line-height:24px;
+  height:calc(95%- (48px + 37px));
+  display:block;
+}
+div.variable-display > div.variable {
+  height: 32px;
+  line-height: 32px;
+  width: 280px;
+  margin: 0 auto;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  text-align:center;
+  color:rgba(207, 216, 220, 1);
+  background-color: rgba(38, 50, 56, 1);
+  border: 1px solid rgba(112, 112, 112, 1);
+  border-radius: 12px;
+  font-family: Consolas,monaco,monospace; 
+  font-weight:bold;
+}
+div.variable-display > div.variable.active {
+  color: rgba(38, 50, 56, 1);
+  background-color: rgba(207, 216, 220, 1);
+  border: 1px solid rgba(38, 50, 56, 1);
+}
+div.variable-display > div.variable.last{
+  margin-bottom:16px;
+}
+div.variable-display > div.variable > div.source{
+  margin-left:12px;
+  float:left;
+  font-size:15px;
+}
+div.variable-display > div.variable > div.figures{
+  float:right;
+  margin-right:12px;
+  line-height:24px;
+  transform:translate(0px, 1px);
+}
+div.variable-display > div.variable > div.figures > div.figure > i{
+  float:left;
+  transform:translate(0,23%);
+  padding:1px;
+  margin-right: 0.5em;
+}
+div.variable-display > div.variable > div.figures > div.figure > span{
+  font-size:0.75em;
+  font-family: 'Noto Sans', Helvetica, arial, sans-serif;
+  text-align:center;
+}
+div.variable-display > div.variable > div.figures > div.figure{
+  border-radius: 32px;
+  color: rgba(38, 50, 56, 1);
+  background-color: rgba(207, 216, 220, 1);
+  border: 1px solid rgba(38, 50, 56, 1);
+  padding: 0 4px 0 4px;
+}
+div.variable-display > div.variable.active > div.figures > div.figure{
+  background-color: rgba(38, 50, 56, 1);
+  border: 1px solid rgba(112, 112, 112, 1);
+  border-radius: 32px;
+  color: rgba(207, 216, 220, 1);
+  padding: 0 4px 0 4px;
+}
+
+div.hospital-display > div.hospital > div.information {
+  display:none;
+}
+div.hospital-display > div.hospital.active > div.information {
+  display:block;
+}
+
+div.hospital-display > div.hospital > div.header {
+  height: 32px;
+  line-height: 32px;
+  width: 280px;
+  margin: 0 auto;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  text-align:center;
+  color:rgba(207, 216, 220, 1);
+  background-color: rgba(38, 50, 56, 1);
+  border: 1px solid rgba(112, 112, 112, 1);
+  border-radius: 12px;
+  font-weight:bold;
+  font-size:0.8em;
+  font-family: 'Noto Sans', Helvetica, arial, sans-serif;
+  overflow: hidden;
+}
+div.hospital-display > div.hospital > div.header > div.name {
+  float:left;
+  margin-left:12px;
+}
+div.hospital-display > div.hospital > div.information > div.info-item {
+  color: rgba(38, 50, 56, 1);
+  background-color: rgba(207, 216, 220, 1);
+  border: 1px solid rgba(38, 50, 56, 1);
+  height: 32px;
+  line-height: 32px;
+  width: 280px;
+  margin: 0 auto;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  text-align:center;
+  border-radius: 12px;
+  font-weight:bold;
+  font-size:0.8em;
+  font-family: 'Noto Sans', Helvetica, arial, sans-serif;
+}
+div.hospital-display > div.hospital > div.information > div.info-item > i, div.hospital-display > div.hospital > div.information > div.info-item > svg{
+  float:left;
+  margin:0 12px 0 12px;
+  width:16px;
+  transform:translate(0, 40%);
+}
+div.hospital-display > div.hospital > div.information > div.info-item > i {
+  transform:translate(0, 80%);
+}
+div.hospital-display > div.hospital > div.information > div.info-item > span {
+  float:left;
+}
+div.hospital-display > div.hospital > div.information > div.info-item.red-border {
+  border: 2px solid rgba(183, 28, 28, 1);
+}
+div.hospital-display > div.hospital > div.information > div.info-item.green-border {
+  border: 2px solid rgba(27, 94, 32, 1);
+}
+div.hospital-display > div.hospital > div.header > svg {
+  float:right;
+  transform:translate(0, 40%);
+  margin-right:12px;
+}
+div.hospital-display > div.hospital.active > div.header > svg {
+  transform:translate(0, 40%) rotate(180deg);
+}
