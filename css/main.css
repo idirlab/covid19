@@ -320,7 +320,7 @@ visibility: visible;
   background-size:40px 40px;
   border: none;
   position: fixed;
-  left: 320px;
+  left: 420px;
   top: 55px;
   z-index: 1000;
   transition: 0.3s;
@@ -378,7 +378,7 @@ visibility: visible;
 }
 
 .card-text {
-  font-size: 40px;
+  font-size: 30px;
   text-align: center;
 }
 
@@ -418,7 +418,7 @@ span {
 }
 
 #placename {
-  font-size: 40px;
+  font-size: 30px;
   position: relative;
   /* top: -20px; */
   font-family: 'Oswald', sans-serif;
@@ -631,7 +631,7 @@ text {
 
 div#info {
   position:fixed;
-  width:300px;
+  width:400px;
   top:103.5px;
   bottom:0;
   left:0;
@@ -658,7 +658,7 @@ div#banner > div#title {
 div#location-information-container {
   position:fixed;
   top:44px;
-  width:300px;
+  width:400px;
   height:58px;
   line-height:58px;
   font-size: 40px;
@@ -691,13 +691,14 @@ div#aggregate-date-window {
 div#hospital-info {
   top:calc(103.5px + (50% - 103.5px));
   height: 50%;
-  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
   transition: 0.3s;
 }
 div.info-pane {
   text-align:center;
   position:fixed;
-  width:300px;
+  width:400px;
   background-color:rgba(176, 190, 197, 1);
   line-height:58px;
   left:0px;
@@ -760,13 +761,14 @@ div#aggregate-date-window > div.info-header > div.date-element#pos-3 {
 }
 div#aggregate-date-window > div.info-header > div.info-header-element {
   display:inline-flex;
+  margin:0 6px 0 6px;
 }
 div.variable-toggle {
-  height: 20px;
-  font-size:8px;
-  line-height: 20px;
+  height: 26px;
+  font-size:12px;
+  line-height: 26px;
   margin-top: 12px;
-  width: 300px;
+  width: 400px;
   font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif; 
   font-weight:bold;
   color:rgba(38, 50, 56, 1);
@@ -776,14 +778,14 @@ div.variable-toggle > div.variable-button {
   background-color: rgba(38, 50, 56, 1);
   border: 1px solid rgba(207, 216, 220, 1);
   color:rgba(207, 216, 220, 1);
-  border-radius: 10px;
-  /* padding:0 6px 0 6px; */
-  width: 80px;
-  height: 20px;
+  border-radius: 26px;
+  margin:0 6px 0 6px;
+  width: 110px;
+  height: 30px;
   
 }
 div.variable-display {
-  width:300px;
+  width:400px;
   margin-top: 12px;
   line-height:24px;
   height:calc(95%- (48px + 37px));
@@ -792,7 +794,7 @@ div.variable-display {
 div.variable-display > div.variable {
   height: 32px;
   line-height: 32px;
-  width: 280px;
+  width: 360px;
   margin: 0 auto;
   margin-top: 12px;
   margin-bottom: 12px;
@@ -800,7 +802,7 @@ div.variable-display > div.variable {
   color:rgba(207, 216, 220, 1);
   background-color: rgba(38, 50, 56, 1);
   border: 1px solid rgba(112, 112, 112, 1);
-  border-radius: 12px;
+  border-radius: 16px;
   font-family: Consolas,monaco,monospace; 
   font-weight:bold;
 }
@@ -859,7 +861,7 @@ div.hospital-display > div.hospital.active > div.information {
 div.hospital-display > div.hospital > div.header {
   height: 32px;
   line-height: 32px;
-  width: 280px;
+  width: 360px;
   margin: 0 auto;
   margin-top: 12px;
   margin-bottom: 12px;
@@ -867,7 +869,7 @@ div.hospital-display > div.hospital > div.header {
   color:rgba(207, 216, 220, 1);
   background-color: rgba(38, 50, 56, 1);
   border: 1px solid rgba(112, 112, 112, 1);
-  border-radius: 12px;
+  border-radius: 16px;
   font-weight:bold;
   font-size:0.8em;
   font-family: 'Noto Sans', Helvetica, arial, sans-serif;
@@ -883,12 +885,12 @@ div.hospital-display > div.hospital > div.information > div.info-item {
   border: 1px solid rgba(38, 50, 56, 1);
   height: 32px;
   line-height: 32px;
-  width: 280px;
+  width: 360px;
   margin: 0 auto;
   margin-top: 12px;
   margin-bottom: 12px;
   text-align:center;
-  border-radius: 12px;
+  border-radius: 16px;
   font-weight:bold;
   font-size:0.8em;
   font-family: 'Noto Sans', Helvetica, arial, sans-serif;
