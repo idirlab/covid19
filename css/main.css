@@ -311,21 +311,6 @@ visibility: visible;
   /* padding: 40px 15px 20px 15px; */
 }
 
-
-.btn-hidden-sidebar {
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  background: url("../img/back_arrow.jpg");
-  background-size:40px 40px;
-  border: none;
-  position: fixed;
-  left: 420px;
-  top: 55px;
-  z-index: 1000;
-  transition: 0.3s;
-}
-
 .card-deck .card {
   background: #343a40;
   padding: 2px;
@@ -655,11 +640,44 @@ div#banner > div#title {
   font-size:37.5;
   letter-spacing:4px;
 }
+
+.btn-hidden-sidebar {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background: url("../img/back_arrow.jpg");
+  background-size:40px 40px;
+  border: none;
+  position: fixed;
+  left: 420px;
+  top: 55px;
+  z-index: 1000;
+  transition: 0.3s;
+  z-index: 1002;
+}
+
+.date_pick {
+  width:40px;
+  height:40px;
+  background-color: rgba(207, 216, 220, 1);
+  border-radius: 20px;
+  position: fixed;
+  left: 20px;
+  top: 55px;
+  /* transform: translate(20px, 9px); */
+  z-index: 1001;
+}
+
+.date_pick > .fa-calendar-alt {
+  transform: translate(10px, 8px);
+}
+
+
 div#location-information-container {
   position:fixed;
   top:44px;
   width:400px;
-  height:58px;
+  height:158px;
   line-height:58px;
   font-size: 40px;
   text-align:center;
@@ -672,9 +690,12 @@ div#location-information-container {
   transition: 0.3s;
 }
 
+
+
 div#location-information-container > p {
   margin-bottom:0px;
   height: inherit;
+
 }
 
 div#location-information-container > p > span#placename {

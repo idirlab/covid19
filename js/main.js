@@ -76,9 +76,7 @@ function closeBar() {
     var button = document.getElementById("btn-close_bar")
     button.style.left = "20px";
     button.style.transform = 'rotate('+180+'deg)'
-    
-    // button.css = "btn-hidden-sidebar"
-    // button.style.background = "url(../img/right_arrow.jpg)";
+
 
   } else {
     flag = true;
@@ -88,11 +86,16 @@ function closeBar() {
     var button = document.getElementById("btn-close_bar")
     button.style.left = "420px";
     button.style.transform = 'rotate('+360+'deg)'
-    // button.css = "btn-open-sidebar"
-    // button.style.background = "url(../img/back_arrow.jpg)";
-
 
   }
   
 }
+
+// const picker = pickadate.create()
+// const element = document.getElementById('pickadate')
+// pickadate.render(element, picker)
+
+var $input = $('#datepicker').pickadate()
+var picker = $input.pickadate('picker')
+
 
