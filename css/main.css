@@ -11,10 +11,15 @@ html, body, main {
 /* #legend-panel {
 
 } */
+.customPopup .leaflet-popup-tip,
+.customPopup .leaflet-popup-content-wrapper {
+  background: #41494C;
+  color: #DBDEE0;
+}
 
- #rankingToggle{
-   visibility: hidden
- }
+#rankingToggle{
+  visibility: hidden
+}
 #table {
   visibility: hidden;
   position: fixed;

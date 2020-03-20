@@ -397,32 +397,10 @@
     }
 
 
-    var communities = new L.MarkerClusterGroup({
-      spiderfyOnMaxZoom: false,
-      singleMarkerMode: true,
-      // showCoverageOnHover: false,
-      // zoomToBoundsOnClick: false,
-      iconCreateFunction: function(cluster) {
-        return L.divIcon({
-          // html: '<i class="fas fa-procedures community community-marker"> <b>' + cluster.getChildCount() + '</b></i>'
-          html: '<i class="fas fa-procedures community community-marker"> <b>' + cluster.getChildCount() + '</b></i>'
-        });
-      }
-
-    });
-
-    var cases = new L.MarkerClusterGroup({
+    var cases= new L.MarkerClusterGroup({
       spiderfyOnMaxZoom: true,
       singleMarkerMode: true,
-      polygonOptions: {
-        fillColor: "black",
-        color: 'black',
-        weight: 0.5,
-        opacity: 0.6,
-        fillOpacity: 0.2
-      },
-      showCoverageOnHover: true,
-      // zoomToBoundsOnClick: false,
+      showCoverageOnHover: false,
       iconCreateFunction: function(cluster) {
         cnt = cluster.getChildCount()
         return L.divIcon({
@@ -445,34 +423,28 @@
 
       $("#date").text("Last update: " + datasets[3][0].timestamp.split(".")[0] + " PST");
 
-      datasets[2].forEach(function(d) {
-        L.marker([parseFloat(d.lat), parseFloat(d.lng)]).bindPopup(d.name + "&nbsp;&nbsp;(<a target='_blank' href='https://translate.google.com/#view=home&op=translate&sl=zh-CN&tl=en&text=" + d.name + "'>Translate to English</a>)").addTo(
-          communities);
-      })
-
-
       datasets[4].forEach(function(d) {
         //console.log(d.id)
-        L.marker([parseFloat(d.lat), parseFloat(d.lng)]).bindPopup("<b>" + d.no + "</b> <p>" + d.note + " identified on " + d.date + ", &nbsp;" + d.reference + ".</p>").addTo(
-          cases);
+        // var customPopup = "<p>Patient details: <br>&nbsp;&nbsp;" + d.note + "<br><br>Identified on <br>&nbsp;&nbsp;" + d.date + "</p>"
+        var customPopup = "<p>Male, 20's, Stable</p>"
+        var customOptions = {
+          'maxWidth': '100',
+          'className' : 'customPopup'
+        }
+        L.marker([parseFloat(d.lat), parseFloat(d.lng)]).bindPopup(customPopup, customOptions).addTo(cases);
       })
 
 
 
       var latest = datasets[0][datasets[0].length - 1];
-      //delete latest["datetime"];
-
 
       var top = {},
         ustop = {},
         cntop = {};
       top["china"] = 0;
       Object.keys(latest).forEach(function(d) {
-        // value = tc(datasets[0][datasets[0].length - 1][d]) - tr(datasets[0][datasets[0].length - 1][d]) - td(datasets[0][datasets[0].length - 1][d]);
         value = tc(datasets[0][datasets[0].length - 1][d]);
         if (datasets[7]["columns"].includes(d)) {
-          // console.log(value);
-          // console.log(top["china"]);
           top["china"] += +value;
           cntop[d] = value;
 
@@ -683,35 +655,35 @@
 
       }
 
-      function setColor(enname) {
-        var id = 0;
-        var pop = datasets[0][datasets[0].length - 1][enname];
+      // function setColor(enname) {
+      //   var id = 0;
+      //   var pop = datasets[0][datasets[0].length - 1][enname];
 
-        if (pop != undefined) {
-          pop = +pop.toString().split("-")[0] - +pop.toString().split("-")[2] - +pop.toString().split("-")[3]; // remaining confirmed
-        } else {
-          pop = 0;
-          // return "#00000000";
-        }
+      //   if (pop != undefined) {
+      //     pop = +pop.toString().split("-")[0] - +pop.toString().split("-")[2] - +pop.toString().split("-")[3]; // remaining confirmed
+      //   } else {
+      //     pop = 0;
+      //     // return "#00000000";
+      //   }
 
-        if (pop >= 10000) {
-          id = 5;
-        } else if (pop > 1000 && pop <= 10000) {
-          id = 4;
-        } else if (pop > 250 && pop <= 1000) {
-          id = 3;
-        } else if (pop > 100 && pop <= 250) {
-          id = 2;
-        } else if (pop > 10 && pop <= 100) {
-          id = 1;
-        } else if (pop > 0 && pop <= 10) {
-          id = 0;
-        } else {
-          id = -1;
-          return "#00000000";
-        }
-        return colors[id];
-      }
+      //   if (pop >= 10000) {
+      //     id = 5;
+      //   } else if (pop > 1000 && pop <= 10000) {
+      //     id = 4;
+      //   } else if (pop > 250 && pop <= 1000) {
+      //     id = 3;
+      //   } else if (pop > 100 && pop <= 250) {
+      //     id = 2;
+      //   } else if (pop > 10 && pop <= 100) {
+      //     id = 1;
+      //   } else if (pop > 0 && pop <= 10) {
+      //     id = 0;
+      //   } else {
+      //     id = -1;
+      //     return "#00000000";
+      //   }
+      //   return colors[id];
+      // }
 
 
       function style(feature) {
@@ -724,7 +696,7 @@
         } else {
           return {
             fill: setFill(feature.properties.enname),
-            fillColor: setColor(feature.properties.enname),
+            // fillColor: setColor(feature.properties.enname),
             fillOpacity: 0.4,
             weight: 0.5,
             opacity: 1,
@@ -742,8 +714,8 @@
         layer.setStyle({
           weight: 2,
           opacity: 0.8,
-          color: '#DC143C',
-          fillColor: '#00ffd9',
+          color: '#DC143C', // state border
+          fillColor: '#FFFFFF', // state color
           fillOpacity: 0.1
         });
         // bring the layer to the front.
