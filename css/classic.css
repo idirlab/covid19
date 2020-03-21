@@ -53,7 +53,7 @@
  */
 .picker__holder {
   position: absolute;
-  background: #fff;
+  background: rgb(160, 176, 185);
   border: 1px solid #aaaaaa;
   border-top-width: 0;
   border-bottom-width: 0;

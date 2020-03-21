@@ -660,26 +660,36 @@ div#banner > div#title {
   z-index: 1002;
 }
 
-.date_pick {
+.side-panel {
+  top: 44px;
+  width: 400px;
+  height: calc(100% - 44px);
+  position:fixed;
+  overflow: hidden;
+  z-index: 1000;
+  transition: 0.3s;
+}
+
+.date-pick {
   width:40px;
   height:40px;
   background-color: rgba(207, 216, 220, 1);
   border-radius: 20px;
-  position: fixed;
+  position: absolute;
   left: 20px;
-  top: 55px;
+  top: 11px;
   /* transform: translate(20px, 9px); */
   z-index: 1001;
 }
 
-.date_pick > .fa-calendar-alt {
+.date-pick > .fa-calendar-alt {
   transform: translate(10px, 8px);
 }
 
 
 div#location-information-container {
-  position:fixed;
-  top:44px;
+  position: absolute;;
+  top:0px;
   width:400px;
   height:158px;
   line-height:58px;

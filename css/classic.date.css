@@ -230,8 +230,8 @@
 .picker__button--today,
 .picker__button--clear,
 .picker__button--close {
-  border: 1px solid #fff;
-  background: #fff;
+  border: 1px solid rgb(160, 176, 185);
+  background: rgb(160, 176, 185);
   font-size: .8em;
   padding: .66em 0;
   font-weight: bold;
