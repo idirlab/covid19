@@ -5,7 +5,7 @@ html, body, main {
   margin: 0;
   background: #fff;
   font-family: 'Titillium Web', sans-serif;
-  overflow: hidden
+  /* overflow: hidden */
 }
 
 /* #legend-panel {
@@ -459,10 +459,14 @@ text {
   color: black
 }
 
-#total-chart {
-  position: relative;
-  top: 10px;
-  left: -20px;
+.idir-total-chart {
+  position: fixed !important;
+  top:44px;
+  width:500px;
+  height:280px;
+  right: 0%;
+  z-index:1000;
+  background: rgb(227, 230, 229);
 }
 
 #rank-chart {
