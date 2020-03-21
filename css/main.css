@@ -741,8 +741,6 @@ div#aggregate-date-window > div.info-header > div.date-element {
   border: 3px solid rgba(38, 50, 56, 1);
 }
 div#aggregate-date-window > div.info-header > div.arrow {
-  /* line-height:1.0em;
-  font-size:1.0em; */
   width: 17px;
   height: 17px;
 }
@@ -877,25 +875,30 @@ div.hospital-display > div.hospital > div.header {
 }
 div.hospital-display > div.hospital > div.header > div.name {
   float:left;
+  text-align:left;
   margin-left:12px;
+  max-width:256px;
+  text-overflow: ellipsis;
+  overflow:hidden;
+  white-space:nowrap;
 }
 div.hospital-display > div.hospital > div.information > div.info-item {
   color: rgba(38, 50, 56, 1);
   background-color: rgba(207, 216, 220, 1);
   border: 1px solid rgba(38, 50, 56, 1);
   height: 32px;
-  line-height: 32px;
   width: 340px;
   margin: 0 auto;
   margin-top: 12px;
   margin-bottom: 12px;
   text-align:center;
   border-radius: 16px;
+  line-height: 32px;
   font-weight:bold;
   font-size:0.8em;
   font-family: 'Noto Sans', Helvetica, arial, sans-serif;
 }
-div.hospital-display > div.hospital > div.information > div.info-item > i, div.hospital-display > div.hospital > div.information > div.info-item > svg{
+div.hospital-display > div.hospital > div.information > div.info-item > i, div.hospital-display > div.hospital > div.information > div.info-item > svg, div.hospital-display > div.hospital > div.information > div.info-item > a > i{
   float:left;
   margin:0 12px 0 12px;
   width:16px;
@@ -904,8 +907,10 @@ div.hospital-display > div.hospital > div.information > div.info-item > i, div.h
 div.hospital-display > div.hospital > div.information > div.info-item > i {
   transform:translate(0, 80%);
 }
-div.hospital-display > div.hospital > div.information > div.info-item > span {
-  float:left;
+
+div.hospital-display > div.hospital > div.information > div.info-item.cursor{
+  cursor:pointer;
+  z-index:9999;
 }
 div.hospital-display > div.hospital > div.information > div.info-item.red-border {
   border: 2px solid rgba(183, 28, 28, 1);
@@ -917,7 +922,19 @@ div.hospital-display > div.hospital > div.header > svg {
   float:right;
   transform:translate(0, 40%);
   margin-right:12px;
+  cursor:pointer;
 }
 div.hospital-display > div.hospital.active > div.header > svg {
   transform:translate(0, 40%) rotate(180deg);
+}
+div.hospital > div.header > div.information {
+  overflow-y: hidden;
+	max-height: 256px; /* approximate max height */
+
+	transition-property: all;
+	transition-duration: .5s;
+	transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+}
+div.hospital > div.header > div.information.closed {
+  max-height:0;
 }
