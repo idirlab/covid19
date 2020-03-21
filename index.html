@@ -46,6 +46,7 @@
       <div id="title" style="font-size:30px;text-align: center;background-color: rgb(79, 105, 120);color: rgb(232, 235, 238)">COVID19 Pandemic - Public Information</div>
     </div>
     <button id="btn-close_bar" class="btn-hidden-sidebar" onclick="closeBar()"></button>
+    <div id="total-chart" class="idir-total-chart"></div>
 
 <!-- <<<<<<< HEAD -->
     <!-- <div id="info" data-simplebar data-simplebar-auto-hide="true">
@@ -163,17 +164,14 @@
             </div>
           </div>
         </div>
-<!-- <<<<<<< HEAD -->
-      <!-- </div>
+  
 
-      <div id="timeline-chart"></div>
-      <div id="total-chart"></div>
-      <div id="rank-chart"></div>
+      <!-- <div id="timeline-chart"></div> -->
+      <!-- <div id="rank-chart"></div> -->
 
-    </div>
     
 
-    <div id="table">
+    <!-- <div id="table">
       <div id="table-container">
         <table id="table-container-div" class="table table-bordered">
           <thead>
@@ -182,14 +180,8 @@
           </tbody>
         </table>
       </div>
-    </div>
+    </div> -->
 
-    <div id="legend-panel" class="card-deck legend">
-
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title grey-circles" style="color:black">no case</h5> -->
-<!-- ======= -->
         <div class="variable">
           <div class="source">CBS</div>
           <div class="figures">
@@ -848,7 +840,7 @@
         },
         zoom: {
           // rescale: true,
-          enabled: false,
+          enabled: true,
           type: "scroll",
         },
         tooltip: {
