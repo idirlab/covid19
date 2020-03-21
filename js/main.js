@@ -100,4 +100,12 @@ function closeBar() {
 var $input = $('#datepicker').pickadate()
 var picker = $input.pickadate('picker')
 
+function pickDate() {
+  console.log('111111')
+  if (picker.get('open')) { 
+    picker.close()
+  } else {
+    picker.open()
+  }
+}
 
