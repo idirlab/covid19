@@ -17,6 +17,7 @@
 	};
 })(window);
 $(document).ready(function(){
+
   var mymap = L.map('map', {
     zoomControl: false,
     zoom: 0,
@@ -366,7 +367,24 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
     }
 
     function showPlace(name) {
-
+      var is_global = name.toUpperCase() === "GLOBAL TREND";
+      if (!is_global){ // Don't do this when first loading the web-page but for subsequent triggers
+        $("div.variable-display").empty();
+        $("div.variable-display").html(`
+          <div id="variable-loading-placeholder">
+            Loading
+          </div>
+        `);
+        var selected_date = new Date($("div.info-header > div.info-header-element#pos-3").text().trim());
+        // Start with this DOM, if it isn't changed then it is accurate and will be displayed.
+        // Else the data will replace it.
+        var DOM = `
+          <div id="variable-loading-no-data">
+            No data for DATE=${moment(selected_date).format("MM/DD/YYYY")} AND LOCATION=${name}. </br>
+            Please try somewhere in the US after 03/19/2020.
+          </div>
+        `;
+      }
       len = places[name].t.length;
 
       nc = places[name].c[len - 1] - places[name].c[len - 2];
@@ -382,52 +400,92 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
         $("#placename").text(name.toUpperCase() + ", CHINA"); // we don't support china yet
       } else {
         $("#placename").text(name.toUpperCase());
-        if (all_columns_in_data.filter(col => name.toLowerCase().toTitleCase() == col).length > 0){
-          // If the area is in our data
-          $("div.variable-display").empty();
-          var DOM = "";
-          var selected_date = new Date($("div.info-header > div.info-header-element#pos-3").text().trim());
+
+        function compareTwoDates(d1, d2) {
+          // check that two dates are on the same day
+          return (d1.getMonth() === d2.getMonth()) &&
+                 (d1.getDate() === d2.getDate()) &&
+                 (d1.getFullYear() === d2.getFullYear());
+        }
+        // Boolean to see if the data covers the date the user is interested in
+        if (!is_global){
+          var data_covers_this_date = Array.from(timeseries.values())
+                                           .map(dataset =>
+                                             Array.from(
+                                               dataset.filter(d => compareTwoDates(selected_date, d.date))
+                                             ).length > 0)
+                                           .reduce((acc, next) => acc || next);
+          // Boolean to see if the location the user is interested in is in the data
+          var data_covers_this_location =
+            (all_columns_in_data.filter(col => name.toLowerCase().toTitleCase() == col).length > 0);
+        }
+        if (!is_global && data_covers_this_date && data_covers_this_location){
+          // If the area is in our data and we have at least one data source that covers that day
+          DOM = "";
           timeseries.forEach(function(dataset, source, _){
-            function compareTwoDates(d1, d2) {
-              // check that two dates are on the same day
-              return (d1.getMonth() === d2.getMonth()) &&
-                     (d1.getDate() === d2.getDate()) &&
-                     (d1.getFullYear() === d2.getFullYear());
-            }
             var data = dataset.filter(d => compareTwoDates(d.date, selected_date));
             function hyphenIfNaN(o){
               return (isNaN(o) ? "&nbsp;-&nbsp;" : o);
             }
-            var state_data = data[0][name.toTitleCase()];
-            var cases_string = hyphenIfNaN(state_data.get("cases"));
-            var deaths_string = hyphenIfNaN(state_data.get("deaths"));
-            var recoveries_string = hyphenIfNaN(state_data.get("recoveries"));
-            var sourceDOM = `
-              <div class="variable">
-                <div class="source">${source}</div>
-                <div class="figures">
-                  <div class="figure">
-                    <i class="fas fa-hospital-symbol"></i>
-                    <span>${cases_string}</span>
-                  </div>
-                  <div class="figure">
-                    <i class="fas fa-skull"></i>
-                    <span>${deaths_string}</span>
-                  </div>
-                  <div class="figure">
-                    <i class="fas fa-user-check"></i>
-                    <span>${recoveries_string}</span>
+            if(data.length > 0){
+              var state_data = data[0][name.toTitleCase()];
+              var cases_string = hyphenIfNaN(state_data.get("cases"));
+              var deaths_string = hyphenIfNaN(state_data.get("deaths"));
+              var recoveries_string = hyphenIfNaN(state_data.get("recoveries"));
+              var sourceDOM = `
+                <div class="variable">
+                  <div class="source">${source}</div>
+                  <div class="figures">
+                    <div class="figure">
+                      <i class="fas fa-hospital-symbol"></i>
+                      <span>${cases_string}</span>
+                    </div>
+                    <div class="figure">
+                      <i class="fas fa-skull"></i>
+                      <span>${deaths_string}</span>
+                    </div>
+                    <div class="figure">
+                      <i class="fas fa-user-check"></i>
+                      <span>${recoveries_string}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            `;
-            DOM = DOM + sourceDOM;
+              `;
+              DOM = DOM + sourceDOM;
+            }
           });
+        }
+        if (!is_global){
           $("div.variable-display").html(DOM);
         }
       }
-
     }
+
+
+    $("div.info-pane#aggregate-date-window > div.info-header > div.arrow").click(function(evt){
+      var arrow_position = $(this).attr("id");
+
+      var date_str = $("div.info-pane#aggregate-date-window > div.info-header > div.date-element#pos-3").text();
+      var selected_date = moment(new Date(date_str));
+      var dates = ["pos-2", "pos-3", "pos-4"].map(id =>
+        moment(new Date(
+          $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${id}`).text()
+        ))
+      );
+      var new_dates = arrow_position === "pos-1" ?
+                      dates.map(d => d.subtract(1, "days")) :
+                      dates.map(d => d.add(1, "days"));
+      // Now update the dates
+      new_dates.forEach(function(new_date, idx){
+        var pos_id = `pos-${idx + 2}`;
+        var date_str = new_date.format("MM/DD/YYYY");
+        $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).text(date_str);
+      });
+
+      // Last, trigger the variables to update for the new date
+      var name = $("div#location-information-container > p > span#placename").text().trim().toLowerCase();
+      showPlace(name);
+    });
 
 
     function setFill(enname) {
