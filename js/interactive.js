@@ -64,10 +64,50 @@ $(document).ready(function(){
     d3.csv('assets/united-states.txt'),
     d3.csv('assets/canada-city.txt'),
     d3.csv('assets/old-name.csv'),
-    d3.csv('assets/Hospital_Geocoded_Hospital_General_Information.csv')
+    d3.csv('assets/Hospital_Geocoded_Hospital_General_Information.csv'),
+    d3.tsv('assets/COVID_data_collection/data/cdc_time_series.csv'),
+    d3.tsv('assets/COVID_data_collection/data/cnn_time_series.csv'),
+    d3.tsv('assets/COVID_data_collection/data/COVIDTrackingProject_time_series.csv'),
+    d3.tsv('assets/COVID_data_collection/data/john_hopkins_time_series.csv'),
+    d3.tsv('assets/COVID_data_collection/data/NYtimes_time_series.csv')
   ]).then(function(datasets) {
 
-    var ushospitals = datasets[datasets.length - 1];
+    var ushospitals = datasets[8];
+    var timeseries = new Map([
+      ["CDC", datasets[9]],
+      ["CNN", datasets[10]],
+      ["COVID Tracking Project", datasets[11]],
+      ["John Hopkins", datasets[12]],
+      ["New York Times", datasets[13]]
+    ]);
+    function unique(value, index, self) {
+        return self.indexOf(value) === index;
+    }
+    var all_columns_in_data = Array.from(timeseries.values()).map(
+      dataset => dataset.columns
+    ).flat().filter(unique); // used to filter for supported locations for covid19 figures
+
+    // This section transforms the source data for later use.
+    var value_extract_regex = /([\d-]+)-([\d-]+)/;
+    timeseries.forEach(function(dataset, source, _){
+      console.log(`Source: ${source}`);
+      dataset.forEach(function(d){
+        d.date = new Date(d.date);
+        dataset.columns.filter(col => col !== "date")
+                       .forEach(function(col){
+                         var element = d[col];
+                         var cases_string = element.match(value_extract_regex)[1];
+                         var deaths_string = element.match(value_extract_regex)[2];
+                         var cases = parseInt(cases_string);
+                         var deaths = parseInt(deaths_string);
+                         d[col] = new Map([
+                           ["cases", cases],
+                           ["deaths", deaths],
+                           ["recoveries", NaN]
+                         ]);
+                       });
+      });
+    });
 
     var hospital_display = $("div.hospital-display");
     function updateHospitalListings() {
@@ -339,9 +379,52 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
         name == "hubei" || name == "hunan" || name == "neimenggu" || name == "jiangsu" || name == "jiangxi" || name == "jilin" || name == "liaoning" ||
         name == "ningxia" || name == "qinghai" || name == "shaanxi" || name == "shandong" || name == "shanghai" || name == "shanxi" ||
         name == "sichuan" || name == "tianjin" || name == "xinjiang" || name == "yunnan" || name == "zhejiang" || name == "xizang") {
-        $("#placename").text(name.toUpperCase() + ", CHINA");
+        $("#placename").text(name.toUpperCase() + ", CHINA"); // we don't support china yet
       } else {
         $("#placename").text(name.toUpperCase());
+        if (all_columns_in_data.filter(col => name.toLowerCase().toTitleCase() == col).length > 0){
+          // If the area is in our data
+          $("div.variable-display").empty();
+          var DOM = "";
+          var selected_date = new Date($("div.info-header > div.info-header-element#pos-3").text().trim());
+          timeseries.forEach(function(dataset, source, _){
+            function compareTwoDates(d1, d2) {
+              // check that two dates are on the same day
+              return (d1.getMonth() === d2.getMonth()) &&
+                     (d1.getDate() === d2.getDate()) &&
+                     (d1.getFullYear() === d2.getFullYear());
+            }
+            var data = dataset.filter(d => compareTwoDates(d.date, selected_date));
+            function hyphenIfNaN(o){
+              return (isNaN(o) ? "&nbsp;-&nbsp;" : o);
+            }
+            var state_data = data[0][name.toTitleCase()];
+            var cases_string = hyphenIfNaN(state_data.get("cases"));
+            var deaths_string = hyphenIfNaN(state_data.get("deaths"));
+            var recoveries_string = hyphenIfNaN(state_data.get("recoveries"));
+            var sourceDOM = `
+              <div class="variable">
+                <div class="source">${source}</div>
+                <div class="figures">
+                  <div class="figure">
+                    <i class="fas fa-hospital-symbol"></i>
+                    <span>${cases_string}</span>
+                  </div>
+                  <div class="figure">
+                    <i class="fas fa-skull"></i>
+                    <span>${deaths_string}</span>
+                  </div>
+                  <div class="figure">
+                    <i class="fas fa-user-check"></i>
+                    <span>${recoveries_string}</span>
+                  </div>
+                </div>
+              </div>
+            `;
+            DOM = DOM + sourceDOM;
+          });
+          $("div.variable-display").html(DOM);
+        }
       }
 
     }

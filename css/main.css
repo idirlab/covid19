@@ -816,6 +816,10 @@ div.variable-display > div.variable > div.source{
   margin-left:12px;
   float:left;
   font-size:15px;
+  max-width: 100px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 div.variable-display > div.variable > div.figures{
   float:right;
