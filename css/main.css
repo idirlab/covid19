@@ -469,6 +469,17 @@ text {
   background: rgb(227, 230, 229);
 }
 
+.juji {
+  position: fixed !important;
+  top:323px;
+  width:500px;
+  height:430px;
+  right: 0%;
+  z-index:1000;
+  background: rgb(227, 230, 229);
+}
+
+
 #rank-chart {
   position: relative;
   top: 20px;
