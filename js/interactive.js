@@ -502,8 +502,6 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
       } else {
         return 'url()';
       }
-
-
     }
 
   // function setColor(enname) {
@@ -600,30 +598,7 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
       });
       // bring the layer to the front.
       layer.bringToFront();
-      // console.log(datasets[14].features)
-      counties_feat = []
-      for (let i = 0; i < datasets[14].features.length; i++) {
-        const feat = datasets[14].features[i];
-        if(datasets[15][feat.properties.STATE]==e.target.feature.properties.enname){
-          counties_feat.push(feat)
-        }
-      }
-      console.log("fuck all", counties_feat)
-      try{
-        mymap.removeLayer(counties)
-      } catch(err) {
-        console.log(err)
-      }
-
-      // if(counties_feat.length==0) {
-        
-      // }
-
-      counties = new L.geoJSON(counties_feat, {
-        // TODO: add
-        style: countyStyle,
-        onEachFeature: onEachCountyFeature
-      }).addTo(mymap);
+      
       if (e.target.feature.properties.enname == "us" || e.target.feature.properties.enname == "canada") {
         layer.bringToBack();
       }
@@ -635,6 +610,25 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
       L.DomEvent.stopPropagation(e);
       $("#hint").text("Click here to the global trend.");
       displayPlace(e.target.feature.properties.enname)
+
+      counties_feat = []
+      for (let i = 0; i < datasets[14].features.length; i++) {
+        const feat = datasets[14].features[i];
+        if(datasets[15][feat.properties.STATE]==e.target.feature.properties.enname){
+          counties_feat.push(feat)
+        }
+      }
+      try{
+        mymap.removeLayer(counties)
+      } catch(err) {
+        console.log(err)
+      }
+
+      counties = new L.geoJSON(counties_feat, {
+        // TODO: add
+        style: countyStyle,
+        onEachFeature: onEachCountyFeature
+      }).addTo(mymap);
     }
 
     // TODO:
