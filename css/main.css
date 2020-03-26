@@ -772,7 +772,7 @@ div#aggregate-date-window > div.info-header > div.date-element {
   font-weight:bold;
   border: 3px solid rgba(38, 50, 56, 1);
 }
-div#aggregate-date-window > div.info-header > div.arrow {
+div#aggregate-date-window > div.info-header > div.arrow.icon-container {
   width: 17px;
   height: 17px;
 }

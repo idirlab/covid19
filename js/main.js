@@ -97,8 +97,22 @@ function closeBar() {
 // const element = document.getElementById('pickadate')
 // pickadate.render(element, picker)
 
-var $input = $('#datepicker').pickadate()
-var picker = $input.pickadate('picker')
+var $input = $('#datepicker').pickadate({
+  onSet:function(datecontainer){
+    function getDate(){
+      return moment(new Date(datecontainer.select));
+    }
+    var dates = [getDate().subtract(1, "days"),
+                 getDate(),
+                 getDate().add(1, "days")];
+    var datestrs = dates.map(d => d.format("MM/DD/YYYY"));
+    datestrs.forEach(function(datestr, idx){
+      var id = `pos-${2 + idx}`;
+      var selector = `div.info-pane#aggregate-date-window > div.info-header > div.date-element#${id}`;
+      $(selector).text(datestr);
+    });
+  }
+});
 
 function pickDate() {
   console.log('111111')

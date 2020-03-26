@@ -415,17 +415,22 @@ $(document).ready(function(){
     }
 
 
+    var date_div = $("div.info-pane#aggregate-date-window > div.info-header > div.date-element#pos-3");
+    date_div.on('DOMSubtreeModified', function(){
+      var name = $("div#location-information-container > p > span#placename").text().trim().toLowerCase();
+      showPlace(name);
+    });
     $("div.info-pane#aggregate-date-window > div.info-header > div.arrow").click(function(evt){
       var arrow_position = $(this).attr("id");
 
-      var date_str = $("div.info-pane#aggregate-date-window > div.info-header > div.date-element#pos-3").text();
+      var date_str = date_div.text();
       var selected_date = moment(new Date(date_str));
       var dates = ["pos-2", "pos-3", "pos-4"].map(id =>
         moment(new Date(
           $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${id}`).text()
         ))
       );
-      var new_dates = arrow_position === "pos-1" ?
+      var new_dates = (arrow_position === "pos-1") || (arrow_position === "pos-2") ?
                       dates.map(d => d.subtract(1, "days")) :
                       dates.map(d => d.add(1, "days"));
       // Now update the dates
@@ -435,11 +440,7 @@ $(document).ready(function(){
         $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).text(date_str);
       });
 
-      // Last, trigger the variables to update for the new date
-      var name = $("div#location-information-container > p > span#placename").text().trim().toLowerCase();
-      showPlace(name);
     });
-
 
     function setFill(enname) {
       var pop = datasets[0][datasets[0].length - 1][enname];
