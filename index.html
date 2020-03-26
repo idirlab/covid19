@@ -50,13 +50,6 @@
     <button id="btn-close_bar" class="btn-hidden-sidebar" onclick="closeBar()"></button>
     <div id="total-chart" class="idir-total-chart"></div>
 
-<!-- <<<<<<< HEAD -->
-    <!-- <div id="info" data-simplebar data-simplebar-auto-hide="true">
-      <div id="deck-1" class="card-deck counts">
-        <div class="card">
-          <div class="card-body confirmed">
-            <h5 class="card-title">Aggregated Confirmed</h5> -->
-<!-- ======= -->
     <div id="left-side-bar" class="side-panel">
     <button id="datepicker" class="date-pick" onclick="pickDate()">
       <i class="far fa-calendar-alt" style="font-size: 24px;"></i>
@@ -257,122 +250,15 @@
         </div>
       </div>
     </div>
-    <div id="hospital-info" class="info-pane bot">
-      <div class="info-header">
-        <i class="fas fa-hospital" style="cursor:pointer;"></i>
-        <span>LOCAL HOSPITAL INFO</span>
-      </div>
-      <div class="hospital-display">
-        <div class="hospital active">
-          <div class="header">
-            <div class="name">Medical City Arlington</div>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
-          </div>
-          <div class="information">
-            <div class="info-item red-border">
-              <i class="fas fa-briefcase-medical"></i>
-              <span>No Test Kits</span>
-            </div>
-            <div class="info-item red-border">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M6 8c1.11 0 2-.9 2-2s-.89-2-2-2c-1.1 0-2 .9-2 2s.9 2 2 2zm6 0c1.11 0 2-.9 2-2s-.89-2-2-2c-1.11 0-2 .9-2 2s.9 2 2 2zM6 9.2c-1.67 0-5 .83-5 2.5V13h10v-1.3c0-1.67-3.33-2.5-5-2.5zm6 0c-.25 0-.54.02-.84.06.79.6 1.34 1.4 1.34 2.44V13H17v-1.3c0-1.67-3.33-2.5-5-2.5z"/></svg>
-              <span>Heavy Patient Load</span>
-            </div>
-            <div class="info-item green-border">
-              <i class="fas fa-phone"></i>
-              <span>111-222-3333</span>
-            </div>
-            <div class="info-item cursor green-border">
-              <i class="fas fa-map-marked-alt"></i>
-              <span>Get Directions</span>
-            </div>
-          </div>
-        </div>
-        <div class="hospital">
-          <div class="header">
-            <div class="name">Baylor Scott &amp; White Emergency Hospital</div>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
-          </div>
-          <div class="information">
-            <div class="info-item red-border">
-              <i class="fas fa-briefcase-medical"></i>
-              <span>No Test Kits</span>
-            </div>
-            <div class="info-item red-border">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M6 8c1.11 0 2-.9 2-2s-.89-2-2-2c-1.1 0-2 .9-2 2s.9 2 2 2zm6 0c1.11 0 2-.9 2-2s-.89-2-2-2c-1.11 0-2 .9-2 2s.9 2 2 2zM6 9.2c-1.67 0-5 .83-5 2.5V13h10v-1.3c0-1.67-3.33-2.5-5-2.5zm6 0c-.25 0-.54.02-.84.06.79.6 1.34 1.4 1.34 2.44V13H17v-1.3c0-1.67-3.33-2.5-5-2.5z"/></svg>
-              <span>Heavy Patient Load</span>
-            </div>
-            <div class="info-item green-border">
-              <i class="fas fa-phone"></i>
-              <span>111-222-3333</span>
-            </div>
-            <div class="info-item cursor green-border">
-              <i class="fas fa-map-marked-alt"></i>
-              <span>Get Directions</span>
-            </div>
-          </div>
-        </div>
-        <div class="hospital">
-          <div class="header">
-            <div class="name">Methodist Mansfield Medical Center</div>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
-          </div>
-          <div class="information">
-            <div class="info-item red-border">
-              <i class="fas fa-briefcase-medical"></i>
-              <span>No Test Kits</span>
-            </div>
-            <div class="info-item red-border">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M6 8c1.11 0 2-.9 2-2s-.89-2-2-2c-1.1 0-2 .9-2 2s.9 2 2 2zm6 0c1.11 0 2-.9 2-2s-.89-2-2-2c-1.11 0-2 .9-2 2s.9 2 2 2zM6 9.2c-1.67 0-5 .83-5 2.5V13h10v-1.3c0-1.67-3.33-2.5-5-2.5zm6 0c-.25 0-.54.02-.84.06.79.6 1.34 1.4 1.34 2.44V13H17v-1.3c0-1.67-3.33-2.5-5-2.5z"/></svg>
-              <span>Heavy Patient Load</span>
-            </div>
-            <div class="info-item green-border">
-              <i class="fas fa-phone"></i>
-              <span>111-222-3333</span>
-            </div>
-            <div class="info-item cursor green-border">
-              <i class="fas fa-map-marked-alt"></i>
-              <span>Get Directions</span>
-            </div>
-          </div>
-        </div>
-        <div class="hospital">
-          <div class="header">
-            <div class="name">Cook Children's</div>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
-          </div>
-          <div class="information">
-            <div class="info-item red-border">
-              <i class="fas fa-briefcase-medical"></i>
-              <span>No Test Kits</span>
-            </div>
-            <div class="info-item red-border">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M6 8c1.11 0 2-.9 2-2s-.89-2-2-2c-1.1 0-2 .9-2 2s.9 2 2 2zm6 0c1.11 0 2-.9 2-2s-.89-2-2-2c-1.11 0-2 .9-2 2s.9 2 2 2zM6 9.2c-1.67 0-5 .83-5 2.5V13h10v-1.3c0-1.67-3.33-2.5-5-2.5zm6 0c-.25 0-.54.02-.84.06.79.6 1.34 1.4 1.34 2.44V13H17v-1.3c0-1.67-3.33-2.5-5-2.5z"/></svg>
-              <span>Heavy Patient Load</span>
-            </div>
-            <div class="info-item green-border">
-              <i class="fas fa-phone"></i>
-              <span>111-222-3333</span>
-            </div>
-            <div class="info-item green-border cursor">
-              <i class="fas fa-map-marked-alt"></i>
-              <span>Get Directions</span>
-            </div>
-          </div>
-        </div>
-        <script>
-          $("div.hospital > div.header > svg").click(function(evt){
-            $(this).closest("div.hospital").toggleClass("active");
-          });
-        </script>
-      </div>
     </div>
-    </div>
-    <div id="map"></div>
+    <div class="closed" id="map"></div>
     <div class="juji">
       <iframe width="100%" height="100%" name="htmlComp-iframe" scrolling="auto" src="https://juji.ai/pre-chat/5e75394b-841d-4adf-a908-6d9844826117"></iframe>
     </div>
   </main>
   <script src="js/main.js"></script>
+  <script src="js/css-element-queries-1.2.1/src/ElementQueries.js"></script>
+  <script src="js/css-element-queries-1.2.1/src/ResizeSensor.js"></script>
   <script src="js/interactive.js"></script>
 
   <!-- Google Analytics -->

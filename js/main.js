@@ -88,9 +88,9 @@ function closeBar() {
     var button = document.getElementById("btn-close_bar")
     button.style.left = "420px";
     button.style.transform = 'rotate('+360+'deg)'
-
   }
-  
+  // toggle the map to get wider to cover the closed area
+  $("body > main > div#map").toggleClass("closed");
 }
 
 // const picker = pickadate.create()
@@ -102,7 +102,7 @@ var picker = $input.pickadate('picker')
 
 function pickDate() {
   console.log('111111')
-  if (picker.get('open')) { 
+  if (picker.get('open')) {
     picker.close()
   } else {
     picker.open()

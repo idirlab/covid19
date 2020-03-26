@@ -25,6 +25,7 @@ $(document).ready(function(){
     minZoom: 0,
     worldCopyJump: true,
   }).fitWorld().setView([37, -107], 5)
+  $("body > main > div#map").toggleClass("closed");
   new L.Control.Zoom({
     position: 'bottomright'
   }).addTo(mymap);
@@ -32,7 +33,7 @@ $(document).ready(function(){
   L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{ maxZoom: 20, subdomains:['mt0','mt1','mt2','mt3']
   }).addTo(mymap);
 
-
+  var added = false;
 
   var chart, rchart;
 
@@ -65,7 +66,6 @@ $(document).ready(function(){
     d3.csv('assets/united-states.txt'),
     d3.csv('assets/canada-city.txt'),
     d3.csv('assets/old-name.csv'),
-    d3.csv('assets/Hospital_Geocoded_Hospital_General_Information.csv'),
     d3.tsv('assets/COVID_data_collection/data/cdc_time_series.csv'),
     d3.tsv('assets/COVID_data_collection/data/cnn_time_series.csv'),
     d3.tsv('assets/COVID_data_collection/data/COVIDTrackingProject_time_series.csv'),
@@ -75,9 +75,8 @@ $(document).ready(function(){
     d3.json("assets/num2state.json")
   ]).then(function(datasets) {
 
-    var ushospitals = datasets[8];
-    var usstates = datasets[15];
-    var uscounties = datasets[14];
+    var usstates = datasets[14];
+    var uscounties = datasets[13];
     function municipalityPostfix (stateString) {
       var stateUpper = stateString.toUpperCase();
       const boroughs = [
@@ -95,11 +94,11 @@ $(document).ready(function(){
       }
     }
     var timeseries = new Map([
-      ["CDC", datasets[9]],
-      ["CNN", datasets[10]],
-      ["COVID Tracking Project", datasets[11]],
-      ["John Hopkins", datasets[12]],
-      ["New York Times", datasets[13]]
+      ["CDC", datasets[8]],
+      ["CNN", datasets[9]],
+      ["COVID Tracking Project", datasets[10]],
+      ["John Hopkins", datasets[11]],
+      ["New York Times", datasets[12]]
     ]);
     function unique(value, index, self) {
         return self.indexOf(value) === index;
@@ -128,66 +127,6 @@ $(document).ready(function(){
                          ]);
                        });
       });
-    });
-
-    var hospital_display = $("div.hospital-display");
-    function updateHospitalListings() {
-      hospital_display.empty()
-      var quadrilateral = mymap.getBounds();
-      var ne_corner = quadrilateral._southWest;
-      var sw_corner = quadrilateral._northEast;
-      var doms = ushospitals.map(function (d) {
-        var DOM = "";
-        var lat = parseFloat(d.Latitude);
-        var lng = parseFloat(d.Longitude);
-        if(!(isNaN(lat) | isNaN(lng))){
-          var point = L.latLng(lat, lng);
-          if (quadrilateral.contains(point)){
-            var hospitalDOM = `
-              <div class="hospital">
-                <div class="header">
-                  <div class="name">${htmlentities.encode(v.lowerCase(d["Facility Name"]).toTitleCase())}</div>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
-                </div>
-                <div class="information">
-                  <div class="info-item red-border">
-                    <i class="fas fa-briefcase-medical"></i>
-                    <span>No Test Kits</span>
-                  </div>
-                  <div class="info-item red-border">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M6 8c1.11 0 2-.9 2-2s-.89-2-2-2c-1.1 0-2 .9-2 2s.9 2 2 2zm6 0c1.11 0 2-.9 2-2s-.89-2-2-2c-1.11 0-2 .9-2 2s.9 2 2 2zM6 9.2c-1.67 0-5 .83-5 2.5V13h10v-1.3c0-1.67-3.33-2.5-5-2.5zm6 0c-.25 0-.54.02-.84.06.79.6 1.34 1.4 1.34 2.44V13H17v-1.3c0-1.67-3.33-2.5-5-2.5z"/></svg>
-                    <span>Heavy Patient Load</span>
-                  </div>
-                  <div class="info-item green-border">
-                    <i class="fas fa-phone"></i>
-                    <span>${d["Phone Number"]}</span>
-                  </div>
-                  <div class="info-item cursor green-border"
-onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destination=${d["Address"]}', '_blank');">
-                    <i class="fas fa-map-marked-alt"></i>
-                    <span>Get Directions</span>
-                  </div>
-                </div>
-              </div>
-            `;
-            DOM = DOM + hospitalDOM;
-          }
-        }
-        return DOM;
-      });
-
-      hospital_display.html(`
-        ${doms.join("\n")}
-        <script>
-          $("div.hospital > div.header > svg").click(function(evt){
-            $(this).closest("div.hospital").toggleClass("active");
-          });
-        </script>
-      `);
-      $("div.hospital-display > div.hospital").first().addClass("active");
-    }
-    $("div.info-pane#hospital-info > div.info-header > i.fa-hospital").click(function(evt){
-      updateHospitalListings();
     });
 
     $("#date").text("Last update: " + datasets[3][0].timestamp.split(".")[0] + " PST");
