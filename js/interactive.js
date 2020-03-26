@@ -25,6 +25,7 @@ $(document).ready(function(){
     minZoom: 0,
     worldCopyJump: true,
   }).fitWorld().setView([37, -107], 5)
+  $("body > main > div#map").toggleClass("closed");
   new L.Control.Zoom({
     position: 'bottomright'
   }).addTo(mymap);
@@ -32,7 +33,7 @@ $(document).ready(function(){
   L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{ maxZoom: 20, subdomains:['mt0','mt1','mt2','mt3']
   }).addTo(mymap);
 
-
+  var added = false;
 
   var chart, rchart;
 
@@ -41,20 +42,6 @@ $(document).ready(function(){
     $('head').append($("<style> .region-color-" + (i + 1).toString() + " { color: " + colors[i] + "; font-size: 15px; text-shadow: 0 0 3px #ffffff;} </style>"));
     $('head').append($("<style> .legend-color-" + (i + 1).toString() + " { background: " + colors[i] + "; font-size: 15px; text-shadow: 0 0 3px #ffffff;} </style>"));
   }
-
-
-  var cases= new L.MarkerClusterGroup({
-    spiderfyOnMaxZoom: true,
-    singleMarkerMode: true,
-    showCoverageOnHover: false,
-    iconCreateFunction: function(cluster) {
-      cnt = cluster.getChildCount()
-      return L.divIcon({
-        html: '<i class="fas fa-map-marker community community-marker fa-3x" ><br><span style="text-align: center; margin: 0px; width: 30px; position: absolute; left: -2px; top: 5px;font-size:12px; color:white">'+cnt+'</span></i>',
-      });
-    }
-  }).addTo(mymap);
-
 
   Promise.all([
     d3.csv('assets/virus.csv'),
@@ -65,7 +52,6 @@ $(document).ready(function(){
     d3.csv('assets/united-states.txt'),
     d3.csv('assets/canada-city.txt'),
     d3.csv('assets/old-name.csv'),
-    d3.csv('assets/Hospital_Geocoded_Hospital_General_Information.csv'),
     d3.tsv('assets/COVID_data_collection/data/cdc_time_series.csv'),
     d3.tsv('assets/COVID_data_collection/data/cnn_time_series.csv'),
     d3.tsv('assets/COVID_data_collection/data/COVIDTrackingProject_time_series.csv'),
@@ -75,13 +61,30 @@ $(document).ready(function(){
     d3.json("assets/num2state.json")
   ]).then(function(datasets) {
 
-    var ushospitals = datasets[8];
+    var usstates = datasets[14];
+    var uscounties = datasets[13];
+    function municipalityPostfix (stateString) {
+      var stateUpper = stateString.toUpperCase();
+      const boroughs = [
+        "CONNECTICUT",
+        "NEW JERSEY",
+        "PENNSYLVANIA"
+      ];
+      const parishes = ["LOUISIANA"];
+      if (boroughs.filter(s => s === stateUpper).length > 0){
+        return "Borough";
+      } else if (parishes.filter(s => s === stateUpper).length > 0) {
+        return "Parish"
+      } else {
+        return "County";
+      }
+    }
     var timeseries = new Map([
-      ["CDC", datasets[9]],
-      ["CNN", datasets[10]],
-      ["COVID Tracking Project", datasets[11]],
-      ["John Hopkins", datasets[12]],
-      ["New York Times", datasets[13]]
+      ["CDC", datasets[8]],
+      ["CNN", datasets[9]],
+      ["COVID Tracking Project", datasets[10]],
+      ["John Hopkins", datasets[11]],
+      ["New York Times", datasets[12]]
     ]);
     function unique(value, index, self) {
         return self.indexOf(value) === index;
@@ -112,80 +115,7 @@ $(document).ready(function(){
       });
     });
 
-    var hospital_display = $("div.hospital-display");
-    function updateHospitalListings() {
-      hospital_display.empty()
-      var quadrilateral = mymap.getBounds();
-      var ne_corner = quadrilateral._southWest;
-      var sw_corner = quadrilateral._northEast;
-      var doms = ushospitals.map(function (d) {
-        var DOM = "";
-        var lat = parseFloat(d.Latitude);
-        var lng = parseFloat(d.Longitude);
-        if(!(isNaN(lat) | isNaN(lng))){
-          var point = L.latLng(lat, lng);
-          if (quadrilateral.contains(point)){
-            var hospitalDOM = `
-              <div class="hospital">
-                <div class="header">
-                  <div class="name">${htmlentities.encode(v.lowerCase(d["Facility Name"]).toTitleCase())}</div>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
-                </div>
-                <div class="information">
-                  <div class="info-item red-border">
-                    <i class="fas fa-briefcase-medical"></i>
-                    <span>No Test Kits</span>
-                  </div>
-                  <div class="info-item red-border">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M6 8c1.11 0 2-.9 2-2s-.89-2-2-2c-1.1 0-2 .9-2 2s.9 2 2 2zm6 0c1.11 0 2-.9 2-2s-.89-2-2-2c-1.11 0-2 .9-2 2s.9 2 2 2zM6 9.2c-1.67 0-5 .83-5 2.5V13h10v-1.3c0-1.67-3.33-2.5-5-2.5zm6 0c-.25 0-.54.02-.84.06.79.6 1.34 1.4 1.34 2.44V13H17v-1.3c0-1.67-3.33-2.5-5-2.5z"/></svg>
-                    <span>Heavy Patient Load</span>
-                  </div>
-                  <div class="info-item green-border">
-                    <i class="fas fa-phone"></i>
-                    <span>${d["Phone Number"]}</span>
-                  </div>
-                  <div class="info-item cursor green-border"
-onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destination=${d["Address"]}', '_blank');">
-                    <i class="fas fa-map-marked-alt"></i>
-                    <span>Get Directions</span>
-                  </div>
-                </div>
-              </div>
-            `;
-            DOM = DOM + hospitalDOM;
-          }
-        }
-        return DOM;
-      });
-
-      hospital_display.html(`
-        ${doms.join("\n")}
-        <script>
-          $("div.hospital > div.header > svg").click(function(evt){
-            $(this).closest("div.hospital").toggleClass("active");
-          });
-        </script>
-      `);
-      $("div.hospital-display > div.hospital").first().addClass("active");
-    }
-    $("div.info-pane#hospital-info > div.info-header > i.fa-hospital").click(function(evt){
-      updateHospitalListings();
-    });
-
     $("#date").text("Last update: " + datasets[3][0].timestamp.split(".")[0] + " PST");
-
-    datasets[4].forEach(function(d) {
-      //console.log(d.id)
-      // var customPopup = "<p>Patient details: <br>&nbsp;&nbsp;" + d.note + "<br><br>Identified on <br>&nbsp;&nbsp;" + d.date + "</p>"
-      var customPopup = "<p>Male, 20's, Stable</p>"
-      var customOptions = {
-        'maxWidth': '100',
-        'className' : 'customPopup'
-      }
-      L.marker([parseFloat(d.lat), parseFloat(d.lng)]).bindPopup(customPopup, customOptions).addTo(cases);
-    })
-
-
 
     var latest = datasets[0][datasets[0].length - 1];
 
@@ -387,12 +317,6 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
           </div>
         `;
       }
-      len = places[name].t.length;
-
-      nc = places[name].c[len - 1] - places[name].c[len - 2];
-      nr = places[name].r[len - 1] - places[name].r[len - 2];
-      nd = places[name].d[len - 1] - places[name].d[len - 2];
-      na = places[name].a[len - 1] - places[name].a[len - 2];
 
       if (name == "anhui" || name == "beijing" || name == "chongqing" || name == "fujian" || name == "gansu" || name == "guangdong" ||
         name == "guangxi" || name == "guizhou" || name == "hainan" || name == "hebei" || name == "heilongjiang" || name == "henan" ||
@@ -464,17 +388,22 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
     }
 
 
+    var date_div = $("div.info-pane#aggregate-date-window > div.info-header > div.date-element#pos-3");
+    date_div.on('DOMSubtreeModified', function(){
+      var name = $("div#location-information-container > p > span#placename").text().trim().toLowerCase();
+      showPlace(name);
+    });
     $("div.info-pane#aggregate-date-window > div.info-header > div.arrow").click(function(evt){
       var arrow_position = $(this).attr("id");
 
-      var date_str = $("div.info-pane#aggregate-date-window > div.info-header > div.date-element#pos-3").text();
+      var date_str = date_div.text();
       var selected_date = moment(new Date(date_str));
       var dates = ["pos-2", "pos-3", "pos-4"].map(id =>
         moment(new Date(
           $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${id}`).text()
         ))
       );
-      var new_dates = arrow_position === "pos-1" ?
+      var new_dates = (arrow_position === "pos-1") || (arrow_position === "pos-2") ?
                       dates.map(d => d.subtract(1, "days")) :
                       dates.map(d => d.add(1, "days"));
       // Now update the dates
@@ -484,11 +413,7 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
         $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).text(date_str);
       });
 
-      // Last, trigger the variables to update for the new date
-      var name = $("div#location-information-container > p > span#placename").text().trim().toLowerCase();
-      showPlace(name);
     });
-
 
     function setFill(enname) {
       var pop = datasets[0][datasets[0].length - 1][enname];
@@ -503,37 +428,6 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
         return 'url()';
       }
     }
-
-  // function setColor(enname) {
-  //   var id = 0;
-  //   var pop = datasets[0][datasets[0].length - 1][enname];
-
-  //   if (pop != undefined) {
-  //     pop = +pop.toString().split("-")[0] - +pop.toString().split("-")[2] - +pop.toString().split("-")[3]; // remaining confirmed
-  //   } else {
-    //     pop = 0;
-    //     // return "#00000000";
-    //   }
-
-    //   if (pop >= 10000) {
-    //     id = 5;
-    //   } else if (pop > 1000 && pop <= 10000) {
-    //     id = 4;
-    //   } else if (pop > 250 && pop <= 1000) {
-    //     id = 3;
-    //   } else if (pop > 100 && pop <= 250) {
-    //     id = 2;
-    //   } else if (pop > 10 && pop <= 100) {
-    //     id = 1;
-    //   } else if (pop > 0 && pop <= 10) {
-    //     id = 0;
-    //   } else {
-    //     id = -1;
-    //     return "#00000000";
-    //   }
-    //   return colors[id];
-    // }
-
 
     function style(feature) {
       if (feature.properties.enname == "us" || feature.properties.enname == "canada") {
@@ -598,7 +492,7 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
       });
       // bring the layer to the front.
       layer.bringToFront();
-      
+
       if (e.target.feature.properties.enname == "us" || e.target.feature.properties.enname == "canada") {
         layer.bringToBack();
       }
@@ -612,9 +506,9 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
       displayPlace(e.target.feature.properties.enname)
 
       counties_feat = []
-      for (let i = 0; i < datasets[14].features.length; i++) {
-        const feat = datasets[14].features[i];
-        if(datasets[15][feat.properties.STATE]==e.target.feature.properties.enname){
+      for (let i = 0; i < uscounties.features.length; i++) {
+        const feat = uscounties.features[i];
+        if(usstates[feat.properties.STATE]==e.target.feature.properties.enname){
           counties_feat.push(feat)
         }
       }
@@ -624,20 +518,21 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
         console.log(err)
       }
 
+
       counties = new L.geoJSON(counties_feat, {
         // TODO: add
         style: countyStyle,
         onEachFeature: onEachCountyFeature
       }).addTo(mymap);
+      mymap.fitBounds(counties.getBounds());
     }
 
     // TODO:
     function zoomToCountyFeature(e) {
-      // mymap.fitBounds(e.target.getBounds());
-
-      L.DomEvent.stopPropagation(e);
-      $("#hint").text("Click here to the global trend.");
-      displayPlace(e.target.feature.properties.enname)
+      console.log("zooming to county");
+      var state = usstates[parseInt(e.target.feature.properties.STATE)].toTitleCase(); // to be used for filter
+      var county = `${e.target.feature.properties.NAME.toTitleCase()} ${municipalityPostfix(state)}`;
+      showPlace(county);
     }
 
     // 3.2.3 reset the hightlighted feature when the mouse is out of its region.
@@ -652,7 +547,6 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
     }
 
     function resetCountyHighlight(e) {
-      console.log('mother fucker', counties)
       counties.resetStyle(e.target);
       // mymap.removeLayer(counties)
     }
@@ -670,7 +564,7 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
       layer.myTag = 'counties'
       layer.on({
         mouseover: highlightCountyFeature,
-        // click: zoomToCountyFeature,
+        click: zoomToCountyFeature,
         mouseout: resetCountyHighlight
       });
     }
