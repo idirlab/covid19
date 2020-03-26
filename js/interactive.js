@@ -43,20 +43,6 @@ $(document).ready(function(){
     $('head').append($("<style> .legend-color-" + (i + 1).toString() + " { background: " + colors[i] + "; font-size: 15px; text-shadow: 0 0 3px #ffffff;} </style>"));
   }
 
-
-  var cases= new L.MarkerClusterGroup({
-    spiderfyOnMaxZoom: true,
-    singleMarkerMode: true,
-    showCoverageOnHover: false,
-    iconCreateFunction: function(cluster) {
-      cnt = cluster.getChildCount()
-      return L.divIcon({
-        html: '<i class="fas fa-map-marker community community-marker fa-3x" ><br><span style="text-align: center; margin: 0px; width: 30px; position: absolute; left: -2px; top: 5px;font-size:12px; color:white">'+cnt+'</span></i>',
-      });
-    }
-  }).addTo(mymap);
-
-
   Promise.all([
     d3.csv('assets/virus.csv'),
     d3.json("assets/all-topo-15.json"),
@@ -130,19 +116,6 @@ $(document).ready(function(){
     });
 
     $("#date").text("Last update: " + datasets[3][0].timestamp.split(".")[0] + " PST");
-
-    datasets[4].forEach(function(d) {
-      //console.log(d.id)
-      // var customPopup = "<p>Patient details: <br>&nbsp;&nbsp;" + d.note + "<br><br>Identified on <br>&nbsp;&nbsp;" + d.date + "</p>"
-      var customPopup = "<p>Male, 20's, Stable</p>"
-      var customOptions = {
-        'maxWidth': '100',
-        'className' : 'customPopup'
-      }
-      L.marker([parseFloat(d.lat), parseFloat(d.lng)]).bindPopup(customPopup, customOptions).addTo(cases);
-    })
-
-
 
     var latest = datasets[0][datasets[0].length - 1];
 
