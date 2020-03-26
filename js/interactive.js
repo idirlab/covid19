@@ -70,7 +70,9 @@ $(document).ready(function(){
     d3.tsv('assets/COVID_data_collection/data/cnn_time_series.csv'),
     d3.tsv('assets/COVID_data_collection/data/COVIDTrackingProject_time_series.csv'),
     d3.tsv('assets/COVID_data_collection/data/john_hopkins_time_series.csv'),
-    d3.tsv('assets/COVID_data_collection/data/NYtimes_time_series.csv')
+    d3.tsv('assets/COVID_data_collection/data/NYtimes_time_series.csv'),
+    d3.json("assets/counties.json"),
+    d3.json("assets/num2state.json")
   ]).then(function(datasets) {
 
     var ushospitals = datasets[8];
@@ -555,7 +557,36 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
       }
     }
 
+    function countyStyle(feature) {
+      return {
+        fill: setFill(feature.properties.enname),
+        // fillColor: setColor(feature.properties.enname),
+        fillOpacity: 0.1,
+        weight: 0.5,
+        opacity: 1,
+        color: '#DC143C',
+        // dashArray: '2'
+      };
+    }
 
+
+
+    function highlightCountyFeature(e) {
+      // e indicates the current event
+      var layer = e.target; //the target capture the object which the event associates with
+      layer.setStyle({
+        weight: 2,
+        opacity: 0.8,
+        color: '#DC143C', // county border
+        fillColor: '#FFFFFF', // county color
+        fillOpacity: 0.1
+      });
+      // bring the layer to the front.
+      layer.bringToFront();
+      if (e.target.feature.properties.enname == "us" || e.target.feature.properties.enname == "canada") {
+        layer.bringToBack();
+      }
+    }
 
     function highlightFeature(e) {
       // e indicates the current event
@@ -568,8 +599,31 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
         fillOpacity: 0.1
       });
       // bring the layer to the front.
-
       layer.bringToFront();
+      // console.log(datasets[14].features)
+      counties_feat = []
+      for (let i = 0; i < datasets[14].features.length; i++) {
+        const feat = datasets[14].features[i];
+        if(datasets[15][feat.properties.STATE]==e.target.feature.properties.enname){
+          counties_feat.push(feat)
+        }
+      }
+      console.log("fuck all", counties_feat)
+      try{
+        mymap.removeLayer(counties)
+      } catch(err) {
+        console.log(err)
+      }
+
+      // if(counties_feat.length==0) {
+        
+      // }
+
+      counties = new L.geoJSON(counties_feat, {
+        // TODO: add
+        style: countyStyle,
+        onEachFeature: onEachCountyFeature
+      }).addTo(mymap);
       if (e.target.feature.properties.enname == "us" || e.target.feature.properties.enname == "canada") {
         layer.bringToBack();
       }
@@ -577,6 +631,14 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
 
     // 3.2.2 zoom to the highlighted feature when the mouse is clicking onto it.
     function zoomToFeature(e) {
+      // mymap.fitBounds(e.target.getBounds());
+      L.DomEvent.stopPropagation(e);
+      $("#hint").text("Click here to the global trend.");
+      displayPlace(e.target.feature.properties.enname)
+    }
+
+    // TODO:
+    function zoomToCountyFeature(e) {
       // mymap.fitBounds(e.target.getBounds());
 
       L.DomEvent.stopPropagation(e);
@@ -587,10 +649,22 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
     // 3.2.3 reset the hightlighted feature when the mouse is out of its region.
     function resetHighlight(e) {
       areas.resetStyle(e.target);
+      // mymap.removeLayer(counties)
+      // mymap.eachLayer(function(layer) {
+      //   if(layer.myTag && layer.myTag==="counties") {
+      //     mymap.removeLayer(layer)
+      //   }
+      // })
+    }
+
+    function resetCountyHighlight(e) {
+      console.log('mother fucker', counties)
+      counties.resetStyle(e.target);
+      // mymap.removeLayer(counties)
     }
 
     // 3.3 add these event the layer obejct.
-    function onEachFeature(feature, layer) {
+    function onEachStateFeature(feature, layer) {
       layer.on({
         mouseover: highlightFeature,
         click: zoomToFeature,
@@ -598,9 +672,18 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
       });
     }
 
+    function onEachCountyFeature(feature, layer) {
+      layer.myTag = 'counties'
+      layer.on({
+        mouseover: highlightCountyFeature,
+        // click: zoomToCountyFeature,
+        mouseout: resetCountyHighlight
+      });
+    }
+
     var areas = new L.TopoJSON(datasets[1], {
       style: style,
-      onEachFeature: onEachFeature
+      onEachFeature: onEachStateFeature
     }).addTo(mymap);
 
 
