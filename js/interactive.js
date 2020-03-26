@@ -76,6 +76,24 @@ $(document).ready(function(){
   ]).then(function(datasets) {
 
     var ushospitals = datasets[8];
+    var usstates = datasets[15];
+    var uscounties = datasets[14];
+    function municipalityPostfix (stateString) {
+      var stateUpper = stateString.toUpperCase();
+      const boroughs = [
+        "CONNECTICUT",
+        "NEW JERSEY",
+        "PENNSYLVANIA"
+      ];
+      const parishes = ["LOUISIANA"];
+      if (boroughs.filter(s => s === stateUpper).length > 0){
+        return "Borough";
+      } else if (parishes.filter(s => s === stateUpper).length > 0) {
+        return "Parish"
+      } else {
+        return "County";
+      }
+    }
     var timeseries = new Map([
       ["CDC", datasets[9]],
       ["CNN", datasets[10]],
@@ -387,12 +405,6 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
           </div>
         `;
       }
-      len = places[name].t.length;
-
-      nc = places[name].c[len - 1] - places[name].c[len - 2];
-      nr = places[name].r[len - 1] - places[name].r[len - 2];
-      nd = places[name].d[len - 1] - places[name].d[len - 2];
-      na = places[name].a[len - 1] - places[name].a[len - 2];
 
       if (name == "anhui" || name == "beijing" || name == "chongqing" || name == "fujian" || name == "gansu" || name == "guangdong" ||
         name == "guangxi" || name == "guizhou" || name == "hainan" || name == "hebei" || name == "heilongjiang" || name == "henan" ||
@@ -504,37 +516,6 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
       }
     }
 
-  // function setColor(enname) {
-  //   var id = 0;
-  //   var pop = datasets[0][datasets[0].length - 1][enname];
-
-  //   if (pop != undefined) {
-  //     pop = +pop.toString().split("-")[0] - +pop.toString().split("-")[2] - +pop.toString().split("-")[3]; // remaining confirmed
-  //   } else {
-    //     pop = 0;
-    //     // return "#00000000";
-    //   }
-
-    //   if (pop >= 10000) {
-    //     id = 5;
-    //   } else if (pop > 1000 && pop <= 10000) {
-    //     id = 4;
-    //   } else if (pop > 250 && pop <= 1000) {
-    //     id = 3;
-    //   } else if (pop > 100 && pop <= 250) {
-    //     id = 2;
-    //   } else if (pop > 10 && pop <= 100) {
-    //     id = 1;
-    //   } else if (pop > 0 && pop <= 10) {
-    //     id = 0;
-    //   } else {
-    //     id = -1;
-    //     return "#00000000";
-    //   }
-    //   return colors[id];
-    // }
-
-
     function style(feature) {
       if (feature.properties.enname == "us" || feature.properties.enname == "canada") {
         return {
@@ -598,7 +579,7 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
       });
       // bring the layer to the front.
       layer.bringToFront();
-      
+
       if (e.target.feature.properties.enname == "us" || e.target.feature.properties.enname == "canada") {
         layer.bringToBack();
       }
@@ -612,9 +593,9 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
       displayPlace(e.target.feature.properties.enname)
 
       counties_feat = []
-      for (let i = 0; i < datasets[14].features.length; i++) {
-        const feat = datasets[14].features[i];
-        if(datasets[15][feat.properties.STATE]==e.target.feature.properties.enname){
+      for (let i = 0; i < uscounties.features.length; i++) {
+        const feat = uscounties.features[i];
+        if(usstates[feat.properties.STATE]==e.target.feature.properties.enname){
           counties_feat.push(feat)
         }
       }
@@ -624,20 +605,21 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
         console.log(err)
       }
 
+
       counties = new L.geoJSON(counties_feat, {
         // TODO: add
         style: countyStyle,
         onEachFeature: onEachCountyFeature
       }).addTo(mymap);
+      mymap.fitBounds(counties.getBounds());
     }
 
     // TODO:
     function zoomToCountyFeature(e) {
-      // mymap.fitBounds(e.target.getBounds());
-
-      L.DomEvent.stopPropagation(e);
-      $("#hint").text("Click here to the global trend.");
-      displayPlace(e.target.feature.properties.enname)
+      console.log("zooming to county");
+      var state = usstates[parseInt(e.target.feature.properties.STATE)].toTitleCase(); // to be used for filter
+      var county = `${e.target.feature.properties.NAME.toTitleCase()} ${municipalityPostfix(state)}`;
+      showPlace(county);
     }
 
     // 3.2.3 reset the hightlighted feature when the mouse is out of its region.
@@ -652,7 +634,6 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
     }
 
     function resetCountyHighlight(e) {
-      console.log('mother fucker', counties)
       counties.resetStyle(e.target);
       // mymap.removeLayer(counties)
     }
@@ -670,7 +651,7 @@ onclick="javascript:window.open('https://www.google.com/maps/dir/?api=1&destinat
       layer.myTag = 'counties'
       layer.on({
         mouseover: highlightCountyFeature,
-        // click: zoomToCountyFeature,
+        click: zoomToCountyFeature,
         mouseout: resetCountyHighlight
       });
     }
