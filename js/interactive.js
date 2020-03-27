@@ -98,7 +98,7 @@ $(document).ready(function(){
     timeseries.forEach(function(dataset, source, _){
       console.log(`Source: ${source}`);
       dataset.forEach(function(d){
-        d.date = new Date(d.date);
+        d.date = moment(d.date, "YYYY-MM-DD");
         dataset.columns.filter(col => col !== "date")
                        .forEach(function(col){
                          var element = d[col];
@@ -307,7 +307,8 @@ $(document).ready(function(){
             Loading
           </div>
         `);
-        var selected_date = new Date($("div.info-header > div.info-header-element#pos-3").text().trim());
+        var selected_date = moment($("div.info-header > div.info-header-element#pos-3").text().trim(),
+                                   "MM/DD/YYYY");
         // Start with this DOM, if it isn't changed then it is accurate and will be displayed.
         // Else the data will replace it.
         var DOM = `
@@ -329,9 +330,9 @@ $(document).ready(function(){
 
         function compareTwoDates(d1, d2) {
           // check that two dates are on the same day
-          return (d1.getMonth() === d2.getMonth()) &&
-                 (d1.getDate() === d2.getDate()) &&
-                 (d1.getFullYear() === d2.getFullYear());
+          return (d1.month() === d2.month()) &&
+                 (d1.date() === d2.date()) &&
+                 (d1.year() === d2.year());
         }
         // Boolean to see if the data covers the date the user is interested in
         if (!is_global){
@@ -389,20 +390,14 @@ $(document).ready(function(){
 
 
     var date_div = $("div.info-pane#aggregate-date-window > div.info-header > div.date-element#pos-3");
-    date_div.on('DOMSubtreeModified', function(){
-      var name = $("div#location-information-container > p > span#placename").text().trim().toLowerCase();
-      showPlace(name);
-    });
     $("div.info-pane#aggregate-date-window > div.info-header > div.arrow").click(function(evt){
       var arrow_position = $(this).attr("id");
 
       var date_str = date_div.text();
       var selected_date = moment(new Date(date_str));
       var dates = ["pos-2", "pos-3", "pos-4"].map(id =>
-        moment(new Date(
-          $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${id}`).text()
-        ))
-      );
+        moment($(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${id}`).text(),
+               "MM/DD/YYYY"));
       var new_dates = (arrow_position === "pos-1") || (arrow_position === "pos-2") ?
                       dates.map(d => d.subtract(1, "days")) :
                       dates.map(d => d.add(1, "days"));
@@ -412,7 +407,10 @@ $(document).ready(function(){
         var date_str = new_date.format("MM/DD/YYYY");
         $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).text(date_str);
       });
-
+    });
+    date_div.on('DOMSubtreeModified', function(){
+      var name = $("div#location-information-container > p > span#placename").text().trim().toLowerCase();
+      showPlace(name);
     });
 
     function setFill(enname) {
