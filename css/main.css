@@ -471,13 +471,32 @@ text {
 
 .juji {
   position: fixed !important;
-  top:323px;
+  bottom: -435px;
+  /* top:323px; */
   width:500px;
-  height:430px;
-  right: 0%;
+  height:435px;
+  right: 70px;
   z-index:1000;
   background: rgb(227, 230, 229);
+  transition: 0.3s;
 }
+
+.chatbot {
+  position: fixed;
+  bottom: 80px;
+  right: 10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background: rgb(227, 230, 229);
+  background: url("../img/robot.png");
+  background-size:50px 50px;
+  border: none;
+  z-index: 1002;
+}
+
+
+
 
 
 #rank-chart {

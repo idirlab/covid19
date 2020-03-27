@@ -114,12 +114,17 @@ var $input = $('#datepicker').pickadate({
   }
 });
 
-function pickDate() {
-  console.log('111111')
-  if (picker.get('open')) {
-    picker.close()
+var flag_chatbot = true
+function open_chatbot() {
+  if(flag_chatbot) {
+    flag_chatbot = false
+    document.getElementById("juji_html").style.bottom = "0px"
+
   } else {
-    picker.open()
+    flag_chatbot = true
+    document.getElementById("juji_html").style.bottom = "-435px"
   }
+  
 }
+
 
