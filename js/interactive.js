@@ -324,9 +324,9 @@ $(document).ready(function(){
         name == "hubei" || name == "hunan" || name == "neimenggu" || name == "jiangsu" || name == "jiangxi" || name == "jilin" || name == "liaoning" ||
         name == "ningxia" || name == "qinghai" || name == "shaanxi" || name == "shandong" || name == "shanghai" || name == "shanxi" ||
         name == "sichuan" || name == "tianjin" || name == "xinjiang" || name == "yunnan" || name == "zhejiang" || name == "xizang") {
-        $("#placename").text(name.toUpperCase() + ", CHINA"); // we don't support china yet
+        $(".placename.hidden").text(name.toUpperCase() + ", CHINA"); // we don't support china yet
       } else {
-        $("#placename").text(name.toUpperCase());
+        $(".placename.hidden").text(name.toUpperCase());
 
         function compareTwoDates(d1, d2) {
           // check that two dates are on the same day
@@ -409,7 +409,7 @@ $(document).ready(function(){
       });
     });
     date_div.on('DOMSubtreeModified', function(){
-      var name = $("div#location-information-container > p > span#placename").text().trim().toLowerCase();
+      var name = $(".placename.hidden").text().trim().toLowerCase();
       showPlace(name);
     });
 
