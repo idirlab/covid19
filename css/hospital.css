@@ -44,6 +44,19 @@ div.hospital-display > div.hospital > div.header > div.name {
     overflow:hidden;
     white-space:nowrap;
 }
+div.hospital-display > div.hospital.active > div.header {
+    height: auto;
+}
+div.hospital-display > div.hospital.active > div.header > div.name {
+    height: auto;
+    overflow: unset;
+    white-space: unset;
+    text-overflow: unset;
+    line-height: initial;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
 div.hospital-display > div.hospital > div.information > div.info-item {
     color: rgba(38, 50, 56, 1);
     background-color: rgba(207, 216, 220, 1);
@@ -86,6 +99,20 @@ div.hospital-display > div.hospital > div.information > div.info-item.orange-bor
 div.hospital-display > div.hospital > div.information > div.info-item.blueviolet-border {
     border: 2px solid blueviolet;
 }
+div.hospital-display > div.hospital > div.information > div.info-item.blue-border {
+    border: 2px solid blue;
+}
+div.hospital-display > div.hospital > div.information > div.info-item.black-border {
+    border: 2px solid black;
+}
+
+div.hospital-display > div.hospital > div.information > div.info-item.long-text {
+    height: auto;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    line-height: initial;
+}
+
 div.hospital-display > div.hospital > div.header > svg {
     float:right;
     transform:translate(0, 40%);

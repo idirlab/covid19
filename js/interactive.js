@@ -445,22 +445,26 @@ $(document).ready(function(){
               var sourceDOM = `
               <div class="hospital">
                 <div class="header">
-                  <div class="name"><full-count style="background: ${(cur.BED_UTILIZATION < 0.33 ? 'green' : (cur.BED_UTILIZATION < 0.66 ? '#ee7600' : 'red'))}">${Math.round(cur.BED_UTILIZATION * 100)}% Full</full-count> ${cur.HOSPITAL_NAME}</div>
+                  <div class="name"><full-count style="background: ${cur.BED_UTILIZATION == null ? "purple" : (cur.BED_UTILIZATION < 0.33 ? 'green' : (cur.BED_UTILIZATION < 0.66 ? '#ee7600' : 'red'))}">${cur.BED_UTILIZATION == null ? "No Data" : Math.round(cur.BED_UTILIZATION * 100) + "% Full"}</full-count> ${cur.HOSPITAL_NAME}</div>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
                 </div>
                 <div class="information">
-                  <div class="info-item ${cur.NUM_LICENSED_BEDS / maxCapacity < 0.33 ? 'red' : (cur.NUM_LICENSED_BEDS / maxCapacity < 0.66 ? 'orange' : 'green')}-border">
-                    <i class="fas fa-briefcase-medical"></i>
-                    <span>${cur.NUM_LICENSED_BEDS} Total Beds${cur.NUM_ICU_BEDS != null ? " (" + cur.NUM_ICU_BEDS + " ICU)" : ""}</span>
+                  <div class="info-item blue-border">
+                    <i class="fas fa-bed"></i>
+                    <span>${cur.HOSPITAL_TYPE}</span>
                   </div>
-                  <div class="info-item ${cur.BED_UTILIZATION < 0.33 ? 'green' : (cur.BED_UTILIZATION < 0.66 ? 'orange' : 'red')}-border">
+                  <div class="info-item ${cur.NUM_LICENSED_BEDS == null ? "black" : cur.NUM_LICENSED_BEDS / maxCapacity < 0.33 ? 'red' : (cur.NUM_LICENSED_BEDS / maxCapacity < 0.66 ? 'orange' : 'green')}-border">
+                    <i class="fas fa-bed"></i>
+                    <span>${cur.NUM_LICENSED_BEDS == null ? "No Bed Data" : cur.NUM_LICENSED_BEDS + " Total Beds"}${cur.NUM_ICU_BEDS != null ? " (" + cur.NUM_ICU_BEDS + " ICU)" : ""}</span>
+                  </div>
+                  <div class="info-item ${cur.BED_UTILIZATION == null ? "black" : cur.BED_UTILIZATION < 0.33 ? 'green' : (cur.BED_UTILIZATION < 0.66 ? 'orange' : 'red')}-border">
                     <i class="fas fa-briefcase-medical"></i>
                     <!-- <span>${Math.round(cur.BED_UTILIZATION * 100)}% (${Math.round(cur.BED_UTILIZATION * cur.NUM_LICENSED_BEDS)}/${cur.NUM_LICENSED_BEDS}) of beds occupied</span> -->
-                    <span>${Math.round(cur.BED_UTILIZATION *100)}% Average Bed Utilization</span>
+                    <span>${cur.BED_UTILIZATION == null ? "No Data for" : Math.round(cur.BED_UTILIZATION *100) + "%"} Average Bed Utilization</span>
                   </div>
-                  <div class="info-item ${cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS < 0.33 ? 'red' : (cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS < 0.66 ? 'orange' : 'green')}-border">
-                    <i class="fas fa-briefcase-medical"></i>
-                    <span>${Math.round(cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS * 100)}% (${cur.NUM_STAFFED_BEDS}/${cur.NUM_LICENSED_BEDS}) of Beds Staffed</span>
+                  <div class="info-item ${cur.NUM_STAFFED_BEDS == null ? "black" : cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS < 0.33 ? 'red' : (cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS < 0.66 ? 'orange' : 'green')}-border">
+                    <i class="fas fa-user-nurse"></i>
+                    <span>${cur.NUM_LICENSED_BEDS == null || cur.NUM_STAFFED_BEDS == null ? "No Data for Staffed Beds" : Math.round(cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS * 100) + "% (" + cur.NUM_STAFFED_BEDS + "/" + cur.NUM_LICENSED_BEDS + ") of Beds Staffed"}</span>
                   </div>
                   <div class="info-item cursor blueviolet-border" onclick="window.open('https://www.google.com/maps/place/${encodeURI(addr)}')">
                     <i class="fas fa-map-marked-alt"></i>
