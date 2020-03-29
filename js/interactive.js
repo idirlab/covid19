@@ -61,8 +61,16 @@ $(document).ready(function(){
     d3.json("assets/num2state.json")
   ]).then(function(datasets) {
 
+    function compareTwoDates(d1, d2) {
+      // check that two dates are on the same day
+      return (d1.month() === d2.month()) &&
+             (d1.date() === d2.date()) &&
+             (d1.year() === d2.year());
+    }
+
     var usstates = datasets[14];
     var uscounties = datasets[13];
+
     function municipalityPostfix (stateString) {
       var stateUpper = stateString.toUpperCase();
       const boroughs = [
@@ -112,8 +120,155 @@ $(document).ready(function(){
                            ["recoveries", NaN]
                          ]);
                        });
+
+        d.US = dataset.columns.filter(col => col !== "date")
+                                   .reduce(
+                                     (acc, state) => new Map([
+                                       ["cases", acc.get("cases") + d[state].get("cases")],
+                                       ["deaths", acc.get("deaths") + d[state].get("deaths")],
+                                       ["recoveries", acc.get("recoveries") + d[state].get("recoveries")]
+                                     ]),
+                                     new Map([["cases", 0], ["deaths", 0], ["recoveries", 0]])
+                                   );
       });
     });
+    // create US dom tree
+    var US_Variables_DOM = Array.from(
+      timeseries.entries()
+    ).map(function(entry) {
+      var source = entry[0];
+      var dataset = entry[1];
+      var cases = "-";
+      var recovered = "-";
+      var deaths = "-";
+      var selected_date = moment($("div.info-header > div.info-header-element#pos-3").text().trim(),
+                                 "MM/DD/YYYY");
+      var data = dataset.filter(d => compareTwoDates(selected_date, d.date));
+
+      if (data.length > 0){
+        var row = data[0];
+        row_cases = row.US.get("cases");
+        row_recoveries = row.US.get("recoveries");
+        row_deaths = row.US.get("deaths");
+        if (!isNaN(row_cases)) {
+          cases = row_cases;
+        }
+        if (!isNaN(row_recoveries)) {
+          recovered = row_recoveries;
+        }
+        if (!isNaN(row_deaths)) {
+          deaths = row_deaths;
+        }
+      }
+      return `
+        <div class="variable">
+          <div class="source">${source}</div>
+          <div class="figures">
+            <div class="figure">
+              <i class="fas fa-hospital-symbol"></i>
+              <span class="confirmed-count" style="color: rgb(40, 50, 55)">${cases}</span>
+            </div>
+            <div class="figure">
+              <i class="fas fa-skull"></i>
+              <span class="death-count" style="color: rgb(40, 50, 55)">${deaths}</span>
+            </div>
+            <div class="figure">
+              <i class="fas fa-user-check"></i>
+              <span class="recovered-count" style="color: rgb(40, 50, 55)">${recovered}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    var selected_source = $("span.default-source").text().trim();
+    var selected_date = moment($("div.info-header > div.info-header-element#pos-3").text().trim(),
+                               "MM/DD/YYYY");
+    var relevant_rows = timeseries.get(selected_source).filter(d => compareTwoDates(selected_date, d.date));
+    var cases = "-";
+    var deaths = "-";
+    var recovered = "-";
+    if(relevant_rows.length > 0){
+      var row = relevant_rows[0];
+      var us_cases = row["US"].get("cases");
+      var us_deaths = row["US"].get("deaths");
+      var us_recovered = row["US"].get("recovered");
+      if(!isNaN(us_cases)){
+        cases = us_cases;
+      }
+      if(!isNaN(us_deaths)){
+        deaths = us_deaths;
+      }
+      if(!isNaN(us_recovered)){
+        recovered = us_recovered;
+      }
+    }
+    var US_dom = `
+        <div class="geolocation-container" parent="GLOBAL" level="COUNTRY" children="STATE">
+          <div class="location-information-container">
+              <span class="placename">US</span>
+              <div class="figures">
+                <div class="figure">
+                  <i class="fas fa-hospital-symbol"></i>
+                  <span class="confirmed-count" style="color: rgb(40, 50, 55)">${cases}</span>
+                </div>
+                <div class="figure">
+                  <i class="fas fa-skull"></i>
+                  <span class="death-count" style="color: rgb(40, 50, 55)">${deaths}</span>
+                </div>
+                <div class="figure">
+                  <i class="fas fa-user-check"></i>
+                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${recovered}</span>
+                </div>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
+          </div>
+          <div class="variable-display">
+            ${US_Variables_DOM.join('\n')}
+          </div>
+        </div>
+    `;
+    var GLOBAL_dom = `
+      <div class="geolocation-container" children="COUNTRY">
+        <div class="location-information-container">
+            <span class="placename">GLOBAL</span>
+            <div class="figures">
+              <div class="figure">
+                <i class="fas fa-hospital-symbol"></i>
+                <span class="confirmed-count" style="color: rgb(40, 50, 55)">${cases}</span>
+              </div>
+              <div class="figure">
+                <i class="fas fa-skull"></i>
+                <span class="death-count" style="color: rgb(40, 50, 55)">${deaths}</span>
+              </div>
+              <div class="figure">
+                <i class="fas fa-user-check"></i>
+                <span class="recovered-count" style="color: rgb(40, 50, 55)">${recovered}</span>
+              </div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
+        </div>
+        <div class="variable-display">
+          ${US_Variables_DOM.join('\n')}
+        </div>
+      </div>
+    `;
+
+    $("div#aggregate-date-window").append(`
+      ${GLOBAL_dom}
+      ${US_dom}
+      <script>
+      $(document).ready(function(){
+        $("div.location-information-container > svg").click(function(){
+          $(this).toggleClass("active");
+          console.log($(this));
+          console.log($(this).parent());
+          console.log($(this).parent().next());
+          var variable_display = $(this).parent().next();
+          variable_display.toggleClass("expanded");
+        });
+      });
+      </script>
+    `);
 
     $("#date").text("Last update: " + datasets[3][0].timestamp.split(".")[0] + " PST");
 
@@ -328,12 +483,6 @@ $(document).ready(function(){
       } else {
         $(".placename.hidden").text(name.toUpperCase());
 
-        function compareTwoDates(d1, d2) {
-          // check that two dates are on the same day
-          return (d1.month() === d2.month()) &&
-                 (d1.date() === d2.date()) &&
-                 (d1.year() === d2.year());
-        }
         // Boolean to see if the data covers the date the user is interested in
         if (!is_global){
           var data_covers_this_date = Array.from(timeseries.values())
