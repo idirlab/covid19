@@ -180,6 +180,122 @@ $(document).ready(function(){
         </div>
       `;
     });
+    var US_States = Array.from(
+      [{"State":"Alabama"},{"State":"Alaska"},{"State":"Arizona"},{"State":"Arkansas"},{"State":"California"},{"State":"Colorado"},{"State":"Connecticut"},{"State":"Delaware"},{"State":"Florida"},{"State":"Georgia"},{"State":"Hawaii"},{"State":"Idaho"},{"State":"Illinois"},{"State":"Indiana"},{"State":"Iowa"},{"State":"Kansas"},{"State":"Kentucky"},{"State":"Louisiana"},{"State":"Maine"},{"State":"Maryland"},{"State":"Massachusetts"},{"State":"Michigan"},{"State":"Minnesota"},{"State":"Mississippi"},{"State":"Missouri"},{"State":"Montana"},{"State":"Nebraska"},{"State":"Nevada"},{"State":"New Hampshire"},{"State":"New Jersey"},{"State":"New Mexico"},{"State":"New York"},{"State":"North Carolina"},{"State":"North Dakota"},{"State":"Ohio"},{"State":"Oklahoma"},{"State":"Oregon"},{"State":"Pennsylvania"},{"State":"Rhode Island"},{"State":"South Carolina"},{"State":"South Dakota"},{"State":"Tennessee"},{"State":"Texas"},{"State":"Utah"},{"State":"Vermont"},{"State":"Virginia"},{"State":"Washington"},{"State":"West Virginia"},{"State":"Wisconsin"},{"State":"Wyoming"}]
+     .map(d => d["State"]));
+    var US_State_variables_by_source = Array.from(
+      timeseries.entries()
+    ).map(function(entry) {
+      var source = entry[0];
+      var dataset = entry[1];
+      const nan_value = "-";
+      var selected_date = moment($("div.info-header > div.info-header-element#pos-3").text().trim(),
+                                 "MM/DD/YYYY");
+      var data = dataset.filter(d => compareTwoDates(selected_date, d.date));
+      if (data.length > 0){
+        var row = data[0];
+        var state_stats = US_States.map(state => new Map([
+          ["state", state],
+          ["stats", row[state]],
+          ["counties", []]]));
+        var state_variable_DOMS = state_stats.map(function (state_map) {
+          var state = state_map.get("state");
+          var stats = state_map.get("stats");
+          var counties = state_map.get("counties");
+          var cases = nan_value;
+          var deaths = nan_value;
+          var recovered = nan_value;
+
+          var row_cases = stats.get("cases");
+          var row_recovered =  stats.get("recovered");
+          var row_deaths = stats.get("deaths");
+          if (!isNaN(row_cases)) {
+            cases = row_cases;
+          }
+          if (!isNaN(row_recoveries)) {
+            recovered = row_recoveries;
+          }
+          if (!isNaN(row_deaths)) {
+            deaths = row_deaths;
+          }
+          var output = new Map([[state,
+          `
+            <div class="variable">
+              <div class="source">${source}</div>
+              <div class="figures">
+                <div class="figure">
+                  <i class="fas fa-hospital-symbol"></i>
+                  <span class="confirmed-count" style="color: rgb(40, 50, 55)">${cases}</span>
+                </div>
+                <div class="figure">
+                  <i class="fas fa-skull"></i>
+                  <span class="death-count" style="color: rgb(40, 50, 55)">${deaths}</span>
+                </div>
+                <div class="figure">
+                  <i class="fas fa-user-check"></i>
+                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${recovered}</span>
+                </div>
+              </div>
+            </div>
+          `]]);
+          return output;
+        });
+        return state_variable_DOMS;
+      } else {
+        function make_no_data_string(state) {
+          return `
+            <div id="variable-loading-no-data">
+              No data for DATE=${moment(selected_date).format("MM/DD/YYYY")} AND LOCATION=${state}. </br>
+              Please try somewhere in the US after 03/19/2020.
+            </div>
+          `;
+        }
+        return US_States.map(state => new Map([state, make_no_data_string(state)]));
+      }
+    }).map(maps => maps.reduce((acc, m) => new Map([...acc, ...m])));
+    var US_State_variables = new Map(Array.from(
+      US_States.map(state =>
+        [state,
+         Array.from(
+           US_State_variables_by_source.map(source_map =>
+             Array.from(
+               source_map.entries()
+             ).filter(array => array[0] == state)[0][1]
+           )
+         ).join("\n")
+        ]
+      )
+    ));
+    var selected_source = $("span.default-source").text().trim();
+    var US_States_DOM = Array.from(US_State_variables.entries()).map(function(array){
+      var state = array[0];
+      var variables_DOM = array[1];
+      return `
+        <div class="geolocation-container" parent="COUNTRY" country="US" level="STATE" children="COUNTIES">
+          <div class="location-information-container">
+              <span class="placename">${state}</span>
+              <div class="figures">
+                <div class="figure">
+                  <i class="fas fa-hospital-symbol"></i>
+                  <span class="confirmed-count" style="color: rgb(40, 50, 55)">${cases}</span>
+                </div>
+                <div class="figure">
+                  <i class="fas fa-skull"></i>
+                  <span class="death-count" style="color: rgb(40, 50, 55)">${deaths}</span>
+                </div>
+                <div class="figure">
+                  <i class="fas fa-user-check"></i>
+                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${recovered}</span>
+                </div>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
+          </div>
+          <div class="variable-display">
+            ${variables_DOM}
+          </div>
+        </div>
+      `;
+    });
     var selected_source = $("span.default-source").text().trim();
     var selected_date = moment($("div.info-header > div.info-header-element#pos-3").text().trim(),
                                "MM/DD/YYYY");
@@ -224,6 +340,9 @@ $(document).ready(function(){
           </div>
           <div class="variable-display">
             ${US_Variables_DOM.join('\n')}
+          </div>
+          <div class="state-display">
+            ${[].join('\n')}
           </div>
         </div>
     `;
