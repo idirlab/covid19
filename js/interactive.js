@@ -456,7 +456,7 @@ $(document).ready(function(){
                   <div class="info-item ${cur.BED_UTILIZATION < 0.33 ? 'green' : (cur.BED_UTILIZATION < 0.66 ? 'orange' : 'red')}-border">
                     <i class="fas fa-briefcase-medical"></i>
                     <!-- <span>${Math.round(cur.BED_UTILIZATION * 100)}% (${Math.round(cur.BED_UTILIZATION * cur.NUM_LICENSED_BEDS)}/${cur.NUM_LICENSED_BEDS}) of beds occupied</span> -->
-                    <span>${Math.round(cur.BED_UTILIZATION *100)}% Bed Utilization on Average</span>
+                    <span>${Math.round(cur.BED_UTILIZATION *100)}% Average Bed Utilization</span>
                   </div>
                   <div class="info-item ${cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS < 0.33 ? 'red' : (cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS < 0.66 ? 'orange' : 'green')}-border">
                     <i class="fas fa-briefcase-medical"></i>
