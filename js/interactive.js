@@ -304,7 +304,7 @@ $(document).ready(function(){
       return place[name];
     }
 
-    function showPlace(name) {
+    function showPlace(name, parent=null) {
       var is_global = name.toUpperCase() === "GLOBAL TREND";
       if (!is_global){ // Don't do this when first loading the web-page but for subsequent triggers
         $("div.variable-display").empty();
@@ -387,8 +387,119 @@ $(document).ready(function(){
             }
           });
         }
-        if (!is_global){
-          $("div.variable-display").html(DOM);
+
+        if (name.toUpperCase().indexOf("COUNTY") == -1) {
+          var curDOM = `
+          <div id="hospital-info" class="info-pane bot">
+            <div class="info-header">
+              <i class="fas fa-hospital" style="cursor:pointer;"></i>
+              <span>LOCAL HOSPITAL INFO</span>
+            </div>
+            Please navigate to county level to view hospitals
+            <span style="color: red">IF THIS IS A BOROUGH, CONTACT KEVIN. HE KNOWS ABOUT THIS ERROR</span>
+          </div>
+          `;
+
+          DOM += curDOM;
+
+          if (!is_global){
+            $("div.variable-display").html(DOM);
+          }
+        } else {
+          var state = parent.toUpperCase();
+          var county = name.toUpperCase().replace(" COUNTY", "");
+
+          var queryURL = `https://services7.arcgis.com/LXCny1HyhQCUSueu/arcgis/rest/services/Definitive_Healthcare_USA_Hospital_Beds/FeatureServer/0/query?where=UPPER(STATE_NAME)%20like%20'%25${state.toUpperCase()}%25'%20AND%20UPPER(COUNTY_NAME)%20like%20'%25${county.toUpperCase()}%25'&outFields=*&outSR=4326&f=json`;
+          console.log("Retrieving hospital info for " + state + " " + county);
+          console.log(queryURL);
+
+          var getHospitalHTML = (info) => {
+            console.log(info);
+
+            info = info.features;  
+            var hospitalDOMs = "";
+
+            if (info.length == 0) {
+              hospitalDOMs += "This county does not have a major hospital";
+            }
+
+            info.sort(function(l, r) {
+              return l.attributes.HOSPITAL_NAME < r.attributes.HOSPITAL_NAME ? -1 : 1;
+            });
+
+            var maxCapacity = 0;
+            for (var i=0; i<info.length; i++) {
+              maxCapacity = Math.max(maxCapacity, info[i].attributes.NUM_LICENSED_BEDS);
+            }
+            console.log(maxCapacity);
+  
+            for (var i=0; i<info.length; i++) {
+              var cur = info[i].attributes;
+              if (cur.STATE_NAME.toUpperCase() != state || cur.COUNTY_NAME.toUpperCase() != county) {
+                console.log("Error: {" + cur.STATE_NAME + " " + cur.COUNTY_NAME + "} does not match the current selection");
+                continue;
+              }
+
+              var addr = `${cur.HQ_ADDRESS} ${cur.HQ_CITY}, ${cur.HQ_STATE}, ${cur.HQ_ZIP_CODE}`;
+
+              var sourceDOM = `
+              <div class="hospital">
+                <div class="header">
+                  <div class="name"><full-count style="background: ${(cur.BED_UTILIZATION < 0.33 ? 'green' : (cur.BED_UTILIZATION < 0.66 ? '#ee7600' : 'red'))}">${Math.round(cur.BED_UTILIZATION * 100)}% Full</full-count> ${cur.HOSPITAL_NAME}</div>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
+                </div>
+                <div class="information">
+                  <div class="info-item ${cur.NUM_LICENSED_BEDS / maxCapacity < 0.33 ? 'red' : (cur.NUM_LICENSED_BEDS / maxCapacity < 0.66 ? 'orange' : 'green')}-border">
+                    <i class="fas fa-briefcase-medical"></i>
+                    <span>${cur.NUM_LICENSED_BEDS} total beds${cur.NUM_ICU_BEDS != null ? " (" + cur.NUM_ICU_BEDS + " ICU)" : ""}</span>
+                  </div>
+                  <div class="info-item ${cur.BED_UTILIZATION < 0.33 ? 'green' : (cur.BED_UTILIZATION < 0.66 ? 'orange' : 'red')}-border">
+                    <i class="fas fa-briefcase-medical"></i>
+                    <span>${Math.round(cur.BED_UTILIZATION * 100)}% (${Math.round(cur.BED_UTILIZATION * cur.NUM_LICENSED_BEDS)}/${cur.NUM_LICENSED_BEDS}) of beds occupied</span>
+                  </div>
+                  <div class="info-item ${cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS < 0.33 ? 'red' : (cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS < 0.66 ? 'orange' : 'green')}-border">
+                    <i class="fas fa-briefcase-medical"></i>
+                    <span>${Math.round(cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS * 100)}% (${cur.NUM_STAFFED_BEDS}/${cur.NUM_LICENSED_BEDS}) of beds staffed</span>
+                  </div>
+                  <div class="info-item cursor blueviolet-border" onclick="window.open('https://www.google.com/maps/place/${encodeURI(addr)}')">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Get Directions</span>
+                  </div>
+                </div>
+              </div>
+              `
+              hospitalDOMs += sourceDOM;
+            }
+  
+            var retDOM = `
+            <div id="hospital-info" class="info-pane bot" style="height: 100%;">
+              <div class="info-header">
+                <i class="fas fa-hospital" style="cursor:pointer;"></i>
+                <span>LOCAL HOSPITAL INFO</span>
+              </div>
+              <div class="hospital-display" style="overflow-y: scroll;">
+                ${hospitalDOMs}
+                <script>
+                  $("div.hospital > div.header > svg").click(function(evt){
+                    $(this).closest("div.hospital").toggleClass("active");
+                  });
+                </script>
+              </div>
+            </div>
+            `;
+  
+            return retDOM;
+          }
+
+          var updateLeftPanel = (hosInfo) => {
+            DOM = DOM + getHospitalHTML(hosInfo);
+  
+            if (!is_global){
+              $("div.variable-display").html(DOM);
+            }
+          }
+
+          corsHTTP(queryURL, updateLeftPanel);
         }
       }
     }
@@ -538,7 +649,7 @@ $(document).ready(function(){
       console.log("zooming to county");
       var state = usstates[e.target.feature.properties.STATE].toTitleCase(); // to be used for filter
       var county = `${e.target.feature.properties.NAME.toTitleCase()} ${municipalityPostfix(state)}`;
-      showPlace(county);
+      showPlace(county, state);
     }
 
     // 3.2.3 reset the hightlighted feature when the mouse is out of its region.

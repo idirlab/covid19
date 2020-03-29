@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
   <link rel="stylesheet" href="css/classic.css" id="theme_base">
   <link rel="stylesheet" href="css/classic.date.css" id="theme_base">
+  <link rel="stylesheet" href="css/hospital.css">
 
   <script src="js/to-title-case.js"></script>
   <script src="js/voca.min.js"></script>
@@ -78,6 +79,7 @@
           <i class="fas fa-arrow-alt-circle-right"></i> 
         </div>
       </div>
+
       <div class="variable-toggle">
         <div class="variable-button" id="cases">
           <i class="fas fa-hospital-symbol"></i>
@@ -248,6 +250,13 @@
             </div>
           </div>
         </div>
+        <div id="hospital-info" class="info-pane bot">
+          <div class="info-header">
+            <i class="fas fa-hospital" style="cursor:pointer;"></i>
+            <span>LOCAL HOSPITAL INFO</span>
+          </div>
+          Please navigate to county level to view hospitals
+        </div>
       </div>
     </div>
     </div>
@@ -260,6 +269,7 @@
   <script src="js/main.js"></script>
   <script src="js/css-element-queries-1.2.1/src/ElementQueries.js"></script>
   <script src="js/css-element-queries-1.2.1/src/ResizeSensor.js"></script>
+  <script src="js/cors.js"></script>
   <script src="js/interactive.js"></script>
 
   <!-- Google Analytics -->
