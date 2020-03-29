@@ -388,7 +388,17 @@ $(document).ready(function(){
           });
         }
 
-        if (name.toUpperCase().indexOf("COUNTY") == -1) {
+        var types = ["COUNTY", "BOROUGH", "PARISH"];
+        var countyType = null;
+
+        for (var i=0; i<types.length; i++) {
+          if (name.toUpperCase().indexOf(" " + types[i]) != -1) {
+            countyType = types[i];
+            break;
+          }
+        }
+
+        if (countyType == null) {
           var curDOM = `
           <div id="hospital-info" class="info-pane bot">
             <div class="info-header">
@@ -396,7 +406,6 @@ $(document).ready(function(){
               <span>LOCAL HOSPITAL INFO</span>
             </div>
             Please navigate to county level to view hospitals
-            <span style="color: red">IF THIS IS A BOROUGH, CONTACT KEVIN. HE KNOWS ABOUT THIS ERROR</span>
           </div>
           `;
 
@@ -407,10 +416,10 @@ $(document).ready(function(){
           }
         } else {
           var state = parent.toUpperCase();
-          var county = name.toUpperCase().replace(" COUNTY", "");
+          var county = name.toUpperCase().replace(" " + countyType, "");
 
           var queryURL = `https://services7.arcgis.com/LXCny1HyhQCUSueu/arcgis/rest/services/Definitive_Healthcare_USA_Hospital_Beds/FeatureServer/0/query?where=UPPER(STATE_NAME)%20like%20'%25${state.toUpperCase()}%25'%20AND%20UPPER(COUNTY_NAME)%20like%20'%25${county.toUpperCase()}%25'&outFields=*&outSR=4326&f=json`;
-          console.log("Retrieving hospital info for " + state + " " + county);
+          console.log("Retrieving hospital info for " + county + ", " + state);
           console.log(queryURL);
 
           var getHospitalHTML = (info) => {
@@ -450,7 +459,7 @@ $(document).ready(function(){
                 </div>
                 <div class="information">
                   <div class="info-item blue-border">
-                    <i class="fas fa-bed"></i>
+                    <i class="fas fa-hospital-alt"></i>
                     <span>${cur.HOSPITAL_TYPE}</span>
                   </div>
                   <div class="info-item ${cur.NUM_LICENSED_BEDS == null ? "black" : cur.NUM_LICENSED_BEDS / maxCapacity < 0.33 ? 'red' : (cur.NUM_LICENSED_BEDS / maxCapacity < 0.66 ? 'orange' : 'green')}-border">
