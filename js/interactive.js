@@ -451,15 +451,16 @@ $(document).ready(function(){
                 <div class="information">
                   <div class="info-item ${cur.NUM_LICENSED_BEDS / maxCapacity < 0.33 ? 'red' : (cur.NUM_LICENSED_BEDS / maxCapacity < 0.66 ? 'orange' : 'green')}-border">
                     <i class="fas fa-briefcase-medical"></i>
-                    <span>${cur.NUM_LICENSED_BEDS} total beds${cur.NUM_ICU_BEDS != null ? " (" + cur.NUM_ICU_BEDS + " ICU)" : ""}</span>
+                    <span>${cur.NUM_LICENSED_BEDS} Total Beds${cur.NUM_ICU_BEDS != null ? " (" + cur.NUM_ICU_BEDS + " ICU)" : ""}</span>
                   </div>
                   <div class="info-item ${cur.BED_UTILIZATION < 0.33 ? 'green' : (cur.BED_UTILIZATION < 0.66 ? 'orange' : 'red')}-border">
                     <i class="fas fa-briefcase-medical"></i>
-                    <span>${Math.round(cur.BED_UTILIZATION * 100)}% (${Math.round(cur.BED_UTILIZATION * cur.NUM_LICENSED_BEDS)}/${cur.NUM_LICENSED_BEDS}) of beds occupied</span>
+                    <!-- <span>${Math.round(cur.BED_UTILIZATION * 100)}% (${Math.round(cur.BED_UTILIZATION * cur.NUM_LICENSED_BEDS)}/${cur.NUM_LICENSED_BEDS}) of beds occupied</span> -->
+                    <span>${Math.round(cur.BED_UTILIZATION *100)}% Bed Utilization on Average</span>
                   </div>
                   <div class="info-item ${cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS < 0.33 ? 'red' : (cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS < 0.66 ? 'orange' : 'green')}-border">
                     <i class="fas fa-briefcase-medical"></i>
-                    <span>${Math.round(cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS * 100)}% (${cur.NUM_STAFFED_BEDS}/${cur.NUM_LICENSED_BEDS}) of beds staffed</span>
+                    <span>${Math.round(cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS * 100)}% (${cur.NUM_STAFFED_BEDS}/${cur.NUM_LICENSED_BEDS}) of Beds Staffed</span>
                   </div>
                   <div class="info-item cursor blueviolet-border" onclick="window.open('https://www.google.com/maps/place/${encodeURI(addr)}')">
                     <i class="fas fa-map-marked-alt"></i>

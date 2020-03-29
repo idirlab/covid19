@@ -1,4 +1,4 @@
-/* div.hospital-display::-webkit-scrollbar {
+div.hospital-display::-webkit-scrollbar {
     width: .5em;
 }
 
@@ -9,7 +9,7 @@ div.hospital-display::-webkit-scrollbar-track {
 div.hospital-display::-webkit-scrollbar-thumb {
     background-color: darkgrey;
     outline: 1px solid slategrey;
-} */
+}
 
 div.hospital-display > div.hospital > div.information {
     display:none;
