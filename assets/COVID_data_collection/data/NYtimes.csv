@@ -1,55 +1,59 @@
-STATE	CASES	DEATHS
-New York	15,168	114
-New Jersey	1,914	20
-Washington	1,844	98
-California	1,639	32
-Illinois	1,049	9
-Michigan	1,033	9
-Florida	1,003	12
-Louisiana	837	20
-Massachusetts	646	5
-Texas	618	7
-Georgia	600	23
-Colorado	591	5
-Pennsylvania	504	3
-Tennessee	423	1
-Wisconsin	381	4
-Ohio	351	3
-Connecticut	327	8
-North Carolina	272	0
-Maryland	245	3
-Virginia	219	3
-Mississippi	207	1
-Indiana	201	6
-South Carolina	195	3
-Nevada	190	2
-Utah	182	1
-Minnesota	170	1
-Arkansas	165	0
-Oregon	161	5
-Arizona	153	2
-Alabama	138	0
-Kentucky	103	3
-District of Columbia	98	2
-Missouri	97	3
-Iowa	90	0
-Maine	89	0
-Rhode Island	83	0
-New Hampshire	78	0
-Oklahoma	67	2
-Kansas	66	2
-New Mexico	65	0
-Nebraska	62	0
-Delaware	56	0
-Vermont	52	2
-Hawaii	48	0
-Idaho	42	0
-Montana	31	0
-North Dakota	30	0
-Guam	27	0
-Wyoming	24	0
-Puerto Rico	23	1
-Alaska	22	0
-South Dakota	21	1
-West Virginia	16	0
-Virgin Islands	6	0
+COUNTY	CASES	DEATHS	RECOVERED
+Alabama	678	4	NA
+Alaska	85	1	NA
+Arizona	773	15	NA
+Arkansas	404	3	NA
+American Samoa	0	0	NA
+California	4,986	104	NA
+Colorado	1,737	30	NA
+Connecticut	1,291	27	NA
+Delaware	213	3	NA
+District of Columbia	304	4	NA
+Florida	3,745	52	NA
+Georgia	2,198	64	NA
+Guam	57	1	NA
+Hawaii	120	0	NA
+Idaho	231	4	NA
+Illinois	3,520	49	NA
+Indiana	1,232	31	NA
+Iowa	298	3	NA
+Kansas	268	5	NA
+Kentucky	302	8	NA
+Louisiana	3,315	137	NA
+Maine	168	1	NA
+Maryland	993	5	NA
+Massachusetts	4,257	44	NA
+Michigan	4,635	111	NA
+Minnesota	441	5	NA
+Mississippi	579	8	NA
+Missouri	838	10	NA
+Montana	129	1	NA
+Nebraska	108	2	NA
+Nevada	706	14	NA
+New Hampshire	187	2	NA
+New Jersey	11,124	140	NA
+New Mexico	191	1	NA
+New York	52,354	728	NA
+North Carolina	972	4	NA
+North Dakota	83	1	NA
+Northern Mariana Islands	2	0	NA
+Ohio	1,406	25	NA
+Oklahoma	377	15	NA
+Oregon	479	13	NA
+Pennsylvania	2,751	34	NA
+Puerto Rico	100	3	NA
+Rhode Island	239	2	NA
+South Carolina	660	15	NA
+South Dakota	68	1	NA
+Tennessee	1,298	6	NA
+Texas	2,063	28	NA
+US Virgin Islands	0	0	NA
+Utah	603	2	NA
+Vermont	211	12	NA
+Virginia	740	17	NA
+Washington	3,776	177	NA
+West Virginia	96	0	NA
+Wisconsin	1,042	17	NA
+Wyoming	73	0	NA
+STATE	CASES	DEATHS	NA
+Virgin Islands	19	0	NA
