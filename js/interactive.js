@@ -912,7 +912,7 @@ function adjustHospitalPaneHeight() {
     var id = $(this).attr('id');
     console.log($(this));
     if (cls == "variable") {
-      sum += 24 + 48;
+      sum += 12 + 32;
     } else if (cls == undefined && id == "variable-loading-no-data") {
       sum += $("#variable-loading-no-data").height();
     }
