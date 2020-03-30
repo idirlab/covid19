@@ -413,6 +413,7 @@ $(document).ready(function(){
 
           if (!is_global){
             $("div.variable-display").html(DOM);
+            adjustHospitalPaneHeight();
           }
         } else {
           var state = parent.toUpperCase();
@@ -486,12 +487,12 @@ $(document).ready(function(){
             }
   
             var retDOM = `
-            <div id="hospital-info" class="info-pane bot" style="height: 100%;">
+            <div id="hospital-info" class="info-pane bot">
               <div class="info-header">
                 <i class="fas fa-hospital" style="cursor:pointer;"></i>
                 <span>LOCAL HOSPITAL INFO</span>
               </div>
-              <div class="hospital-display" style="overflow-y: scroll;">
+              <div class="hospital-display" style="height: calc(100% - 48px); overflow-y: scroll;">
                 ${hospitalDOMs}
                 <script>
                   $("div.hospital > div.header > svg").click(function(evt){
@@ -510,6 +511,7 @@ $(document).ready(function(){
   
             if (!is_global){
               $("div.variable-display").html(DOM);
+              adjustHospitalPaneHeight();
             }
           }
 
@@ -901,3 +903,20 @@ $(document).ready(function(){
 
   });
 });
+
+function adjustHospitalPaneHeight() {
+  var sum = 0;
+  console.log('asdfasdfsafdf');
+  $("div.variable-display").children().each(function() {
+    var cls = $(this).attr('class');
+    var id = $(this).attr('id');
+    console.log($(this));
+    if (cls == "variable") {
+      sum += 24 + 48;
+    } else if (cls == undefined && id == "variable-loading-no-data") {
+      sum += $("#variable-loading-no-data").height();
+    }
+  })
+  console.log(sum);
+  $("#hospital-info").height($("#left-side-bar").height() - 58 - 48 - 26 - 12 - 12 - sum);
+}

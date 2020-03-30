@@ -7,8 +7,8 @@ div.hospital-display::-webkit-scrollbar-track {
 }
 
 div.hospital-display::-webkit-scrollbar-thumb {
-    background-color: darkgrey;
-    outline: 1px solid slategrey;
+    background-color: #383838;
+    outline: 1px solid black;
 }
 
 div.hospital-display > div.hospital > div.information {
