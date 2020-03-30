@@ -68,6 +68,8 @@ $(document).ready(function(){
              (d1.year() === d2.year());
     }
 
+    $("div.side-panel#left-side-bar > div#aggregate-date-window").scroll();
+    $("div.side-panel#left-side-bar > div#aggregate-date-window").animate({scrollTop: 0});
     var usstates = datasets[14];
     var uscounties = datasets[13];
 
@@ -183,14 +185,41 @@ $(document).ready(function(){
     var US_States = Array.from(
       [{"State":"Alabama"},{"State":"Alaska"},{"State":"Arizona"},{"State":"Arkansas"},{"State":"California"},{"State":"Colorado"},{"State":"Connecticut"},{"State":"Delaware"},{"State":"Florida"},{"State":"Georgia"},{"State":"Hawaii"},{"State":"Idaho"},{"State":"Illinois"},{"State":"Indiana"},{"State":"Iowa"},{"State":"Kansas"},{"State":"Kentucky"},{"State":"Louisiana"},{"State":"Maine"},{"State":"Maryland"},{"State":"Massachusetts"},{"State":"Michigan"},{"State":"Minnesota"},{"State":"Mississippi"},{"State":"Missouri"},{"State":"Montana"},{"State":"Nebraska"},{"State":"Nevada"},{"State":"New Hampshire"},{"State":"New Jersey"},{"State":"New Mexico"},{"State":"New York"},{"State":"North Carolina"},{"State":"North Dakota"},{"State":"Ohio"},{"State":"Oklahoma"},{"State":"Oregon"},{"State":"Pennsylvania"},{"State":"Rhode Island"},{"State":"South Carolina"},{"State":"South Dakota"},{"State":"Tennessee"},{"State":"Texas"},{"State":"Utah"},{"State":"Vermont"},{"State":"Virginia"},{"State":"Washington"},{"State":"West Virginia"},{"State":"Wisconsin"},{"State":"Wyoming"}]
      .map(d => d["State"]));
+    const nan_value = "-";
+    var selected_source = $("span.default-source").text().trim();
+    var selected_date = moment($("div.info-header > div.info-header-element#pos-3").text().trim(),
+                               "MM/DD/YYYY");
+    var default_values_dataset = timeseries.get(selected_source);
+    var default_data = default_values_dataset .filter(d => compareTwoDates(selected_date, d.date));
+    function get_state_default_values(state) {
+      var cases = nan_value;
+      var deaths = nan_value;
+      var recovered = nan_value;
+      if (default_data.length > 0){
+        var row_cases = default_data[0][state].get("cases");
+        var row_recovered =  default_data[0][state].get("recovered");
+        var row_deaths = default_data[0][state].get("deaths");
+        if (!isNaN(row_cases)) {
+          cases = row_cases;
+        }
+        if (!isNaN(row_recoveries)) {
+          recovered = row_recoveries;
+        }
+        if (!isNaN(row_deaths)) {
+          deaths = row_deaths;
+        }
+      }
+      var output = {"cases":cases,
+                    "recovered":recovered,
+                    "deaths":deaths};
+      return output;
+    }
+
     var US_State_variables_by_source = Array.from(
       timeseries.entries()
     ).map(function(entry) {
       var source = entry[0];
       var dataset = entry[1];
-      const nan_value = "-";
-      var selected_date = moment($("div.info-header > div.info-header-element#pos-3").text().trim(),
-                                 "MM/DD/YYYY");
       var data = dataset.filter(d => compareTwoDates(selected_date, d.date));
       if (data.length > 0){
         var row = data[0];
@@ -266,26 +295,26 @@ $(document).ready(function(){
         ]
       )
     ));
-    var selected_source = $("span.default-source").text().trim();
-    var US_States_DOM = Array.from(US_State_variables.entries()).map(function(array){
+    var US_States_DOMs = Array.from(US_State_variables.entries()).map(function(array){
       var state = array[0];
       var variables_DOM = array[1];
+      var caseinfostrings = get_state_default_values(state);
       return `
-        <div class="geolocation-container" parent="COUNTRY" country="US" level="STATE" children="COUNTIES">
+        <div class="geolocation-container" parent="COUNTRY" COUNTRY="US" STATE="${state}" level="STATE" children="COUNTIES">
           <div class="location-information-container">
               <span class="placename">${state}</span>
               <div class="figures">
                 <div class="figure">
                   <i class="fas fa-hospital-symbol"></i>
-                  <span class="confirmed-count" style="color: rgb(40, 50, 55)">${cases}</span>
+                  <span class="confirmed-count" style="color: rgb(40, 50, 55)">${caseinfostrings["cases"]}</span>
                 </div>
                 <div class="figure">
                   <i class="fas fa-skull"></i>
-                  <span class="death-count" style="color: rgb(40, 50, 55)">${deaths}</span>
+                  <span class="death-count" style="color: rgb(40, 50, 55)">${caseinfostrings["deaths"]}</span>
                 </div>
                 <div class="figure">
                   <i class="fas fa-user-check"></i>
-                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${recovered}</span>
+                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${caseinfostrings["recovered"]}</span>
                 </div>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
@@ -296,9 +325,8 @@ $(document).ready(function(){
         </div>
       `;
     });
-    var selected_source = $("span.default-source").text().trim();
-    var selected_date = moment($("div.info-header > div.info-header-element#pos-3").text().trim(),
-                               "MM/DD/YYYY");
+    var US_States_DOM = US_States_DOMs.join("\n");
+    // now get US-level info
     var relevant_rows = timeseries.get(selected_source).filter(d => compareTwoDates(selected_date, d.date));
     var cases = "-";
     var deaths = "-";
@@ -319,7 +347,7 @@ $(document).ready(function(){
       }
     }
     var US_dom = `
-        <div class="geolocation-container" parent="GLOBAL" level="COUNTRY" children="STATE">
+        <div class="geolocation-container" parent="GLOBAL" country="US" level="COUNTRY" children="STATE">
           <div class="location-information-container">
               <span class="placename">US</span>
               <div class="figures">
@@ -342,9 +370,22 @@ $(document).ready(function(){
             ${US_Variables_DOM.join('\n')}
           </div>
           <div class="state-display">
-            ${[].join('\n')}
+            ${US_States_DOM}
           </div>
         </div>
+        <script>
+          $(document).ready(function(){
+            $("div.geolocation-container[country='US']")
+              .filter("div.geolocation-container[level='COUNTRY']")
+              .children(".location-information-container").on("click", function(evt){
+                var user_clicked_arrow = evt.target.matches("svg");
+                if(user_clicked_arrow)
+                  return;
+                var states_display = $(this).next().next();
+                states_display.toggleClass("expanded");
+              });
+          });
+        </script>
     `;
     var GLOBAL_dom = `
       <div class="geolocation-container" children="COUNTRY">
@@ -369,22 +410,33 @@ $(document).ready(function(){
         <div class="variable-display">
           ${US_Variables_DOM.join('\n')}
         </div>
+        <div class="country-display">
+          ${US_dom}
+        </div>
       </div>
     `;
 
     $("div#aggregate-date-window").append(`
       ${GLOBAL_dom}
-      ${US_dom}
       <script>
       $(document).ready(function(){
         $("div.location-information-container > svg").click(function(){
           $(this).toggleClass("active");
-          console.log($(this));
-          console.log($(this).parent());
-          console.log($(this).parent().next());
           var variable_display = $(this).parent().next();
           variable_display.toggleClass("expanded");
         });
+        $("div.geolocation-container[children='COUNTRY']")
+          .children(".location-information-container").on("click", function(evt){
+            var user_clicked_arrow = evt.target.matches("svg");
+            if(user_clicked_arrow)
+              return;
+            var country_display = $(this).next().next();
+            var us_location_container = $("div.geolocation-container[level='COUNTRY']")
+              .filter("div.geolocation-container[country='US']");
+            var state_display = us_location_container.children(".state-display");
+            state_display.toggleClass("expanded", false)
+            country_display.toggleClass("expanded");
+          });
       });
       </script>
     `);
@@ -574,23 +626,76 @@ $(document).ready(function(){
 
     function showPlace(name) {
       var is_global = name.toUpperCase() === "GLOBAL TREND";
-      if (!is_global){ // Don't do this when first loading the web-page but for subsequent triggers
-        $("div.variable-display").empty();
-        $("div.variable-display").html(`
-          <div id="variable-loading-placeholder">
-            Loading
-          </div>
-        `);
-        var selected_date = moment($("div.info-header > div.info-header-element#pos-3").text().trim(),
-                                   "MM/DD/YYYY");
-        // Start with this DOM, if it isn't changed then it is accurate and will be displayed.
-        // Else the data will replace it.
-        var DOM = `
-          <div id="variable-loading-no-data">
-            No data for DATE=${moment(selected_date).format("MM/DD/YYYY")} AND LOCATION=${name}. </br>
-            Please try somewhere in the US after 03/19/2020.
-          </div>
-        `;
+      var is_state = US_States.map(s => s.toLowerCase()).includes(name);
+      var is_US = name.toUpperCase() === "US";
+
+      if (is_global) {
+        console.log("global");
+        // Hide all other infoboxes and show the countires and global units
+        $("div.geolocation-container[children!='COUNTRY']")
+          .children(".location-information-container")
+          .children("svg[class='active']").click();
+        $("div.geolocation-container[children='COUNTRY']")
+          .children(".location-information-container")
+          .children("svg").toggleClass("active", true);
+        $("div.geolocation-container[children='COUNTRY']")
+          .children(".variable-display").toggleClass("expanded", true);
+        $("div.geolocation-container[children='COUNTRY']")
+          .children(".country-display").toggleClass("expanded", true);
+        $("div.state-display.expanded").toggleClass("expanded", false);
+      } else if (is_US){
+        // Hide all other infoboxes and show the states and US units
+        $("div.geolocation-container[level!='COUNTRY']")
+          .filter("div.geolocation-container[country!='US']")
+          .children(".location-information-container")
+          .children("svg[class='active']").click();
+        $("div.geolocation-container[level='COUNTRY']")
+          .filter("div.geolocation-container[country='US']")
+          .children(".location-information-container")
+          .children("svg").toggleClass("active", true);
+        $("div.geolocation-container[level='COUNTRY']")
+          .filter("div.geolocation-container[country='US']")
+          .children(".variable-display").toggleClass("expanded", true);
+        $("div.geolocation-container[level='COUNTRY']")
+          .filter("div.geolocation-container[country='US']")
+          .children(".state-display").toggleClass("expanded", true);
+      } else if (is_state) {
+        $("div.geolocation-container[level!='STATE']")
+          .filter("div.geolocation-container[country!='US']")
+          .children(".location-information-container")
+          .children("svg[class='active']").click();
+        $("div.geolocation-container[level='STATE']")
+          .filter("div.geolocation-container[country='US']")
+          .filter(`div.geolocation-container[state!='${name.toTitleCase()}']`)
+          .children(".location-information-container")
+          .children("svg[class='active']").click();
+        var us_location_container = $("div.geolocation-container[level='COUNTRY']")
+          .filter("div.geolocation-container[country='US']");
+        var state_display = us_location_container.children(".state-display");
+        state_display.toggleClass("expanded", true)
+        us_location_container
+          .children(".variable-display").toggleClass("expanded", false);
+        us_location_container
+          .children(".location-information-container")
+          .children("svg")
+          .toggleClass("active", false);
+        var state_svg = $("div.geolocation-container[level='STATE']")
+          .filter(`div.geolocation-container[state='${name.toTitleCase()}']`)
+          .children(".location-information-container")
+          .children("svg");
+        var state_last_variable = $("div.geolocation-container[level='STATE']")
+          .filter(`div.geolocation-container[state='${name.toTitleCase()}']`)
+          .children(".location-information-container")
+          .children(".placename");
+        if(!state_svg.attr("class")){
+          state_svg.click()
+        }
+        var container = $("div.side-panel#left-side-bar > div#aggregate-date-window");
+        container.scroll();
+        container.animate({
+          scrollTop: state_last_variable.offset().top - container.offset().top + container.scrollTop()
+        });
+        console.log("logic to show counties goes here...");
       }
 
       if (name == "anhui" || name == "beijing" || name == "chongqing" || name == "fujian" || name == "gansu" || name == "guangdong" ||
@@ -601,58 +706,6 @@ $(document).ready(function(){
         $(".placename.hidden").text(name.toUpperCase() + ", CHINA"); // we don't support china yet
       } else {
         $(".placename.hidden").text(name.toUpperCase());
-
-        // Boolean to see if the data covers the date the user is interested in
-        if (!is_global){
-          var data_covers_this_date = Array.from(timeseries.values())
-                                           .map(dataset =>
-                                             Array.from(
-                                               dataset.filter(d => compareTwoDates(selected_date, d.date))
-                                             ).length > 0)
-                                           .reduce((acc, next) => acc || next);
-          // Boolean to see if the location the user is interested in is in the data
-          var data_covers_this_location =
-            (all_columns_in_data.filter(col => name.toLowerCase().toTitleCase() == col).length > 0);
-        }
-        if (!is_global && data_covers_this_date && data_covers_this_location){
-          // If the area is in our data and we have at least one data source that covers that day
-          DOM = "";
-          timeseries.forEach(function(dataset, source, _){
-            var data = dataset.filter(d => compareTwoDates(d.date, selected_date));
-            function hyphenIfNaN(o){
-              return (isNaN(o) ? "&nbsp;-&nbsp;" : o);
-            }
-            if(data.length > 0){
-              var state_data = data[0][name.toTitleCase()];
-              var cases_string = hyphenIfNaN(state_data.get("cases"));
-              var deaths_string = hyphenIfNaN(state_data.get("deaths"));
-              var recoveries_string = hyphenIfNaN(state_data.get("recoveries"));
-              var sourceDOM = `
-                <div class="variable">
-                  <div class="source">${source}</div>
-                  <div class="figures">
-                    <div class="figure">
-                      <i class="fas fa-hospital-symbol"></i>
-                      <span>${cases_string}</span>
-                    </div>
-                    <div class="figure">
-                      <i class="fas fa-skull"></i>
-                      <span>${deaths_string}</span>
-                    </div>
-                    <div class="figure">
-                      <i class="fas fa-user-check"></i>
-                      <span>${recoveries_string}</span>
-                    </div>
-                  </div>
-                </div>
-              `;
-              DOM = DOM + sourceDOM;
-            }
-          });
-        }
-        if (!is_global){
-          $("div.variable-display").html(DOM);
-        }
       }
     }
 

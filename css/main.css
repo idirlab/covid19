@@ -725,12 +725,12 @@ div.location-information-container {
   border-radius: 0px;
   box-shadow: 0px 2px 3px 0px rgba(38, 50, 56, 1);
   overflow: hidden;
+  cursor:pointer;
 }
 
 
 
 div.location-information-container {
-  margin-bottom:0px;
   height: inherit;
   background-color: rgb(40, 50, 55);
   text-align: center;
@@ -743,10 +743,12 @@ div.location-information-container > span.placename {
   display:inline-block;
   margin-left:12px;
   font-size:0.5em;
+  cursor:auto;
   transform: translate(0px, 0px);
 }
 div.location-information-container > div.figures {
   line-height:24px;
+  cursor:auto;
   transform:translate(0px, 16px);
   right:36px;
   position:absolute;
@@ -882,6 +884,88 @@ div.variable-display.expanded {
   -webkit-transition: height .5s;
   transition: height .5s;
 }
+div.state-display > div.geolocation-container > div.location-information-container > svg,
+div.state-display > div.geolocation-container > div.location-information-container > div.figures,
+div.state-display {
+  -moz-transition: height .5s;
+  -ms-transition: height .5s;
+  -o-transition: height .5s;
+  -webkit-transition: height .5s;
+  transition: height .5s;
+  height:0;
+  overflow: hidden;
+}
+div.state-display.expanded {
+  height:3760px;
+  -moz-transition: height .5s;
+  -ms-transition: height .5s;
+  -o-transition: height .5s;
+  -webkit-transition: height .5s;
+  transition: height .5s;
+}
+div.state-display.expanded > div.geolocation-container > div.location-information-container > svg,
+div.state-display.expanded > div.geolocation-container > div.location-information-container > div.figures {
+  height:37px;
+  -moz-transition: height .5s;
+  -ms-transition: height .5s;
+  -o-transition: height .5s;
+  -webkit-transition: height .5s;
+  transition: height .5s;
+}
+div.state-display.expanded > div.geolocation-container > div.location-information-container > svg {
+  transform:translate(0, 30%);
+  transition: transform .3s;
+}
+div.state-display.expanded > div.geolocation-container > div.location-information-container > svg.active {
+  transform:rotate(180deg) translate(0, -30%);
+  transition: transform .3s;
+}
+div.country-display {
+  -moz-transition: height .5s;
+  -ms-transition: height .5s;
+  -o-transition: height .5s;
+  -webkit-transition: height .5s;
+  transition: height .5s;
+  height:0;
+  overflow: hidden;
+}
+div.country-display.expanded {
+  height:3760px;
+  -moz-transition: height .5s;
+  -ms-transition: height .5s;
+  -o-transition: height .5s;
+  -webkit-transition: height .5s;
+  transition: height .5s;
+}
+div.country-display > div.geolocation-container > div.location-information-container > svg,
+div.country-display > div.geolocation-container > div.location-information-container > div.figures,
+div.country-display {
+  -moz-transition: height .5s;
+  -ms-transition: height .5s;
+  -o-transition: height .5s;
+  -webkit-transition: height .5s;
+  transition: height .5s;
+  height:0;
+  overflow: hidden;
+}
+div.country-display.expanded > div.geolocation-container > div.location-information-container > svg,
+div.country-display.expanded > div.geolocation-container > div.location-information-container > div.figures {
+  height:37px;
+  -moz-transition: height .5s;
+  -ms-transition: height .5s;
+  -o-transition: height .5s;
+  -webkit-transition: height .5s;
+  transition: height .5s;
+  transform: translate(0, 30%);
+}
+div.country-display.expanded {
+  height:3760px;
+  -moz-transition: height .5s;
+  -ms-transition: height .5s;
+  -o-transition: height .5s;
+  -webkit-transition: height .5s;
+  transition: height .5s;
+}
 div.variable-display > div.variable {
   height: 32px;
   line-height: 32px;
@@ -901,9 +985,6 @@ div.variable-display > div.variable.active {
   color: rgba(38, 50, 56, 1);
   background-color: rgba(207, 216, 220, 1);
   border: 1px solid rgba(38, 50, 56, 1);
-}
-div.variable-display > div.variable.last{
-  margin-bottom:16px;
 }
 div.variable-display > div.variable > div.source{
   margin-left:12px;
@@ -935,10 +1016,12 @@ div.variable-display > div.variable > div.figures > div.figure > span{
 }
 div.location-information-container > svg {
   transform:translate(0px, 22px);
+  line-height:24px;
   cursor:pointer;
   transition:0.3s;
   position:absolute;
   right:12px;
+  z-index:9999;
 }
 div.location-information-container > svg.active {
   transform:rotate(180deg) translate(0px, -22px);
