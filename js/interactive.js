@@ -55,12 +55,13 @@ $(document).ready(function(){
     d3.tsv('assets/COVID_data_collection/data/cdc_time_series.csv'),
     d3.tsv('assets/COVID_data_collection/data/cnn_time_series.csv'),
     d3.tsv('assets/COVID_data_collection/data/COVIDTrackingProject_time_series.csv'),
-    d3.tsv('assets/COVID_data_collection/data/john_hopkins_time_series.csv'),
+    d3.tsv('assets/COVID_data_collection/data/johns_hopkins_states_time_series.csv'),
     d3.tsv('assets/COVID_data_collection/data/NYtimes_time_series.csv'),
     d3.json("assets/counties.json"),
     d3.json("assets/num2state.json")
   ]).then(function(datasets) {
 
+    var hyph = "&nbsp;-&nbsp;";
     function compareTwoDates(d1, d2) {
       // check that two dates are on the same day
       return (d1.month() === d2.month()) &&
@@ -104,7 +105,7 @@ $(document).ready(function(){
     ).flat().filter(unique); // used to filter for supported locations for covid19 figures
 
     // This section transforms the source data for later use.
-    var value_extract_regex = /([\d-]+)-([\d-]+)/;
+    var value_extract_regex = /([\w-]+)-([\w-]+)-([\w-]+)/;
     timeseries.forEach(function(dataset, source, _){
       console.log(`Source: ${source}`);
       dataset.forEach(function(d){
@@ -112,14 +113,17 @@ $(document).ready(function(){
         dataset.columns.filter(col => col !== "date")
                        .forEach(function(col){
                          var element = d[col];
-                         var cases_string = element.match(value_extract_regex)[1];
-                         var deaths_string = element.match(value_extract_regex)[2];
+                         var match = element.match(value_extract_regex);
+                         var cases_string = match ? match[1] : hyphenIfNaN(NaN);
+                         var deaths_string = match ? match[2] : hyphenIfNaN(NaN);
+                         var recoveries_string = match ? match[3] : hyphenIfNaN(NaN);
                          var cases = parseInt(cases_string);
                          var deaths = parseInt(deaths_string);
+                         var recoveries = parseInt(recoveries_string);
                          d[col] = new Map([
                            ["cases", cases],
                            ["deaths", deaths],
-                           ["recoveries", NaN]
+                           ["recoveries", recoveries]
                          ]);
                        });
 
@@ -134,15 +138,18 @@ $(document).ready(function(){
                                    );
       });
     });
+    function hyphenIfNaN(o){
+      return (isNaN(o) ? hyph : o);
+    }
     // create US dom tree
     var US_Variables_DOM = Array.from(
       timeseries.entries()
     ).map(function(entry) {
       var source = entry[0];
       var dataset = entry[1];
-      var cases = "-";
-      var recovered = "-";
-      var deaths = "-";
+      var cases = hyph;
+      var recovered = hyph;
+      var deaths = hyph;
       var selected_date = moment($("div.info-header > div.info-header-element#pos-3").text().trim(),
                                  "MM/DD/YYYY");
       var data = dataset.filter(d => compareTwoDates(selected_date, d.date));
@@ -152,30 +159,21 @@ $(document).ready(function(){
         row_cases = row.US.get("cases");
         row_recoveries = row.US.get("recoveries");
         row_deaths = row.US.get("deaths");
-        if (!isNaN(row_cases)) {
-          cases = row_cases;
-        }
-        if (!isNaN(row_recoveries)) {
-          recovered = row_recoveries;
-        }
-        if (!isNaN(row_deaths)) {
-          deaths = row_deaths;
-        }
+        cases = hyphenIfNaN(row.US.get("cases"));
+        recovered = hyphenIfNaN(row.US.get("recoveries"));
+        deaths = hyphenIfNaN(row.US.get("deaths"));
       }
       return `
         <div class="variable">
           <div class="source">${source}</div>
           <div class="figures">
             <div class="figure">
-              <i class="fas fa-hospital-symbol"></i>
               <span class="confirmed-count" style="color: rgb(40, 50, 55)">${cases}</span>
             </div>
             <div class="figure">
-              <i class="fas fa-skull"></i>
               <span class="death-count" style="color: rgb(40, 50, 55)">${deaths}</span>
             </div>
             <div class="figure">
-              <i class="fas fa-user-check"></i>
               <span class="recovered-count" style="color: rgb(40, 50, 55)">${recovered}</span>
             </div>
           </div>
@@ -185,29 +183,19 @@ $(document).ready(function(){
     var US_States = Array.from(
       [{"State":"Alabama"},{"State":"Alaska"},{"State":"Arizona"},{"State":"Arkansas"},{"State":"California"},{"State":"Colorado"},{"State":"Connecticut"},{"State":"Delaware"},{"State":"Florida"},{"State":"Georgia"},{"State":"Hawaii"},{"State":"Idaho"},{"State":"Illinois"},{"State":"Indiana"},{"State":"Iowa"},{"State":"Kansas"},{"State":"Kentucky"},{"State":"Louisiana"},{"State":"Maine"},{"State":"Maryland"},{"State":"Massachusetts"},{"State":"Michigan"},{"State":"Minnesota"},{"State":"Mississippi"},{"State":"Missouri"},{"State":"Montana"},{"State":"Nebraska"},{"State":"Nevada"},{"State":"New Hampshire"},{"State":"New Jersey"},{"State":"New Mexico"},{"State":"New York"},{"State":"North Carolina"},{"State":"North Dakota"},{"State":"Ohio"},{"State":"Oklahoma"},{"State":"Oregon"},{"State":"Pennsylvania"},{"State":"Rhode Island"},{"State":"South Carolina"},{"State":"South Dakota"},{"State":"Tennessee"},{"State":"Texas"},{"State":"Utah"},{"State":"Vermont"},{"State":"Virginia"},{"State":"Washington"},{"State":"West Virginia"},{"State":"Wisconsin"},{"State":"Wyoming"}]
      .map(d => d["State"]));
-    const nan_value = "-";
     var selected_source = $("span.default-source").text().trim();
     var selected_date = moment($("div.info-header > div.info-header-element#pos-3").text().trim(),
                                "MM/DD/YYYY");
     var default_values_dataset = timeseries.get(selected_source);
     var default_data = default_values_dataset .filter(d => compareTwoDates(selected_date, d.date));
     function get_state_default_values(state) {
-      var cases = nan_value;
-      var deaths = nan_value;
-      var recovered = nan_value;
+      var cases = hyph;
+      var deaths = hyph;
+      var recovered = hyph;
       if (default_data.length > 0){
-        var row_cases = default_data[0][state].get("cases");
-        var row_recovered =  default_data[0][state].get("recovered");
-        var row_deaths = default_data[0][state].get("deaths");
-        if (!isNaN(row_cases)) {
-          cases = row_cases;
-        }
-        if (!isNaN(row_recoveries)) {
-          recovered = row_recoveries;
-        }
-        if (!isNaN(row_deaths)) {
-          deaths = row_deaths;
-        }
+        var cases = hyphenIfNaN(default_data[0][state].get("cases"));
+        var deaths =  hyphenIfNaN(default_data[0][state].get("recovered"));
+        var recovered = hyphenIfNaN(default_data[0][state].get("deaths"));
       }
       var output = {"cases":cases,
                     "recovered":recovered,
@@ -231,37 +219,22 @@ $(document).ready(function(){
           var state = state_map.get("state");
           var stats = state_map.get("stats");
           var counties = state_map.get("counties");
-          var cases = nan_value;
-          var deaths = nan_value;
-          var recovered = nan_value;
+          var cases = hyphenIfNaN(stats.get("cases"));
+          var deaths = hyphenIfNaN(stats.get("deaths"));
+          var recovered = hyphenIfNaN(stats.get("recovered"));
 
-          var row_cases = stats.get("cases");
-          var row_recovered =  stats.get("recovered");
-          var row_deaths = stats.get("deaths");
-          if (!isNaN(row_cases)) {
-            cases = row_cases;
-          }
-          if (!isNaN(row_recoveries)) {
-            recovered = row_recoveries;
-          }
-          if (!isNaN(row_deaths)) {
-            deaths = row_deaths;
-          }
           var output = new Map([[state,
           `
             <div class="variable">
               <div class="source">${source}</div>
               <div class="figures">
                 <div class="figure">
-                  <i class="fas fa-hospital-symbol"></i>
                   <span class="confirmed-count" style="color: rgb(40, 50, 55)">${cases}</span>
                 </div>
                 <div class="figure">
-                  <i class="fas fa-skull"></i>
                   <span class="death-count" style="color: rgb(40, 50, 55)">${deaths}</span>
                 </div>
                 <div class="figure">
-                  <i class="fas fa-user-check"></i>
                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${recovered}</span>
                 </div>
               </div>
@@ -279,7 +252,7 @@ $(document).ready(function(){
             </div>
           `;
         }
-        return US_States.map(state => new Map([state, make_no_data_string(state)]));
+        return US_States.map(state => new Map([[state, make_no_data_string(state)]]));
       }
     }).map(maps => maps.reduce((acc, m) => new Map([...acc, ...m])));
     var US_State_variables = new Map(Array.from(
@@ -305,15 +278,12 @@ $(document).ready(function(){
               <span class="placename">${state}</span>
               <div class="figures">
                 <div class="figure">
-                  <i class="fas fa-hospital-symbol"></i>
                   <span class="confirmed-count" style="color: rgb(40, 50, 55)">${caseinfostrings["cases"]}</span>
                 </div>
                 <div class="figure">
-                  <i class="fas fa-skull"></i>
                   <span class="death-count" style="color: rgb(40, 50, 55)">${caseinfostrings["deaths"]}</span>
                 </div>
                 <div class="figure">
-                  <i class="fas fa-user-check"></i>
                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${caseinfostrings["recovered"]}</span>
                 </div>
               </div>
@@ -352,15 +322,12 @@ $(document).ready(function(){
               <span class="placename">US</span>
               <div class="figures">
                 <div class="figure">
-                  <i class="fas fa-hospital-symbol"></i>
                   <span class="confirmed-count" style="color: rgb(40, 50, 55)">${cases}</span>
                 </div>
                 <div class="figure">
-                  <i class="fas fa-skull"></i>
                   <span class="death-count" style="color: rgb(40, 50, 55)">${deaths}</span>
                 </div>
                 <div class="figure">
-                  <i class="fas fa-user-check"></i>
                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${recovered}</span>
                 </div>
               </div>
@@ -393,15 +360,12 @@ $(document).ready(function(){
             <span class="placename">GLOBAL</span>
             <div class="figures">
               <div class="figure">
-                <i class="fas fa-hospital-symbol"></i>
                 <span class="confirmed-count" style="color: rgb(40, 50, 55)">${cases}</span>
               </div>
               <div class="figure">
-                <i class="fas fa-skull"></i>
                 <span class="death-count" style="color: rgb(40, 50, 55)">${deaths}</span>
               </div>
               <div class="figure">
-                <i class="fas fa-user-check"></i>
                 <span class="recovered-count" style="color: rgb(40, 50, 55)">${recovered}</span>
               </div>
             </div>

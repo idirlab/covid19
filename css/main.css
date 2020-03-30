@@ -759,6 +759,13 @@ div.location-information-container > div.figures > div.figure{
   background-color: rgba(207, 216, 220, 1);
   border: 1px solid rgba(38, 50, 56, 1);
   padding: 0 4px 0 4px;
+  border-radius: 32px;
+  color: rgba(38, 50, 56, 1);
+  background-color: rgba(207, 216, 220, 1);
+  border: 1px solid rgba(38, 50, 56, 1);
+  padding: 0 4px 0 4px;
+  transform:translate(0px,-1px);
+  width:70px;
 }
 div.location-information-container > div.figures > div.figure > i{
   border-radius: 32px;
@@ -781,7 +788,7 @@ div.location-information-container > div.figures > div.figure > span{
 }
 
 div#aggregate-date-window {
-  position: absolute;
+  position: relative;
   height:100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -803,8 +810,12 @@ div.info-pane.top {
 }
 div.info-header {
   height:48px;
+  z-index:9999;
   line-height:48px;
+  width:400px;
   background-color:rgba(207, 216, 220, 1);
+  top:calc(44px);
+  position:fixed;
 }
 div#aggregate-date-window > div.info-header > div.info-header-element {
   cursor:pointer;
@@ -843,10 +854,13 @@ div#aggregate-date-window > div.info-header > div.info-header-element {
   margin:0 6px 0 6px;
 }
 div.variable-toggle {
-  height: 30px;
+  z-index:9999;
+  height: 44px;
   font-size:12px;
   line-height: 30px;
-  margin: 4px 0 4px 0;
+  background: rgba(176, 190, 197, 1);
+  position:fixed;
+  top:calc(44px + 48px);
   width: 400px;
   font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif; 
   font-weight:bold;
@@ -861,7 +875,7 @@ div.variable-toggle > div.variable-button {
   margin:0 6px 0 6px;
   width: 110px;
   height: 30px;
-  
+  transform: translate(0px,7px);
 }
 div.variable-display {
   width:100%;
@@ -996,23 +1010,19 @@ div.variable-display > div.variable > div.source{
   white-space: nowrap;
 }
 div.variable-display > div.variable > div.figures{
-  float:right;
   margin-right:12px;
   line-height:24px;
   transform:translate(0px, 1px);
-}
-div.variable-display > div.variable > div.figures > div.figure > i{
-  float:left;
-  transform:translate(0,23%);
-  padding:1px;
-  margin-right: 0.5em;
+  max-width:270px;
+  float:right;
 }
 div.variable-display > div.variable > div.figures > div.figure > span{
   font-size:0.75em;
   font-family: 'Noto Sans', Helvetica, arial, sans-serif;
   text-align:center;
-  min-width:35px;
   display: inline-block;
+  height:26px;
+  width:100%;
 }
 div.location-information-container > svg {
   transform:translate(0px, 22px);
@@ -1021,7 +1031,7 @@ div.location-information-container > svg {
   transition:0.3s;
   position:absolute;
   right:12px;
-  z-index:9999;
+  z-index:9000;
 }
 div.location-information-container > svg.active {
   transform:rotate(180deg) translate(0px, -22px);
@@ -1033,13 +1043,8 @@ div.variable-display > div.variable > div.figures > div.figure{
   background-color: rgba(207, 216, 220, 1);
   border: 1px solid rgba(38, 50, 56, 1);
   padding: 0 4px 0 4px;
-}
-div.variable-display > div.variable.active > div.figures > div.figure{
-  background-color: rgba(38, 50, 56, 1);
-  border: 1px solid rgba(112, 112, 112, 1);
-  border-radius: 32px;
-  color: rgba(207, 216, 220, 1);
-  padding: 0 4px 0 4px;
+  transform:translate(0px,-1px);
+  width:70px;
 }
 div#variable-loading-placeholder:after {
   overflow: hidden;
@@ -1078,4 +1083,7 @@ body > main > div.closed#map {
 }
 .hidden {
   display:none;
+}
+div.geolocation-container[children="COUNTRY"]{
+  margin-top:calc(48px + calc(8px + 30px));
 }

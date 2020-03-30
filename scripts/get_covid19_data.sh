@@ -10,9 +10,6 @@
 # Assumes master branch is set
 #cd /home/zhengyuan/Projects/covid19data
 source gittoken.env
-BRANCH=master
-git stash
-git checkout $BRANCH
 rm -rf covid19data
 git clone git@github.com:idirlab/covid19data.git
 rm -rf assets/COVID_data_collection
