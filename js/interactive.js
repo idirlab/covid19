@@ -56,12 +56,16 @@ $(document).ready(function(){
     d3.tsv('assets/COVID_data_collection/data/cnn_time_series.csv'),
     d3.tsv('assets/COVID_data_collection/data/COVIDTrackingProject_time_series.csv'),
     d3.tsv('assets/COVID_data_collection/data/johns_hopkins_states_time_series.csv'),
+    d3.tsv('assets/COVID_data_collection/data/johns_hopkins_counties_time_series.csv'),
     d3.tsv('assets/COVID_data_collection/data/NYtimes_time_series.csv'),
     d3.json("assets/counties.json"),
     d3.json("assets/num2state.json")
   ]).then(function(datasets) {
 
     var hyph = "&nbsp;-&nbsp;";
+    var US_States = Array.from(
+      [{"State":"Alabama"},{"State":"Alaska"},{"State":"Arizona"},{"State":"Arkansas"},{"State":"California"},{"State":"Colorado"},{"State":"Connecticut"},{"State":"Delaware"},{"State":"Florida"},{"State":"Georgia"},{"State":"Hawaii"},{"State":"Idaho"},{"State":"Illinois"},{"State":"Indiana"},{"State":"Iowa"},{"State":"Kansas"},{"State":"Kentucky"},{"State":"Louisiana"},{"State":"Maine"},{"State":"Maryland"},{"State":"Massachusetts"},{"State":"Michigan"},{"State":"Minnesota"},{"State":"Mississippi"},{"State":"Missouri"},{"State":"Montana"},{"State":"Nebraska"},{"State":"Nevada"},{"State":"New Hampshire"},{"State":"New Jersey"},{"State":"New Mexico"},{"State":"New York"},{"State":"North Carolina"},{"State":"North Dakota"},{"State":"Ohio"},{"State":"Oklahoma"},{"State":"Oregon"},{"State":"Pennsylvania"},{"State":"Rhode Island"},{"State":"South Carolina"},{"State":"South Dakota"},{"State":"Tennessee"},{"State":"Texas"},{"State":"Utah"},{"State":"Vermont"},{"State":"Virginia"},{"State":"Washington"},{"State":"West Virginia"},{"State":"Wisconsin"},{"State":"Wyoming"}]
+     .map(d => d["State"]));
     function compareTwoDates(d1, d2) {
       // check that two dates are on the same day
       return (d1.month() === d2.month()) &&
@@ -71,8 +75,8 @@ $(document).ready(function(){
 
     $("div.side-panel#left-side-bar > div#aggregate-date-window").scroll();
     $("div.side-panel#left-side-bar > div#aggregate-date-window").animate({scrollTop: 0});
-    var usstates = datasets[14];
-    var uscounties = datasets[13];
+    var usstates = datasets[datasets.length - 1];
+    var uscounties = datasets[datasets.length - 2];
 
     function municipalityPostfix (stateString) {
       var stateUpper = stateString.toUpperCase();
@@ -95,7 +99,8 @@ $(document).ready(function(){
       ["CNN", datasets[9]],
       ["COVID Tracking Project", datasets[10]],
       ["John Hopkins", datasets[11]],
-      ["New York Times", datasets[12]]
+      ["John Hopkins County Data", datasets[12]],
+      ["New York Times", datasets[13]]
     ]);
     function unique(value, index, self) {
         return self.indexOf(value) === index;
@@ -136,6 +141,50 @@ $(document).ready(function(){
                                      ]),
                                      new Map([["cases", 0], ["deaths", 0], ["recoveries", 0]])
                                    );
+      });
+    });
+    // Additional Transform for county-level data (all other data was state level)
+    var county_source = "John Hopkins County Data"
+    var county_data = timeseries.get(county_source);
+    var county_columns = county_data.columns;
+    var county_extract_regex =/(^[\w\s.-]+)-([\w\s.]*?)$/;
+    function get_match_from_countystring(countystring, idx) {
+      var match = countystring.match(county_extract_regex);
+      if(match){
+        var state = match[idx];
+        return state;
+      } else{
+        return NaN;
+      }
+    }
+    function get_state_from_countystring(countystring) {
+      return get_match_from_countystring(countystring, 2);
+    }
+    function get_county_from_countystring(countystring) {
+      return get_match_from_countystring(countystring, 1);
+    }
+    var state_to_county_map = new Map(
+      US_States.map(state =>
+        [state,
+         county_columns
+           .filter(countystring => get_state_from_countystring(countystring) === state)
+           .map(countystring => get_county_from_countystring(countystring))])
+    );
+    timeseries.get("John Hopkins County Data").forEach(function(d){
+      state_to_county_map.forEach(function(counties, state){
+        d[state] = new Map([["cases", 0],
+                            ["deaths", 0],
+                            ["recoveries", 0]]);
+        counties.forEach(function(county){
+          var column = `${county}-${state}`;
+          var countystats = d[column];
+          d[state].set("cases",
+                       d[state].get("cases") + countystats.get("cases"))
+          d[state].set("deaths",
+                       d[state].get("deaths") + countystats.get("deaths"))
+          d[state].set("recoveries",
+                       d[state].get("recoveries") + countystats.get("recoveries"))
+        });
       });
     });
     function hyphenIfNaN(o){
@@ -180,9 +229,6 @@ $(document).ready(function(){
         </div>
       `;
     });
-    var US_States = Array.from(
-      [{"State":"Alabama"},{"State":"Alaska"},{"State":"Arizona"},{"State":"Arkansas"},{"State":"California"},{"State":"Colorado"},{"State":"Connecticut"},{"State":"Delaware"},{"State":"Florida"},{"State":"Georgia"},{"State":"Hawaii"},{"State":"Idaho"},{"State":"Illinois"},{"State":"Indiana"},{"State":"Iowa"},{"State":"Kansas"},{"State":"Kentucky"},{"State":"Louisiana"},{"State":"Maine"},{"State":"Maryland"},{"State":"Massachusetts"},{"State":"Michigan"},{"State":"Minnesota"},{"State":"Mississippi"},{"State":"Missouri"},{"State":"Montana"},{"State":"Nebraska"},{"State":"Nevada"},{"State":"New Hampshire"},{"State":"New Jersey"},{"State":"New Mexico"},{"State":"New York"},{"State":"North Carolina"},{"State":"North Dakota"},{"State":"Ohio"},{"State":"Oklahoma"},{"State":"Oregon"},{"State":"Pennsylvania"},{"State":"Rhode Island"},{"State":"South Carolina"},{"State":"South Dakota"},{"State":"Tennessee"},{"State":"Texas"},{"State":"Utah"},{"State":"Vermont"},{"State":"Virginia"},{"State":"Washington"},{"State":"West Virginia"},{"State":"Wisconsin"},{"State":"Wyoming"}]
-     .map(d => d["State"]));
     var selected_source = $("span.default-source").text().trim();
     var selected_date = moment($("div.info-header > div.info-header-element#pos-3").text().trim(),
                                "MM/DD/YYYY");
@@ -214,17 +260,45 @@ $(document).ready(function(){
         var state_stats = US_States.map(state => new Map([
           ["state", state],
           ["stats", row[state]],
-          ["counties", []]]));
+          ["counties", state_to_county_map.get(state)]]));
         var state_variable_DOMS = state_stats.map(function (state_map) {
           var state = state_map.get("state");
           var stats = state_map.get("stats");
           var counties = state_map.get("counties");
+
+          var countystrings = counties.map(county => [county,
+                                                      `${county}-${state}`]);
+          var countystats = countystrings.map(countystringarr => [countystringarr[0],
+                                                                  row[countystringarr[1]]]);
+          var sanitizedcountystats = countystats.map(
+            statsarr => [statsarr[0],
+                         Boolean(statsarr[1]) ? statsarr[1] : new Map([["cases", NaN],
+                                                                       ["recoveries", NaN],
+                                                                       ["deaths", NaN]])]);
+          var county_variable_DOMs = sanitizedcountystats.map(sanitizedarr =>
+            new Map([[sanitizedarr[0],
+            `
+              <div class="variable">
+                <div class="source">${source}</div>
+                <div class="figures">
+                  <div class="figure">
+                    <span class="confirmed-count" style="color: rgb(40, 50, 55)">${hyphenIfNaN(sanitizedarr[1].get("cases"))}</span>
+                  </div>
+                  <div class="figure">
+                    <span class="death-count" style="color: rgb(40, 50, 55)">${hyphenIfNaN(sanitizedarr[1].get("deaths"))}</span>
+                  </div>
+                  <div class="figure">
+                    <span class="recovered-count" style="color: rgb(40, 50, 55)">${hyphenIfNaN(sanitizedarr[1].get("recoveries"))}</span>
+                  </div>
+                </div>
+            `]])
+          );
+
           var cases = hyphenIfNaN(stats.get("cases"));
           var deaths = hyphenIfNaN(stats.get("deaths"));
           var recovered = hyphenIfNaN(stats.get("recovered"));
 
-          var output = new Map([[state,
-          `
+          var state_variable_DOM = `
             <div class="variable">
               <div class="source">${source}</div>
               <div class="figures">
@@ -238,8 +312,9 @@ $(document).ready(function(){
                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${recovered}</span>
                 </div>
               </div>
-            </div>
-          `]]);
+            </div>`;
+          var output = new Map([[state, new Map([["state_variable", state_variable_DOM],
+                                                 ["county_variables", county_variable_DOMs]])]]);
           return output;
         });
         return state_variable_DOMS;
@@ -252,6 +327,11 @@ $(document).ready(function(){
             </div>
           `;
         }
+        function make_no_data_map(state) {
+          var output = new Map([[state, new Map([["state_variable", make_no_data_string(state)],
+                                                 ["county_variables", []]])]]);
+          return output
+        }
         return US_States.map(state => new Map([[state, make_no_data_string(state)]]));
       }
     }).map(maps => maps.reduce((acc, m) => new Map([...acc, ...m])));
@@ -262,16 +342,76 @@ $(document).ready(function(){
            US_State_variables_by_source.map(source_map =>
              Array.from(
                source_map.entries()
-             ).filter(array => array[0] == state)[0][1]
+             ).filter(array => array[0] == state)[0][1].get("state_variable")
            )
          ).join("\n")
         ]
       )
     ));
+    var US_State_county_variable_DOMS_messy = new Map(Array.from(
+      US_States.map(state =>
+        [state,
+         Array.from(
+           US_State_variables_by_source.map(source_map =>
+             Array.from(
+               source_map.entries()
+             ).filter(array => array[0] == state)[0][1].get("county_variables")
+           )
+         )
+        ]
+      )
+    ));
+    var US_State_county_variable_DOM_entries = Array.from(US_State_county_variable_DOMS_messy.entries()).map(
+      us_state_county_array =>
+        new Map([[us_state_county_array[0],
+                  us_state_county_array[1].map(counties_information =>
+                    counties_information.reduce(function (acc, map){
+                      var county = Array.from(map.keys())[0];
+                      var string_to_concat = acc.has(county) ? acc.get(county) : "";
+                      acc.set(county, string_to_concat + map.get(county));
+                      return acc;
+                    })
+                  )
+                 ]])).reduce((acc, m) => new Map([...acc, ...m]));
+    var US_State_county_variable_DOMS_as_arrays = new Map(
+      Array.from(US_State_county_variable_DOM_entries.entries()).map(arr =>
+        [arr[0], arr[1].reduce(function(acc, map){
+          acc.forEach(function(value, key, _){
+            var value_is_array = Array.isArray(value);
+            if(value_is_array){
+              acc.set(key, acc.get(key).concat([map.get(key)]));
+            }else{
+              acc.set(key, [acc.get(key), map.get(key)])
+            }
+          });
+          return acc;
+        })]
+      )
+    );
+    var US_State_county_variable_DOMS = new Map(
+      Array.from(US_State_county_variable_DOMS_as_arrays)
+        .map(arr => [arr[0],
+                     new Map(Array.from(arr[1]).map(inner_arr => [inner_arr[0], inner_arr[1].join("\n")]))])
+    );
     var US_States_DOMs = Array.from(US_State_variables.entries()).map(function(array){
       var state = array[0];
       var variables_DOM = array[1];
       var caseinfostrings = get_state_default_values(state);
+      var counties_variables_DOMS = Array.from(US_State_county_variable_DOMS.get(state).entries());
+      var counties_DOM = counties_variables_DOMS.map(function(county_to_variables_DOM_entry){
+        var county = county_to_variables_DOM_entry[0];
+        var variables_DOM = county_to_variables_DOM_entry[1];
+        return `
+        <div class="geolocation-container" parent="STATE" STATE="${state}" level="COUNTY" county="${county}">
+          <div class="location-information-container">
+              <span class="placename">${county} ${municipalityPostfix(state)}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
+          </div>
+          <div class="variable-display">
+            ${variables_DOM}
+          </div>
+        </div>
+        `}).join("\n");
       return `
         <div class="geolocation-container" parent="COUNTRY" COUNTRY="US" STATE="${state}" level="STATE" children="COUNTIES">
           <div class="location-information-container">
@@ -291,6 +431,9 @@ $(document).ready(function(){
           </div>
           <div class="variable-display">
             ${variables_DOM}
+          </div>
+          <div class="county-display">
+            ${counties_DOM}
           </div>
         </div>
       `;
