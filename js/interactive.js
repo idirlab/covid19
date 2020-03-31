@@ -54,9 +54,12 @@ $(document).ready(function(){
     d3.csv('assets/old-name.csv'),
     d3.tsv('assets/COVID_data_collection/data/cdc_time_series.csv'),
     d3.tsv('assets/COVID_data_collection/data/cnn_time_series.csv'),
-    d3.tsv('assets/COVID_data_collection/data/COVIDTrackingProject_time_series.csv'),
+    // TODO: modify the data sources after first release
+    // d3.tsv('assets/COVID_data_collection/data/COVIDTrackingProject_time_series.csv'),
+    d3.tsv('assets/COVID_data_collection/data/COVIDTrackingProject_state_history_3_30.csv'),
     d3.tsv('assets/COVID_data_collection/data/johns_hopkins_states_time_series.csv'),
-    d3.tsv('assets/COVID_data_collection/data/NYtimes_time_series.csv'),
+    // d3.tsv('assets/COVID_data_collection/data/NYtimes_time_series_with_history.csv'),
+    d3.tsv('assets/COVID_data_collection/data/ny_state_series_3_30.csv'),
     d3.json("assets/counties.json"),
     d3.json("assets/num2state.json"),
     d3.tsv('assets/COVID_data_collection/data/johns_hopkins_counties_time_series.csv')
@@ -103,8 +106,8 @@ $(document).ready(function(){
         dataset.columns.filter(col => col !== "date" && col.length!=0)
                        .forEach(function(col){
                          var element = d[col];
-                        //  console.log(element)
-                        //  console.log(element.match(value_extract_regex))
+                         console.log(element)
+                         console.log(element.match(value_extract_regex))
                          
                          var cases_string = element.match(value_extract_regex)[1];
                          var deaths_string = element.match(value_extract_regex)[2];
@@ -549,6 +552,7 @@ $(document).ready(function(){
 
 
     var date_div = $("div.info-pane#aggregate-date-window > div.info-header > div.date-element#pos-3");
+    console.log('da', date_div)
     date_div.on('DOMSubtreeModified', function(){
       var name = $("div#location-information-container > p > span#placename").text().trim().toLowerCase();
       showPlace(name);
