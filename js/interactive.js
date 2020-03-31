@@ -388,6 +388,33 @@ $(document).ready(function(){
           });
         }
 
+        // @TODO remove this, hardcoded for demo
+        // if (name.toUpperCase() == "COLLIN COUNTY") {
+        //   DOM = ""
+        //   for (var i=0; i<1; i++) {
+        //     var source = "JHU", cases_string = "87", deaths_string = "1", recoveries_string = "-";
+        //     DOM += `
+        //       <div class="variable">
+        //         <div class="source">${source}</div>
+        //         <div class="figures">
+        //           <div class="figure">
+        //             <i class="fas fa-hospital-symbol"></i>
+        //             <span>${cases_string}</span>
+        //           </div>
+        //           <div class="figure">
+        //             <i class="fas fa-skull"></i>
+        //             <span>${deaths_string}</span>
+        //           </div>
+        //           <div class="figure">
+        //             <i class="fas fa-user-check"></i>
+        //             <span>${recoveries_string}</span>
+        //           </div>
+        //         </div>
+        //       </div>
+        //     `;
+        //   }
+        // }
+
         var types = ["COUNTY", "BOROUGH", "PARISH"];
         var countyType = null;
 
