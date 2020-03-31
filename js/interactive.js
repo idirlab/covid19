@@ -552,7 +552,7 @@ $(document).ready(function(){
 
 
     var date_div = $("div.info-pane#aggregate-date-window > div.info-header > div.date-element#pos-3");
-    console.log('da', date_div)
+    
     date_div.on('DOMSubtreeModified', function(){
       var name = $("div#location-information-container > p > span#placename").text().trim().toLowerCase();
       showPlace(name);
@@ -570,7 +570,7 @@ $(document).ready(function(){
       var new_dates = (arrow_position === "pos-1") || (arrow_position === "pos-2") ?
                       dates.map(d => d.subtract(1, "days")) :
                       dates.map(d => d.add(1, "days"));
-      // Now update the dates
+      // Now update the dates TODO: bugs time offset by 1 day to real data.
       new_dates.forEach(function(new_date, idx){
         var pos_id = `pos-${idx + 2}`;
         var date_str = new_date.format("MM/DD/YYYY");
