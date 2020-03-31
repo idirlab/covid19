@@ -910,7 +910,7 @@ div.state-display {
   overflow: hidden;
 }
 div.state-display.expanded {
-  height:3760px;
+  height:auto;
   -moz-transition: height .5s;
   -ms-transition: height .5s;
   -o-transition: height .5s;
@@ -934,6 +934,50 @@ div.state-display.expanded > div.geolocation-container > div.location-informatio
   transform:rotate(180deg) translate(0, -30%);
   transition: transform .3s;
 }
+
+
+
+
+div.county-display > div.geolocation-container > div.location-information-container > svg,
+div.county-display > div.geolocation-container > div.location-information-container > div.figures,
+div.county-display {
+  -moz-transition: height .5s;
+  -ms-transition: height .5s;
+  -o-transition: height .5s;
+  -webkit-transition: height .5s;
+  transition: height .5s;
+  height:0;
+  overflow: hidden;
+}
+div.county-display.expanded {
+  height:auto;
+  -moz-transition: height .5s;
+  -ms-transition: height .5s;
+  -o-transition: height .5s;
+  -webkit-transition: height .5s;
+  transition: height .5s;
+}
+div.county-display.expanded > div.geolocation-container > div.location-information-container > svg,
+div.county-display.expanded > div.geolocation-container > div.location-information-container > div.figures {
+  height:37px;
+  -moz-transition: height .5s;
+  -ms-transition: height .5s;
+  -o-transition: height .5s;
+  -webkit-transition: height .5s;
+  transition: height .5s;
+}
+div.county-display.expanded > div.geolocation-container > div.location-information-container > svg {
+  transform:translate(0, 30%);
+  transition: transform .3s;
+}
+div.county-display.expanded > div.geolocation-container > div.location-information-container > svg.active {
+  transform:rotate(180deg) translate(0, -30%);
+  transition: transform .3s;
+}
+
+
+
+
 div.country-display {
   -moz-transition: height .5s;
   -ms-transition: height .5s;
@@ -944,7 +988,7 @@ div.country-display {
   overflow: hidden;
 }
 div.country-display.expanded {
-  height:3760px;
+  height:auto;
   -moz-transition: height .5s;
   -ms-transition: height .5s;
   -o-transition: height .5s;
@@ -973,7 +1017,7 @@ div.country-display.expanded > div.geolocation-container > div.location-informat
   transform: translate(0, 30%);
 }
 div.country-display.expanded {
-  height:3760px;
+  height:auto;
   -moz-transition: height .5s;
   -ms-transition: height .5s;
   -o-transition: height .5s;

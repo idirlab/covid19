@@ -291,6 +291,7 @@ $(document).ready(function(){
                     <span class="recovered-count" style="color: rgb(40, 50, 55)">${hyphenIfNaN(sanitizedarr[1].get("recoveries"))}</span>
                   </div>
                 </div>
+              </div>
             `]])
           );
 
@@ -402,7 +403,7 @@ $(document).ready(function(){
         var county = county_to_variables_DOM_entry[0];
         var variables_DOM = county_to_variables_DOM_entry[1];
         return `
-        <div class="geolocation-container" parent="STATE" STATE="${state}" level="COUNTY" county="${county}">
+        <div class="geolocation-container" parent="STATE" STATE="${state}" level="COUNTY" county="${county} ${municipalityPostfix(state)}">
           <div class="location-information-container">
               <span class="placename">${county} ${municipalityPostfix(state)}</span>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
@@ -493,6 +494,15 @@ $(document).ready(function(){
                   return;
                 var states_display = $(this).next().next();
                 states_display.toggleClass("expanded");
+              });
+            $("div.geolocation-container[country='US']")
+              .filter("div.geolocation-container[level='STATE']")
+              .children(".location-information-container").on("click", function(evt){
+                var user_clicked_arrow = evt.target.matches("svg");
+                if(user_clicked_arrow)
+                  return;
+                var county_display = $(this).next().next();
+                county_display.toggleClass("expanded");
               });
           });
         </script>
@@ -735,6 +745,9 @@ $(document).ready(function(){
       var is_global = name.toUpperCase() === "GLOBAL TREND";
       var is_state = US_States.map(s => s.toLowerCase()).includes(name);
       var is_US = name.toUpperCase() === "US";
+      var is_county = Boolean(name.toUpperCase().includes("COUNTY") |
+                              name.toUpperCase().includes("BOROUGH") |
+                              name.toUpperCase().includes("PARISH"));
 
       if (is_global) {
         console.log("global");
@@ -750,12 +763,17 @@ $(document).ready(function(){
         $("div.geolocation-container[children='COUNTRY']")
           .children(".country-display").toggleClass("expanded", true);
         $("div.state-display.expanded").toggleClass("expanded", false);
+        $("div.county-display.expanded").toggleClass("expanded", false);
       } else if (is_US){
         // Hide all other infoboxes and show the states and US units
         $("div.geolocation-container[level!='COUNTRY']")
           .filter("div.geolocation-container[country!='US']")
           .children(".location-information-container")
           .children("svg[class='active']").click();
+        $("div.geolocation-container[level='STATE']")
+          .filter("div.geolocation-container[country='US']")
+          .filter(`div.geolocation-container[state!='${name.toTitleCase()}']`)
+          .toggleClass("hidden", false);
         $("div.geolocation-container[level='COUNTRY']")
           .filter("div.geolocation-container[country='US']")
           .children(".location-information-container")
@@ -766,6 +784,7 @@ $(document).ready(function(){
         $("div.geolocation-container[level='COUNTRY']")
           .filter("div.geolocation-container[country='US']")
           .children(".state-display").toggleClass("expanded", true);
+        $("div.county-display.expanded").toggleClass("expanded", false);
       } else if (is_state) {
         $("div.geolocation-container[level!='STATE']")
           .filter("div.geolocation-container[country!='US']")
@@ -776,6 +795,22 @@ $(document).ready(function(){
           .filter(`div.geolocation-container[state!='${name.toTitleCase()}']`)
           .children(".location-information-container")
           .children("svg[class='active']").click();
+        $("div.geolocation-container[level='STATE']")
+          .filter("div.geolocation-container[country='US']")
+          .filter(`div.geolocation-container[state!='${name.toTitleCase()}']`)
+          .toggleClass("hidden", true);
+        $("div.geolocation-container[level='STATE']")
+          .filter("div.geolocation-container[country='US']")
+          .filter(`div.geolocation-container[state='${name.toTitleCase()}']`)
+          .toggleClass("hidden", false);
+        $("div.geolocation-container[level='STATE']")
+          .filter("div.geolocation-container[country='US']")
+          .filter(`div.geolocation-container[state!='${name.toTitleCase()}']`)
+          .children(".county-display").toggleClass("expanded", false);
+        $("div.geolocation-container[level='STATE']")
+          .filter("div.geolocation-container[country='US']")
+          .filter(`div.geolocation-container[state='${name.toTitleCase()}']`)
+          .children(".county-display").toggleClass("expanded", true);
         var us_location_container = $("div.geolocation-container[level='COUNTRY']")
           .filter("div.geolocation-container[country='US']");
         var state_display = us_location_container.children(".state-display");
@@ -802,7 +837,23 @@ $(document).ready(function(){
         container.animate({
           scrollTop: state_last_variable.offset().top - container.offset().top + container.scrollTop()
         });
-        console.log("logic to show counties goes here...");
+      } else if (is_county) {
+        var county_div = $("div.geolocation-container[level='COUNTY']")
+          .filter(`div.geolocation-container[county='${name}']`);
+        var county_header = county_div
+          .children(".location-information-container")
+          .children(".placename");
+        var county_svg = county_div
+          .children(".location-information-container")
+          .children("svg");
+        if(!county_svg.attr("class")){
+          county_svg.click()
+        }
+        var container = $("div.side-panel#left-side-bar > div#aggregate-date-window");
+        container.scroll();
+        container.animate({
+          scrollTop: county_header.offset().top - container.offset().top + container.scrollTop()
+        });
       }
 
       if (name == "anhui" || name == "beijing" || name == "chongqing" || name == "fujian" || name == "gansu" || name == "guangdong" ||
@@ -956,7 +1007,7 @@ $(document).ready(function(){
     // TODO:
     function zoomToCountyFeature(e) {
       console.log("zooming to county");
-      var state = usstates[parseInt(e.target.feature.properties.STATE)].toTitleCase(); // to be used for filter
+      var state = usstates[e.target.feature.properties.STATE].toTitleCase(); // to be used for filter
       var county = `${e.target.feature.properties.NAME.toTitleCase()} ${municipalityPostfix(state)}`;
       showPlace(county);
     }
