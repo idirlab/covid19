@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
   <link rel="stylesheet" href="css/classic.css" id="theme_base">
   <link rel="stylesheet" href="css/classic.date.css" id="theme_base">
+  <link rel="stylesheet" href="css/hospital.css">
 
   <script src="js/to-title-case.js"></script>
   <script src="js/voca.min.js"></script>
@@ -43,7 +44,7 @@
 </head>
 
 <body>
-  <main>
+  <main style="height: 100%;">
     <div id="banner">
       <div id="title" style="font-size:30px;text-align: center;background-color: rgb(79, 105, 120);color: rgb(232, 235, 238)">
         COVID19 Pandemic - Public Information
@@ -55,6 +56,15 @@
 
     <div id="left-side-bar" class="side-panel">
     
+    <div id="floating-side-panel-info-container">
+      <div id="hospital-info" class="info-pane bot">
+        <div class="info-header">
+          <i class="fas fa-hospital" style="cursor:pointer;"></i>
+          <span>LOCAL HOSPITAL INFO</span>
+        </div>
+        Please navigate to county level to view hospitals
+      </div>
+    </div>
     <div id="aggregate-date-window" class="info-pane top">
       <div class="info-header">
         <button id="datepicker" class="date-pick" onclick="pickDate()">
@@ -76,6 +86,7 @@
           <i class="fas fa-arrow-alt-circle-right"></i> 
         </div>
       </div>
+
       <div class="variable-toggle">
         <div class="variable-button" id="cases">
           <i class="fas fa-hospital-symbol"></i>
@@ -103,6 +114,7 @@
   <script src="js/main.js"></script>
   <script src="js/css-element-queries-1.2.1/src/ElementQueries.js"></script>
   <script src="js/css-element-queries-1.2.1/src/ResizeSensor.js"></script>
+  <script src="js/cors.js"></script>
   <script src="js/interactive.js"></script>
 
   <!-- Google Analytics -->
