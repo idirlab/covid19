@@ -46,34 +46,41 @@
 <body>
   <main style="height: 100%;">
     <div id="banner">
-      <div id="title" style="font-size:30px;text-align: center;background-color: rgb(79, 105, 120);color: rgb(232, 235, 238)">COVID19 Pandemic - Public Information</div>
+      <div id="title" style="font-size:30px;text-align: center;background-color: rgb(79, 105, 120);color: rgb(232, 235, 238)">
+        COVID19 Pandemic - Public Information
+        <i style="cursor:pointer;float:right;margin-right:12px;transform:translate(0px, 6px);" class="fas fa-cog" onclick="javascript:"></i>
+      </div>
     </div>
     <button id="btn-close_bar" class="btn-hidden-sidebar" onclick="closeBar()"></button>
     <div id="total-chart" class="idir-total-chart"></div>
 
     <div id="left-side-bar" class="side-panel">
-    <button id="datepicker" class="date-pick" onclick="pickDate()">
-      <i class="far fa-calendar-alt" style="font-size: 24px;"></i>
-    </button>
-
     
-    <div id="location-information-container">
-      <p style="background-color: rgb(40, 50, 55); text-align: center;"><span id="placename"
-          style="color: rgb(197, 207, 212)">GLOBAL TREND</span> </p>
+    <div id="floating-side-panel-info-container">
+      <div id="hospital-info" class="info-pane bot">
+        <div class="info-header">
+          <i class="fas fa-hospital" style="cursor:pointer;"></i>
+          <span>LOCAL HOSPITAL INFO</span>
+        </div>
+        Please navigate to county level to view hospitals
+      </div>
     </div>
-    <div id="aggregate-date-window" style="height: calc(100% - 58px)" class="info-pane top">
+    <div id="aggregate-date-window" class="info-pane top">
       <div class="info-header">
+        <button id="datepicker" class="date-pick" onclick="pickDate()">
+          <i class="far fa-calendar-alt" style="font-size: 24px;"></i>
+        </button>
         <div id="pos-1" class="info-header-element arrow icon-container">
           <i class="fas fa-arrow-alt-circle-left"></i> 
         </div>
         <div id="pos-2" class="info-header-element date-element arrow">
-          03&#x2F;18&#x2F;2020
+          03&#x2F;27&#x2F;2020
         </div>
         <div id="pos-3" class="info-header-element date-element">
-          03&#x2F;19&#x2F;2020
+          03&#x2F;28&#x2F;2020
         </div>
         <div id="pos-4" class="info-header-element date-element arrow">
-          03&#x2F;20&#x2F;2020
+          03&#x2F;29&#x2F;2020
         </div>
         <div id="pos-5" class="info-header-element arrow icon-container">
           <i class="fas fa-arrow-alt-circle-right"></i> 
@@ -94,170 +101,8 @@
           <span>Recoveries</span>
         </div>
       </div>
-      <div class="variable-display">
-        <div class="variable active">
-          <div class="source">WHO</div>
-          <div class="figures">
-            <div class="figure">
-              <i class="fas fa-hospital-symbol"></i>
-              <span class="confirmed-count" style="color: rgb(197, 207, 212)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-skull"></i>
-              <span class="death-count" style="color: rgb(197, 207, 212)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-user-check"></i>
-              <span class="recovered-count" style="color: rgb(197, 207, 212)"></span>
-            </div>
-
-          </div>
-        </div>
-        <div class="variable">
-          <div class="source">CDC</div>
-          <div class="figures">
-            <div class="figure">
-              <i class="fas fa-hospital-symbol"></i>
-              <span class="confirmed-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-skull"></i>
-              <span class="death-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-user-check"></i>
-              <span class="recovered-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-          </div>
-        </div>
-        <div class="variable">
-          <div class="source">JHU</div>
-          <div class="figures">
-            <div class="figure">
-              <i class="fas fa-hospital-symbol"></i>
-              <span class="confirmed-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-skull"></i>
-              <span class="death-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-user-check"></i>
-              <span class="recovered-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-          </div>
-        </div>
-        <div class="variable">
-          <div class="source">ABC</div>
-          <div class="figures">
-            <div class="figure">
-              <i class="fas fa-hospital-symbol"></i>
-              <span class="confirmed-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-skull"></i>
-              <span class="death-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-user-check"></i>
-              <span class="recovered-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-          </div>
-        </div>
-  
-
-      <!-- <div id="timeline-chart"></div> -->
-      <!-- <div id="rank-chart"></div> -->
-
-    
-
-    <!-- <div id="table">
-      <div id="table-container">
-        <table id="table-container-div" class="table table-bordered">
-          <thead>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-      </div>
-    </div> -->
-
-        <div class="variable">
-          <div class="source">CBS</div>
-          <div class="figures">
-            <div class="figure">
-              <i class="fas fa-hospital-symbol"></i>
-              <span class="confirmed-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-skull"></i>
-              <span class="death-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-user-check"></i>
-              <span class="recovered-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-          </div>
-        </div>
-        <div class="variable">
-          <div class="source">CNN</div>
-          <div class="figures">
-            <div class="figure">
-              <i class="fas fa-hospital-symbol"></i>
-              <span class="confirmed-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-skull"></i>
-              <span class="death-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-user-check"></i>
-              <span class="recovered-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-          </div>
-        </div>
-        <div class="variable">
-          <div class="source">FOX</div>
-          <div class="figures">
-            <div class="figure">
-              <i class="fas fa-hospital-symbol"></i>
-              <span class="confirmed-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-skull"></i>
-              <span class="death-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-user-check"></i>
-              <span class="recovered-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-          </div>
-        </div>
-        <div class="variable last">
-          <div class="source">NBC</div>
-          <div class="figures">
-            <div class="figure">
-              <i class="fas fa-hospital-symbol"></i>
-              <span class="confirmed-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-skull"></i>
-              <span class="death-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-            <div class="figure">
-              <i class="fas fa-user-check"></i>
-              <span class="recovered-count" style="color: rgb(40, 50, 55)"></span>
-            </div>
-          </div>
-        </div>
-        <div id="hospital-info" class="info-pane bot">
-          <div class="info-header">
-            <i class="fas fa-hospital" style="cursor:pointer;"></i>
-            <span>LOCAL HOSPITAL INFO</span>
-          </div>
-          Please navigate to county level to view hospitals
-        </div>
-      </div>
+      <span class="placename hidden">GLOBAL TREND</span>
+      <span class="default-source hidden">CDC</span>
     </div>
     </div>
     <div class="closed" id="map"></div>
