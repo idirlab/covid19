@@ -1,3 +1,5 @@
 assets/COVID_data_collection
 covid19data
 gittoken.env
+package-lock.json
+node_modules
