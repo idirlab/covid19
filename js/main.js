@@ -78,7 +78,6 @@ function closeBar() {
     button.style.left = "20px";
     button.style.transform = 'rotate('+180+'deg)'
 
-
   } else {
     flag = true;
     // document.getElementById("aggregate-date-window").style.width = "400px";
@@ -89,6 +88,12 @@ function closeBar() {
     button.style.left = "420px";
     button.style.transform = 'rotate('+360+'deg)'
   }
+  // flag -> true for open
+  // flag -> false for closed
+  $("div#floating-side-panel-info-container").css("display", flag ? "block" : "none")
+  $("div#aggregate-date-window > div.info-header").css("display", flag ? "block" : "none")
+  $("div#aggregate-date-window > div.variable-toggle").css("display", flag ? "block" : "none")
+
   // toggle the map to get wider to cover the closed area
   $("body > main > div#map").toggleClass("closed");
 }
@@ -124,7 +129,13 @@ function open_chatbot() {
     flag_chatbot = true
     document.getElementById("juji_html").style.bottom = "-435px"
   }
-  
+
 }
 
-
+// -- Uncomment this section to set the current date on load
+//[1, 2, 3].map(i => i - 2)
+//         .map(i => [i,
+//                    i < 0 ? moment().subtract(-1 * i, "days") : moment().add(i, "days")])
+//         .forEach(tup => $(`div#pos-${ tup[0] + 3 }`).text(tup[1].format("MM/DD/YYYY")))
+// -- Uncomment this section to set the current date on load
+$("div#pos-2")

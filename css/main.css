@@ -684,7 +684,7 @@ div#banner > div#title {
   border: none;
   position: fixed;
   left: 420px;
-  top: 55px;
+  top: 48px;
   z-index: 1000;
   transition: 0.3s;
   z-index: 1002;
@@ -1117,7 +1117,7 @@ body > main > div#map {
   height: calc(100% - 44px);
   position: fixed;
   overflow: hidden;
-  z-index: 1000;
+  z-index: 100;
   transition: 0.3s;
 }
 body > main > div.closed#map {

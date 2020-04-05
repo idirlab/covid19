@@ -177,3 +177,24 @@ full-count {
     padding-bottom: .05em;
     background: green;
 }
+div#floating-side-panel-info-container {
+  background-color:rgba(96, 125, 139, 1);
+  z-index: 10000;
+  position: absolute;
+  display: flex;
+  overflow-y: scroll;
+  width: 400px;
+}
+div.right {
+  left:400px;
+}
+div.smaller {
+  height: calc(100% - 44px);
+  top: 44px;
+}
+div.scrollable {
+  overflow-y:auto;
+}
+div.info-header.smaller.unset-height {
+  height:unset;
+}

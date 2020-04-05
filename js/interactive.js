@@ -753,6 +753,24 @@ $(document).ready(function(){
                               name.toUpperCase().includes("BOROUGH") |
                               name.toUpperCase().includes("PARISH"));
 
+      function hospital_container_msg_DOM(msg, hidden) {
+        return `
+            <div id="hospital-info" class="info-pane smaller right ${hidden?'hidden':''}" style="margin-top:48px;">
+              <div class="info-header smaller right unset-height ${hidden?'hidden':''}">
+                <i class="fas fa-hospital" style="cursor:pointer;"></i>
+                <span>LOCAL HOSPITAL INFO</span>
+              </div>
+              ${msg}
+            </div>
+            `;
+      }
+      $("div#floating-side-panel-info-container").html(
+        hospital_container_msg_DOM(
+          !is_county ? "Please navigate to county level to view hospitals" : "Loading...",
+          !is_county ? true : false
+        )
+      );
+
       if (is_global) {
         console.log("global");
         // Hide all other infoboxes and show the countires and global units
@@ -875,8 +893,8 @@ $(document).ready(function(){
 
         if (countyType == null) {
           var curDOM = `
-          <div id="hospital-info" class="info-pane bot">
-            <div class="info-header">
+          <div id="hospital-info" class="info-pane smaller right hidden">
+            <div class="info-header smaller right unset-height hidden">
               <i class="fas fa-hospital" style="cursor:pointer;"></i>
               <span>LOCAL HOSPITAL INFO</span>
             </div>
@@ -962,12 +980,12 @@ $(document).ready(function(){
             }
 
             var retDOM = `
-            <div id="hospital-info" class="info-pane bot">
-              <div class="info-header">
+            <div id="hospital-info" class="info-pane smaller right scrollable" style="margin-top:48px;">
+              <div class="info-header smaller right unset-height">
                 <i class="fas fa-hospital" style="cursor:pointer;"></i>
                 <span>LOCAL HOSPITAL INFO</span>
               </div>
-              <div class="hospital-display" style="height: calc(100% - 48px); overflow-y: scroll;">
+              <div class="hospital-display">
                 ${hospitalDOMs}
                 <script>
                   $("div.hospital > div.header > svg").click(function(evt){
@@ -1400,5 +1418,4 @@ function adjustHospitalPaneHeight() {
     }
   })
   console.log(sum);
-  $("#hospital-info").height($("#left-side-bar").height() - 58 - 48 - 26 - 12 - 12 - sum);
 }
