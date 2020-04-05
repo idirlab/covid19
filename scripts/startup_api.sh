@@ -7,5 +7,4 @@
 #  1) cds to the right dir
 #  2) runs the api
 cd api
-python3 app.py
-
+python3 app.py 2>&1 > api.log & disown
