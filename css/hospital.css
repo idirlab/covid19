@@ -189,8 +189,8 @@ div.right {
   left:400px;
 }
 div.smaller {
-  height: calc(100% - 256px);
-  top: 256px;
+  height: calc(100% - 44px);
+  top: 44px;
 }
 div.scrollable {
   overflow-y:auto;
