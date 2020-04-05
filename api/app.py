@@ -172,7 +172,7 @@ def get_all_data(node, date, entity_type):
     else:
         if date in file_list['JHU']['county'][1]:
             col_idx = None
-            
+
             try:
                 col_idx = file_list['JHU']['county'][0].columns.get_loc(node)
             except Exception as _:
@@ -205,7 +205,7 @@ def init_server():
             dates[el] = i
 
         print(dates)
-        
+
         return (df, dates)
 
     for key, value in source_list.items():
@@ -218,4 +218,4 @@ def init_server():
 
 if __name__ == "__main__":
     init_server()
-    app.run(port="2222", threaded=True, debug=False)
+    app.run(host="0.0.0.0", port="2222", threaded=True, debug=False)
