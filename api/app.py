@@ -218,4 +218,4 @@ def init_server():
 
 if __name__ == "__main__":
     init_server()
-    app.run(port="2222", threaded=True, debug=True)
+    app.run(port="2222", threaded=True, debug=False)
