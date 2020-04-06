@@ -301,6 +301,13 @@ var source_list = new Map([
           // Create side-panel here
           console.log(info.curnode)
           console.log(info.curnode.default_stats)
+          var no_data = Object.entries(info.curnode.detailed_stats).length == 0;
+          if (no_data) {
+            $("div#aggregate-date-window > div.response-area").html(`
+              No data for <br/> <tt>DATE = ${selected_date().format("YYYY-MM-DD")}</tt> and <tt>LOCATION = ${name}</tt>
+            `);
+            return;
+          }
           var cases = info.curnode.default_stats[0];
           var deaths = info.curnode.default_stats[1];
           var recovered = info.curnode.default_stats[2];
@@ -329,7 +336,7 @@ var source_list = new Map([
         function standard_name(string) { return string.toLowerCase().toTitleCase(); }
         var placename = standard_name(name)
         var location_info_DOM = `
-          <div class="location-information-container" style="margin-top:98px;">
+          <div class="location-information-container">
               <span class="placename">${placename}</span>
               <div class="figures">
                 <div class="figure">
