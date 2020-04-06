@@ -52,7 +52,7 @@ def stat_query():
         },
         'children': [{
             'name': x,
-            'default_stats': get_data_from_source(x, date, dsrc, ('state' if entity_type == 'country' else ('county' if entity_type == 'state' else '-1')), par=node)
+            'default_stats': get_data_from_source(x, date, dsrc, ('state' if entity_type == 'country' else ('county' if entity_type == 'state' else ('country' if entity_type == 'global' else '-1'))), par=node)
         } for x in get_children(node, entity_type)]
     }
 
@@ -77,7 +77,9 @@ def parse_into_arrays(ret):
 
 
 def get_children(node, entity_type):
-    if entity_type == 'country':
+    if entity_type == 'global':
+        return [x.lower().strip(' \r\t\n') for x in open(os.path.join(source_list_prefix, 'countries.txt'), 'r')]
+    elif entity_type == 'country':
         if node == "us":
             return [x.lower().strip(' \t\r\n') for x in open(os.path.join(source_list_prefix, 'states.txt'), 'r')]
         else:
@@ -104,6 +106,8 @@ def get_parent(node, entity_type):
             return -1
     elif entity_type == 'state':
         return 'us'
+    elif entity_type == 'country':
+        return 'global'
     else:
         return -1
 
@@ -112,7 +116,27 @@ def get_data_from_source(node, date, source, entity_type, par=None):
     if entity_type == 'county':
         node = '{}-{}'.format(node, (get_parent(node, entity_type) if par == None else par))
 
-    if source != "JHU":
+    if entity_type == 'global':
+        if source == 'JHU':
+            if date in file_list['JHU']['country'][1]:
+                res = [0, 0, 0]
+                has_na = [False, False, False]
+                temp = file_list['JHU']['country'][0].iloc[file_list['JHU']['country'][1][date]]
+
+                for i in range(1, len(temp)):
+                    print(temp[i])
+                    for idx, el in enumerate(temp[i].split('-')):
+                        if el.isdigit():
+                            res[idx] += int(el)
+                        else:
+                            has_na[idx] = True
+
+                return '-'.join(['NA' if x == 0 and has_na[i] else str(x) for i, x in enumerate(res)])
+            else:
+                return []
+        else:
+            return []
+    elif source != "JHU":
         if date in file_list[source][1]:
             try:
                 info = file_list[source][0].iloc[file_list[source][1][date], file_list[source][0].columns.get_loc(node)]
@@ -143,7 +167,9 @@ def select_entity_type(name):
                     return True
             return False
 
-    if any([x in name for x in ['county', 'parish', 'borough']]):
+    if name == 'global':
+        return 'global'
+    elif any([x in name for x in ['county', 'parish', 'borough']]):
         return 'county'
     elif is_state():
         return 'state'
@@ -154,7 +180,22 @@ def select_entity_type(name):
 def get_all_data(node, date, entity_type):
     ret = {}
 
-    if entity_type == 'country':
+    if entity_type == 'global':
+        if date in file_list['JHU']['country'][1]:
+            res = [0, 0, 0]
+            has_na = [False, False, False]
+            temp = file_list['JHU']['country'][0].iloc[file_list['JHU']['country'][1][date]]
+
+            for i in range(1, len(temp)):
+                print(temp[i])
+                for idx, el in enumerate(temp[i].split('-')):
+                    if el.isdigit():
+                        res[idx] += int(el)
+                    else:
+                        has_na[idx] = True
+
+            ret['JHU'] = '-'.join(['NA' if x == 0 and has_na[i] else str(x) for i, x in enumerate(res)])
+    elif entity_type == 'country':
         if date in file_list['JHU']['country'][1]:
             info = file_list['JHU']['country'][0].iloc[file_list['JHU']['country'][1][date], file_list['JHU']['country'][0].columns.get_loc(node)]
             ret['JHU'] = info
@@ -218,4 +259,5 @@ def init_server():
 
 if __name__ == "__main__":
     init_server()
-    app.run(host="0.0.0.0", port="2222", threaded=True, debug=False)
+    # app.run(host="0.0.0.0", port="2222", threaded=True, debug=False)
+    app.run(port="2222", threaded=True, debug=True)
