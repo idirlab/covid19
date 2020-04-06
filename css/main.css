@@ -742,7 +742,7 @@ div.location-information-container > span.placename {
   color: rgb(197, 207, 212);
   display:inline-block;
   margin-left:12px;
-  font-size:0.5em;
+  font-size:13px;
   cursor:auto;
   transform: translate(0px, 0px);
 }
@@ -891,25 +891,6 @@ div.variable-display {
   overflow: hidden;
 }
 div.variable-display.expanded {
-  height:276px;
-  -moz-transition: height .5s;
-  -ms-transition: height .5s;
-  -o-transition: height .5s;
-  -webkit-transition: height .5s;
-  transition: height .5s;
-}
-div.state-display > div.geolocation-container > div.location-information-container > svg,
-div.state-display > div.geolocation-container > div.location-information-container > div.figures,
-div.state-display {
-  -moz-transition: height .5s;
-  -ms-transition: height .5s;
-  -o-transition: height .5s;
-  -webkit-transition: height .5s;
-  transition: height .5s;
-  height:0;
-  overflow: hidden;
-}
-div.state-display.expanded {
   height:auto;
   -moz-transition: height .5s;
   -ms-transition: height .5s;
@@ -917,113 +898,7 @@ div.state-display.expanded {
   -webkit-transition: height .5s;
   transition: height .5s;
 }
-div.state-display.expanded > div.geolocation-container > div.location-information-container > svg,
-div.state-display.expanded > div.geolocation-container > div.location-information-container > div.figures {
-  height:37px;
-  -moz-transition: height .5s;
-  -ms-transition: height .5s;
-  -o-transition: height .5s;
-  -webkit-transition: height .5s;
-  transition: height .5s;
-}
-div.state-display.expanded > div.geolocation-container > div.location-information-container > svg {
-  transform:translate(0, 30%);
-  transition: transform .3s;
-}
-div.state-display.expanded > div.geolocation-container > div.location-information-container > svg.active {
-  transform:rotate(180deg) translate(0, -30%);
-  transition: transform .3s;
-}
 
-
-
-
-div.county-display > div.geolocation-container > div.location-information-container > svg,
-div.county-display > div.geolocation-container > div.location-information-container > div.figures,
-div.county-display {
-  -moz-transition: height .5s;
-  -ms-transition: height .5s;
-  -o-transition: height .5s;
-  -webkit-transition: height .5s;
-  transition: height .5s;
-  height:0;
-  overflow: hidden;
-}
-div.county-display.expanded {
-  height:auto;
-  -moz-transition: height .5s;
-  -ms-transition: height .5s;
-  -o-transition: height .5s;
-  -webkit-transition: height .5s;
-  transition: height .5s;
-}
-div.county-display.expanded > div.geolocation-container > div.location-information-container > svg,
-div.county-display.expanded > div.geolocation-container > div.location-information-container > div.figures {
-  height:37px;
-  -moz-transition: height .5s;
-  -ms-transition: height .5s;
-  -o-transition: height .5s;
-  -webkit-transition: height .5s;
-  transition: height .5s;
-}
-div.county-display.expanded > div.geolocation-container > div.location-information-container > svg {
-  transform:translate(0, 30%);
-  transition: transform .3s;
-}
-div.county-display.expanded > div.geolocation-container > div.location-information-container > svg.active {
-  transform:rotate(180deg) translate(0, -30%);
-  transition: transform .3s;
-}
-
-
-
-
-div.country-display {
-  -moz-transition: height .5s;
-  -ms-transition: height .5s;
-  -o-transition: height .5s;
-  -webkit-transition: height .5s;
-  transition: height .5s;
-  height:0;
-  overflow: hidden;
-}
-div.country-display.expanded {
-  height:auto;
-  -moz-transition: height .5s;
-  -ms-transition: height .5s;
-  -o-transition: height .5s;
-  -webkit-transition: height .5s;
-  transition: height .5s;
-}
-div.country-display > div.geolocation-container > div.location-information-container > svg,
-div.country-display > div.geolocation-container > div.location-information-container > div.figures,
-div.country-display {
-  -moz-transition: height .5s;
-  -ms-transition: height .5s;
-  -o-transition: height .5s;
-  -webkit-transition: height .5s;
-  transition: height .5s;
-  height:0;
-  overflow: hidden;
-}
-div.country-display.expanded > div.geolocation-container > div.location-information-container > svg,
-div.country-display.expanded > div.geolocation-container > div.location-information-container > div.figures {
-  height:37px;
-  -moz-transition: height .5s;
-  -ms-transition: height .5s;
-  -o-transition: height .5s;
-  -webkit-transition: height .5s;
-  transition: height .5s;
-  transform: translate(0, 30%);
-}
-div.country-display.expanded {
-  height:auto;
-  -moz-transition: height .5s;
-  -ms-transition: height .5s;
-  -o-transition: height .5s;
-  -webkit-transition: height .5s;
-  transition: height .5s;
-}
 div.variable-display > div.variable {
   height: 32px;
   line-height: 32px;
@@ -1130,4 +1005,10 @@ body > main > div.closed#map {
 }
 div.geolocation-container[children="COUNTRY"]{
   margin-top:calc(48px + calc(8px + 30px));
+}
+div.location-information-container > span.placename {
+  max-width: 84px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
