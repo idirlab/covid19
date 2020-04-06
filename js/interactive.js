@@ -282,7 +282,7 @@ var source_list = new Map([
         return `
             <div id="hospital-info" class="info-pane smaller right ${hidden?'hidden':''}" style="margin-top:48px;">
               <div class="info-header smaller right unset-height ${hidden?'hidden':''}">
-                <i class="fas fa-hospital" style="cursor:pointer;"></i>
+                <i class="fas fa-hospital"></i>
                 <span>LOCAL HOSPITAL INFO</span>
               </div>
               ${msg}
@@ -341,7 +341,7 @@ var source_list = new Map([
         }
         var placename = standard_name(name)
         var location_info_DOM = `
-          <div class="location-information-container">
+          <div class="location-information-container root">
               <span class="placename">${placename}</span>
               <div class="figures">
                 <div class="figure">
@@ -385,7 +385,12 @@ var source_list = new Map([
         $("div#aggregate-date-window > div.response-area").html(`
           ${output_DOM}
         `);
+        $("div.location-information-container.root > svg").click(function(){
+          $(this).parent().next().toggleClass("expanded");
+        });
         $("div.location-information-container > svg").click(function(){
+          if($(this).parent().attr("class").split(/\s+/).includes("root"))
+            return;
           $(this).toggleClass("active");
           var placename = $(this).parent().find("span.placename");
           showPlace(placename.text().trim());
@@ -413,7 +418,7 @@ var source_list = new Map([
           var curDOM = `
           <div id="hospital-info" class="info-pane smaller right hidden">
             <div class="info-header smaller right unset-height hidden">
-              <i class="fas fa-hospital" style="cursor:pointer;"></i>
+              <i class="fas fa-hospital"></i>
               <span>LOCAL HOSPITAL INFO</span>
             </div>
             Please navigate to county level to view hospitals
@@ -500,7 +505,7 @@ var source_list = new Map([
             var retDOM = `
             <div id="hospital-info" class="info-pane smaller right scrollable" style="margin-top:48px;">
               <div class="info-header smaller right unset-height">
-                <i class="fas fa-hospital" style="cursor:pointer;"></i>
+                <i class="fas fa-hospital"></i>
                 <span>LOCAL HOSPITAL INFO</span>
               </div>
               <div class="hospital-display">
