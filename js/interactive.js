@@ -333,7 +333,12 @@ var source_list = new Map([
             ${variable_DOMS.join("\n")}
           </div>
         `;
-        function standard_name(string) { return string.toLowerCase().toTitleCase(); }
+        function standard_name(string) {
+          var out = string.toLowerCase().toTitleCase();
+          if (out.toUpperCase() == "US")
+            out = "US";
+          return out;
+        }
         var placename = standard_name(name)
         var location_info_DOM = `
           <div class="location-information-container">
@@ -353,7 +358,7 @@ var source_list = new Map([
           </div>
         `;
         var placename = (s) =>
-          is_state ? `${s.toLowerCase().toTitleCase()} ${municipalityPostfix(county_state)}`: s.toLowerCase().toTitleCase();
+          standard_name(is_state ? `${s.toLowerCase().toTitleCase()} ${municipalityPostfix(county_state)}`: s);
         var first_order_children_DOM = info.children.map(child_obj => `
           <div class="location-information-container" style="margin-top:12px;">
           <span class="placename">${placename(child_obj.name)}</span>
