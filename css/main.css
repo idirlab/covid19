@@ -742,7 +742,7 @@ div.location-information-container > span.placename {
   color: rgb(197, 207, 212);
   display:inline-block;
   margin-left:12px;
-  font-size:0.5em;
+  font-size:13px;
   cursor:auto;
   transform: translate(0px, 0px);
 }
@@ -1005,4 +1005,10 @@ body > main > div.closed#map {
 }
 div.geolocation-container[children="COUNTRY"]{
   margin-top:calc(48px + calc(8px + 30px));
+}
+div.location-information-container > span.placename {
+  max-width: 84px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }

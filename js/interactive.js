@@ -18,6 +18,24 @@
 })(window);
 $(document).ready(function(){
 
+  function getDay(num, str) {
+    var today = new Date();
+    var nowTime = today.getTime()
+    var ms = 24*3600*1000*num
+    today.setTime(parseInt(nowTime + ms))
+    var oYear = today.getFullYear()
+    var oMoth = (today.getMonth() + 1).toString()
+    if (oMoth.length <= 1) oMoth = '0' + oMoth
+    var oDay = today.getDate().toString()
+    if (oDay.length <= 1) oDay = '0' + oDay
+    return oMoth + str + oDay+ str+ oYear
+  }
+  var today = getDay(0, '/')
+  var yesterday = getDay(-1, '/')
+  var tomorrow = getDay(1, '/')
+  document.getElementById("pos-2").innerHTML = yesterday
+  document.getElementById("pos-3").innerHTML = today
+  document.getElementById("pos-4").innerHTML = tomorrow
   var mymap = L.map('map', {
     zoomControl: false,
     zoom: 0,
@@ -55,7 +73,22 @@ $(document).ready(function(){
     d3.json("assets/counties.json"),
     d3.json("assets/num2state.json")
   ]).then(function(datasets) {
-
+    function municipalityPostfix (stateString) {
+      var stateUpper = stateString.toUpperCase();
+      const boroughs = [
+        "CONNECTICUT",
+        "NEW JERSEY",
+        "PENNSYLVANIA"
+      ];
+      const parishes = ["LOUISIANA"];
+      if (boroughs.filter(s => s === stateUpper).length > 0){
+        return "Borough";
+      } else if (parishes.filter(s => s === stateUpper).length > 0) {
+        return "Parish"
+      } else {
+        return "County";
+      }
+    }
     var hyph = "&nbsp;-&nbsp;";
     var US_States = Array.from(
       [{"State":"Alabama"},{"State":"Alaska"},{"State":"Arizona"},{"State":"Arkansas"},{"State":"California"},{"State":"Colorado"},{"State":"Connecticut"},{"State":"Delaware"},{"State":"Florida"},{"State":"Georgia"},{"State":"Hawaii"},{"State":"Idaho"},{"State":"Illinois"},{"State":"Indiana"},{"State":"Iowa"},{"State":"Kansas"},{"State":"Kentucky"},{"State":"Louisiana"},{"State":"Maine"},{"State":"Maryland"},{"State":"Massachusetts"},{"State":"Michigan"},{"State":"Minnesota"},{"State":"Mississippi"},{"State":"Missouri"},{"State":"Montana"},{"State":"Nebraska"},{"State":"Nevada"},{"State":"New Hampshire"},{"State":"New Jersey"},{"State":"New Mexico"},{"State":"New York"},{"State":"North Carolina"},{"State":"North Dakota"},{"State":"Ohio"},{"State":"Oklahoma"},{"State":"Oregon"},{"State":"Pennsylvania"},{"State":"Rhode Island"},{"State":"South Carolina"},{"State":"South Dakota"},{"State":"Tennessee"},{"State":"Texas"},{"State":"Utah"},{"State":"Vermont"},{"State":"Virginia"},{"State":"Washington"},{"State":"West Virginia"},{"State":"Wisconsin"},{"State":"Wyoming"}]
@@ -91,8 +124,7 @@ var source_list = new Map([
 
     // create US dom tree
     function selected_source() { return $("span.default-source").text().trim();}
-    var selected_date = moment($("div.info-header > div.info-header-element#pos-3").text().trim(),
-                               "MM/DD/YYYY");
+    function selected_date() { return moment($("div.info-header > div.info-header-element#pos-3").text().trim(), "MM/DD/YYYY"); }
 
     $("#date").text("Last update: " + datasets[3][0].timestamp.split(".")[0] + " PST");
 
@@ -234,18 +266,17 @@ var source_list = new Map([
     }
 
     function showPlace(name, parent=null) {
-      var is_global = name.toUpperCase() === "GLOBAL TREND";
-      var is_state = US_States.map(s => s.toLowerCase()).includes(name);
+      name = name.toLowerCase().toTitleCase();
+      var is_global = name.toUpperCase() === "GLOBAL";
+      var is_state = US_States.map(s => s.toLowerCase()).includes(name.toLowerCase());
       if(is_state)
-        $("div.selected-state.hidden").text(name.toLowerCase().toTitleCase());
+        $("span.selected-state.hidden").text(name.toLowerCase().toTitleCase());
       var is_US = name.toUpperCase() === "US";
       var is_county = Boolean(name.toUpperCase().includes("COUNTY") |
                               name.toUpperCase().includes("BOROUGH") |
                               name.toUpperCase().includes("PARISH")|
-                              countylist.includes(name.toLowerCase().toTitleCase()));
-      var county_state;
-      if(is_county)
-        county_state = $("div.selected-state.hidden").text(name.toLowerCase().toTitleCase());
+                              (!is_state && countylist.includes(name.toLowerCase().toTitleCase())));
+      var county_state = $("span.selected-state.hidden").text();
 
       function hospital_container_msg_DOM(msg, hidden) {
         return `
@@ -296,7 +327,7 @@ var source_list = new Map([
           </div>
         `;
         function standard_name(string) { return string.toLowerCase().toTitleCase(); }
-        var placename = is_county ? standard_name(`${name} municipalityPostfix(state)`): standard_name(name)
+        var placename = standard_name(name)
         var location_info_DOM = `
           <div class="location-information-container" style="margin-top:98px;">
               <span class="placename">${placename}</span>
@@ -314,39 +345,41 @@ var source_list = new Map([
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
           </div>
         `;
+        var placename = (s) =>
+          is_state ? `${s.toLowerCase().toTitleCase()} ${municipalityPostfix(county_state)}`: s.toLowerCase().toTitleCase();
+        var first_order_children_DOM = info.children.map(child_obj => `
+          <div class="location-information-container" style="margin-top:12px;">
+          <span class="placename">${placename(child_obj.name)}</span>
+              <div class="figures">
+                <div class="figure">
+                  <span class="confirmed-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[0]}</span>
+                </div>
+                <div class="figure">
+                  <span class="death-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[1]}</span>
+                </div>
+                <div class="figure">
+                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[0]}</span>
+                </div>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
+          </div>`).join("\n");
         var output_DOM = `
           <div class="geolocation-container">
             ${location_info_DOM}
             ${variable_DOM}
           </div>
+          ${first_order_children_DOM}
         `;
-        $("div#aggregate-date-window").append(`
+        $("div#aggregate-date-window > div.response-area").html(`
           ${output_DOM}
-          <script>
-          $(document).ready(function(){
-            $("div.location-information-container > svg").click(function(){
-              $(this).toggleClass("active");
-              var variable_display = $(this).parent().next();
-              variable_display.toggleClass("expanded");
-            });
-            $("div.geolocation-container")
-              .children(".location-information-container").on("click", function(evt){
-                var user_clicked_arrow = evt.target.matches("svg");
-                if(user_clicked_arrow)
-                  return;
-                var country_display = $(this).next().next();
-                var us_location_container = $("div.geolocation-container[level='COUNTRY']")
-                  .filter("div.geolocation-container[country='US']");
-                var state_display = us_location_container.children(".state-display");
-                state_display.toggleClass("expanded", false)
-                country_display.toggleClass("expanded");
-              });
-          });
-          </script>
         `);
-        return output_DOM;
+        $("div.location-information-container > svg").click(function(){
+          $(this).toggleClass("active");
+          var placename = $(this).parent().find("span.placename");
+          showPlace(placename.text().trim());
+        });
       }
-      queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date.format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+      queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       corsHTTP(queryURL, parseInfo)
 
       if (is_county) {
@@ -382,7 +415,7 @@ var source_list = new Map([
             adjustHospitalPaneHeight();
           }
         } else {
-          var state = parent.toUpperCase();
+          var state = county_state.toUpperCase();
           var county = name.toUpperCase().replace(" " + countyType, "");
 
           var queryURL = `https://services7.arcgis.com/LXCny1HyhQCUSueu/arcgis/rest/services/Definitive_Healthcare_USA_Hospital_Beds/FeatureServer/0/query?where=UPPER(STATE_NAME)%20like%20'%25${state.toUpperCase()}%25'%20AND%20UPPER(COUNTY_NAME)%20like%20'%25${county.toUpperCase()}%25'&outFields=*&outSR=4326&f=json`;
@@ -508,6 +541,8 @@ var source_list = new Map([
       });
     });
     date_div.on('DOMSubtreeModified', function(){
+      if ($(this).html().length == 0)
+        return;
       var name = $(".placename.hidden").text().trim().toLowerCase();
       showPlace(name);
     });
