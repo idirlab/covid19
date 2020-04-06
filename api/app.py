@@ -259,5 +259,5 @@ def init_server():
 
 if __name__ == "__main__":
     init_server()
-    # app.run(host="0.0.0.0", port="2222", threaded=True, debug=False)
-    app.run(port="2222", threaded=True, debug=True)
+    app.run(host="0.0.0.0", port="2222", threaded=True, debug=False)
+    # app.run(port="2222", threaded=True, debug=True)
