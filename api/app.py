@@ -1,5 +1,9 @@
 from flask import Flask, request, jsonify, render_template, Blueprint
 from flask_cors import CORS
+from threading import Timer
+from time import sleep
+from datetime import datetime
+from absl import logging
 import os
 import pandas
 
@@ -20,6 +24,19 @@ source_list = {
     }
 }
 
+refresh_interval_hrs = 1
+refreshing = False
+query_processes = []
+
+
+def clear_cached_data():
+    file_list.clear()
+
+
+@app.route('/api/v1/allsourcequery')
+def all_source_query():
+    return jsonify(source_list)
+
 
 # ----- all countries in world -----
 # country level data -> 1) jhu global time series.tsv
@@ -28,6 +45,15 @@ source_list = {
 # county level data -> 1) jhu counties time series
 @app.route('/api/v1/statquery')
 def stat_query():
+    global refreshing, query_processes
+
+    while refreshing:
+        logging.info('query received, waiting for refresh to complete')
+        sleep(0.5)
+
+    pid = 0 if len(query_processes) == 0 else query_processes[-1] + 1
+    query_processes.append(pid)
+
     if (all([x in request.args for x in ['node', 'date', 'dsrc']])):
         node = request.args['node'].lower()
         date = request.args['date']  # what format?
@@ -35,10 +61,10 @@ def stat_query():
     else:
         return jsonify(-1)
 
-    print('Processing request...')
+    logging.info('Processing request...')
 
     entity_type = select_entity_type(node)
-    print('is {}'.format(entity_type))
+    logging.info('is {}'.format(entity_type))
 
     if entity_type == 'county':
         node = node.replace(' county', '')
@@ -56,9 +82,10 @@ def stat_query():
         } for x in get_children(node, entity_type)]
     }
 
-    ret = parse_into_arrays(ret)
+    ret = jsonify(parse_into_arrays(ret))
 
-    return jsonify(ret)
+    query_processes.remove(pid)
+    return ret
 
 
 def parse_into_arrays(ret):
@@ -124,7 +151,6 @@ def get_data_from_source(node, date, source, entity_type, par=None):
                 temp = file_list['JHU']['country'][0].iloc[file_list['JHU']['country'][1][date]]
 
                 for i in range(1, len(temp)):
-                    print(temp[i])
                     for idx, el in enumerate(temp[i].split('-')):
                         if el.isdigit():
                             res[idx] += int(el)
@@ -187,7 +213,6 @@ def get_all_data(node, date, entity_type):
             temp = file_list['JHU']['country'][0].iloc[file_list['JHU']['country'][1][date]]
 
             for i in range(1, len(temp)):
-                print(temp[i])
                 for idx, el in enumerate(temp[i].split('-')):
                     if el.isdigit():
                         res[idx] += int(el)
@@ -225,12 +250,7 @@ def get_all_data(node, date, entity_type):
     return ret
 
 
-@app.route('/api/v1/allsourcequery')
-def all_source_query():
-    return jsonify(source_list)
-
-
-def init_server():
+def refresh_data_util():
     def prc(v):
         path = os.path.join(source_list_prefix, v)
 
@@ -245,7 +265,7 @@ def init_server():
         for i, el in enumerate(df[df.columns[0]]):
             dates[el] = i
 
-        print(dates)
+        logging.info(dates)
 
         return (df, dates)
 
@@ -257,7 +277,31 @@ def init_server():
             for subkey, subvalue in source_list[key].items():
                 file_list[key][subkey] = prc(subvalue)
 
+
+def refresh_data():
+    global refreshing, query_processes
+
+    while len(query_processes) > 0:
+        logging.info('waiting to refresh, query_processes={}'.format(query_processes))
+        sleep(0.5)
+
+    logging.info('{}: starting refresh'.format(datetime.now()))
+
+    refreshing = True
+
+    clear_cached_data()
+    refresh_data_util()
+
+    Timer(int(refresh_interval_hrs * 3600), refresh_data).start()
+
+    refreshing = False
+
+    logging.info('{}: refresh complete'.format(datetime.now()))
+
+
 if __name__ == "__main__":
-    init_server()
-    app.run(host="0.0.0.0", port="2222", threaded=True, debug=False)
-    # app.run(port="2222", threaded=True, debug=True)
+    logging.set_verbosity(logging.INFO)
+    refresh_data()
+    
+    app.run(host="0.0.0.0", port="2222", threaded=True, debug=False, use_reloader=False)
+    # app.run(port="2222", threaded=True, debug=True, use_reloader=False)
