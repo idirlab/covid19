@@ -285,18 +285,16 @@ def refresh_data():
         logging.info('waiting to refresh, query_processes={}'.format(query_processes))
         sleep(0.5)
 
-    logging.info('{}: starting refresh'.format(datetime.now()))
-
     refreshing = True
+    logging.info('{}: starting refresh'.format(datetime.now()))
 
     clear_cached_data()
     refresh_data_util()
 
     Timer(int(refresh_interval_hrs * 3600), refresh_data).start()
+    logging.info('{}: refresh complete'.format(datetime.now()))
 
     refreshing = False
-
-    logging.info('{}: refresh complete'.format(datetime.now()))
 
 
 if __name__ == "__main__":
