@@ -11,15 +11,14 @@ app = Flask(__name__)
 CORS(app)
 
 file_list = {}
-# source_list_prefix = '../assets/COVID_data_collection/data/'
 source_list_prefix = '../../covid19data/COVID_data_collection/data/'
 source_list = {
     'CDC': 'cdc_time_series.csv',  # state
     'CNN': 'cnn_time_series.csv',  # state
-    'COVID Tracking Project': 'COVIDTrackingProject_time_series_with_history.csv',  # state
-    'NY Times': 'NYtimes_us-states.csv',  # state
+    'COVID Tracking Project': 'COVIDTrackingProject_time_series.csv',  # state
+    'NY Times': 'NYtimes_time_series.csv',  # state
     'JHU': {
-        'country': 'JHU_global_time_series.csv',  # country
+        'country': 'JHU_global_time_series.csv',  # country and province
         'state': 'johns_hopkins_states_time_series.csv',  # state
         'county': 'johns_hopkins_counties_time_series.csv',  # county
     }
@@ -57,7 +56,7 @@ def stat_query():
 
     if (all([x in request.args for x in ['node', 'date', 'dsrc']])):
         node = request.args['node'].lower()
-        date = request.args['date']  # what format?
+        date = request.args['date']
         dsrc = request.args['dsrc']
     else:
         return jsonify(-1)
@@ -71,6 +70,9 @@ def stat_query():
         node = node.replace(' county', '')
         node = node.replace(' borough', '')
         node = node.replace(' parish', '')
+    elif 'province' in entity_type:
+        node = '{} - {}'.format(entity_type.split('-')[1], node)
+        entity_type = 'province'
 
     ret = {
         'curnode': {
@@ -106,7 +108,7 @@ def parse_into_arrays(ret):
 
 def get_children(node, entity_type):
     if entity_type == 'global':
-        return [x.lower().strip(' \r\t\n') for x in open(os.path.join(source_list_prefix, 'countries.txt'), 'r')]
+        return [x.lower().strip(' \r\t\n') for x in open(os.path.join(source_list_prefix, 'countries.txt'), 'r') if ' - ' not in x]
     elif entity_type == 'country':
         if node == "us":
             return [x.lower().strip(' \t\r\n') for x in open(os.path.join(source_list_prefix, 'states.txt'), 'r')]
@@ -120,6 +122,8 @@ def get_children(node, entity_type):
                 if node in line and not line[line.rindex(node) - 2].isdigit():
                     ret.append(line.split(',')[1])
         return ret
+    elif entity_type == 'province':
+        return []
     else:
         return []
 
@@ -136,6 +140,8 @@ def get_parent(node, entity_type):
         return 'us'
     elif entity_type == 'country':
         return 'global'
+    elif entity_type == 'province':
+        return node.split(' - ')[0]
     else:
         return -1
 
@@ -173,6 +179,9 @@ def get_data_from_source(node, date, source, entity_type, par=None):
         else:
             return []
     else:
+        if entity_type == 'province':
+            entity_type = 'country'
+
         if date in file_list[source][entity_type][1]:
             try:
                 info = file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], file_list[source][entity_type][0].columns.get_loc(node)]
@@ -185,6 +194,7 @@ def get_data_from_source(node, date, source, entity_type, par=None):
 
 # county: COUNTY, PARISH, BOROUGH
 # state: contained in united-states.txt
+# province: contained in either China or Canada list
 # country: all other?
 def select_entity_type(name):
     def is_state():
@@ -194,6 +204,21 @@ def select_entity_type(name):
                     return True
             return False
 
+    def is_province():
+        def prc_file(fname):
+            with open(os.path.join(source_list_prefix, fname), 'r') as f:
+                states = [x.lower() for x in f.readline().strip(' \r\n\t').split(',')]
+                if name in states:
+                    return True
+            return False
+
+        if prc_file('provinces-china.csv'):
+            return 'china'
+        elif prc_file('provinces-canada.csv'):
+            return 'canada'
+        else:
+            return None
+
     if name == 'global':
         return 'global'
     elif any([x in name for x in ['county', 'parish', 'borough']]):
@@ -201,55 +226,21 @@ def select_entity_type(name):
     elif is_state():
         return 'state'
     else:
-        return 'country'
+        is_prov = is_province()
+        if is_prov is None:
+            return 'country'
+        else:
+            return 'province-{}'.format(is_prov)
 
 
 def get_all_data(node, date, entity_type):
-    ret = {}
-
-    if entity_type == 'global':
-        if date in file_list['JHU']['country'][1]:
-            res = [0, 0, 0]
-            has_na = [False, False, False]
-            temp = file_list['JHU']['country'][0].iloc[file_list['JHU']['country'][1][date]]
-
-            for i in range(1, len(temp)):
-                for idx, el in enumerate(temp[i].split('-')):
-                    if el.isdigit():
-                        res[idx] += int(el)
-                    else:
-                        has_na[idx] = True
-
-            ret['JHU'] = '-'.join(['NA' if x == 0 and has_na[i] else str(x) for i, x in enumerate(res)])
-    elif entity_type == 'country':
-        if date in file_list['JHU']['country'][1]:
-            info = file_list['JHU']['country'][0].iloc[file_list['JHU']['country'][1][date], file_list['JHU']['country'][0].columns.get_loc(node)]
-            ret['JHU'] = info
-    elif entity_type == 'state':
-        for source in ['CDC', 'CNN', 'COVID Tracking Project']:
-            if date in file_list[source][1]:
-                info = file_list[source][0].iloc[file_list[source][1][date], file_list[source][0].columns.get_loc(node)]
-                ret[source] = info
-
-        if date in file_list['JHU']['state'][1]:
-            info = file_list['JHU']['state'][0].iloc[file_list['JHU']['state'][1][date], file_list['JHU']['state'][0].columns.get_loc(node)]
-            ret['JHU'] = info
-
-        # NY times sucks, annoying formatting
+    if entity_type == 'state':
+        ret = {}
+        for source in ['CDC', 'CNN', 'COVID Tracking Project', 'NY Times', 'JHU']:
+            ret[source] = get_data_from_source(node, date, source, entity_type)
+        return ret
     else:
-        if date in file_list['JHU']['county'][1]:
-            col_idx = None
-
-            try:
-                col_idx = file_list['JHU']['county'][0].columns.get_loc(node)
-            except Exception as _:
-                col_idx = file_list['JHU']['county'][0].columns.get_loc('{}-{}'.format(node, get_parent(node, entity_type)))
-
-            info = file_list['JHU']['county'][0].iloc[file_list['JHU']['county'][1][date], col_idx]
-            ret['JHU'] = info
-
-    return ret
-
+        return {'JHU': get_data_from_source(node, date, 'JHU', entity_type)}
 
 def refresh_data_util():
     def prc(v):
@@ -259,6 +250,8 @@ def refresh_data_util():
         with open(path, 'r') as f:
             if '\t' in f.read():
                 delim = '\t'
+
+        logging.info('loading {}'.format(path))
 
         df = pandas.read_csv(path, sep=delim)
         df.columns = df.columns.str.lower()
@@ -303,4 +296,3 @@ if __name__ == "__main__":
     refresh_data()
     
     app.run(host="0.0.0.0", port="2222", threaded=True, debug=False, use_reloader=False)
-    # app.run(port="2222", threaded=True, debug=True, use_reloader=False)
