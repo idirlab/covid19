@@ -264,8 +264,6 @@ def refresh_data_util():
         return (df, dates)
 
     for key, value in source_list.items():
-        if key in ['COVID Tracking Project', 'NY Times']:
-            continue
         if key != 'JHU':
             file_list[key] = prc(value)
         else:
