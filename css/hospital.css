@@ -198,3 +198,23 @@ div.scrollable {
 div.info-header.smaller.unset-height {
   height:unset;
 }
+
+button.close_hos_info {
+  width:40px;
+  height:40px;
+  /* line-height:40px; */
+  background-color: rgba(207, 216, 220, 1);
+  /* border-radius: 20px; */
+  border-width: 0px;
+  /* display:inline-block; */
+  transform: translate(80px, 2px);
+}
+
+i.fas.fa-hospital {
+    transform: translate(28px, 0px);
+}
+
+span.titile_info {
+    display: inline-block;
+    transform: translate(30px, 0px);
+}
