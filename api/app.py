@@ -88,6 +88,8 @@ def stat_query():
     ret = jsonify(parse_into_arrays(ret))
 
     query_processes.remove(pid)
+    logging.info(query_processes)
+
     return ret
 
 
