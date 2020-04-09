@@ -657,7 +657,8 @@ var source_list = new Map([
       counties_feat = []
       for (let i = 0; i < uscounties.features.length; i++) {
         const feat = uscounties.features[i];
-        if(usstates[feat.properties.STATE]==e.target.feature.properties.enname){
+        if(usstates[feat.properties.STATE]==e.target.feature.properties.enname ||
+           usstates[feat.properties.STATE]==e.target.feature.properties.enname.split(/\s+/)[0]){
           counties_feat.push(feat)
         }
       }
