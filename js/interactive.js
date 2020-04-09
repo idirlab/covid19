@@ -266,6 +266,7 @@ var source_list = new Map([
     }
 
     function showPlace(name, parent=null) {
+      // console.log(name)
       name = name.toLowerCase().toTitleCase();
       var is_global = name.toUpperCase() === "GLOBAL";
       var is_state = US_States.map(s => s.toLowerCase()).includes(name.toLowerCase());
@@ -283,8 +284,17 @@ var source_list = new Map([
             <div id="hospital-info" class="info-pane smaller right ${hidden?'hidden':''}" style="margin-top:48px;">
               <div class="info-header smaller right unset-height ${hidden?'hidden':''}">
                 <i class="fas fa-hospital"></i>
-                <span>LOCAL HOSPITAL INFO</span>
+                <span class="titile_info">LOCAL HOSPITAL INFO</span>
+                <button class="close_hos_info" onclick="close_hos_info()">
+                  <i class="fas fa-times-circle" style="font-size: 24px;"></i>
+                </button>
               </div>
+              <script>
+                function close_hos_info() {
+                  console.log("close");
+                  $("div#hospital-info").css("display","none");
+                }
+              </script>
               ${msg}
             </div>
             `;
@@ -309,8 +319,8 @@ var source_list = new Map([
             return;
           }
           var cases = info.curnode.default_stats[0];
-          var deaths = info.curnode.default_stats[1];
-          var recovered = info.curnode.default_stats[2];
+          var deaths = info.curnode.default_stats[1]==-1 ? "NA" : info.curnode.default_stats[1];
+          var recovered = info.curnode.default_stats[2]==-1 ? "NA" : info.curnode.default_stats[2];
           var variable_DOMS = Array.from(Object.entries(info.curnode.detailed_stats)).map(src_to_stats =>
             `
              <div class="variable">
@@ -320,10 +330,10 @@ var source_list = new Map([
                    <span class="confirmed-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][0]}</span>
                  </div>
                  <div class="figure">
-                   <span class="death-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][1]}</span>
+                   <span class="death-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][1]==-1 ? 'NA': src_to_stats[1][1]}</span>
                  </div>
                  <div class="figure">
-                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][2]}</span>
+                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][2]==-1 ? 'NA': src_to_stats[1][2]}</span>
                  </div>
                </div>
              </div>
@@ -336,7 +346,7 @@ var source_list = new Map([
         function standard_name(string) {
           var out = string.toLowerCase().toTitleCase();
           if (out.toUpperCase() == "US")
-            out = "US";
+            out = "United States";
           return out;
         }
         var placename = standard_name(name)
@@ -419,8 +429,17 @@ var source_list = new Map([
           <div id="hospital-info" class="info-pane smaller right hidden">
             <div class="info-header smaller right unset-height hidden">
               <i class="fas fa-hospital"></i>
-              <span>LOCAL HOSPITAL INFO</span>
+              <span class="titile_info">LOCAL HOSPITAL INFO</span>
+              <button class="close_hos_info" onclick="close_hos_info()">
+                  <i class="fas fa-times-circle" style="font-size: 24px;"></i>
+                </button>
             </div>
+            <script>
+              function close_hos_info() {
+                console.log("close");
+                $("div#hospital-info").css("display","none")
+              }
+            </script>
             Please navigate to county level to view hospitals
           </div>
           `;
@@ -506,14 +525,26 @@ var source_list = new Map([
             <div id="hospital-info" class="info-pane smaller right scrollable" style="margin-top:48px;">
               <div class="info-header smaller right unset-height">
                 <i class="fas fa-hospital"></i>
-                <span>LOCAL HOSPITAL INFO</span>
+                <span class="titile_info">LOCAL HOSPITAL INFO</span>
+                <button class="close_hos_info" onclick="close_hos_info()">
+                  <i class="fas fa-times-circle" style="font-size: 24px;"></i>
+                </button>
               </div>
+              <script>
+                function close_hos_info() {
+                  console.log("close");
+                  $("div#hospital-info").css("display","none")
+                }
+              </script>
+
+
               <div class="hospital-display">
                 ${hospitalDOMs}
                 <script>
                   $("div.hospital > div.header > svg").click(function(evt){
                     $(this).closest("div.hospital").toggleClass("active");
                   });
+
                 </script>
               </div>
             </div>
@@ -826,6 +857,7 @@ var source_list = new Map([
 
     function displayPlace(name) {
 
+      $(".placename.hidden").text(name);
       places[name] = calPlace(name);
       showPlace(name);
 
