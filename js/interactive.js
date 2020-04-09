@@ -824,7 +824,7 @@ var source_list = new Map([
 
 
     function displayPlace(name) {
-
+      $(".placename.hidden").text(name)
       places[name] = calPlace(name);
       showPlace(name);
 
