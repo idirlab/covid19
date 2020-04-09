@@ -11,13 +11,12 @@ app = Flask(__name__)
 CORS(app)
 
 file_list = {}
-# source_list_prefix = '../assets/COVID_data_collection/data/'
 source_list_prefix = '../../covid19data/COVID_data_collection/data/'
 source_list = {
     'CDC': 'cdc_time_series.csv',  # state
     'CNN': 'cnn_time_series.csv',  # state
-    'COVID Tracking Project': 'COVIDTrackingProject_time_series_with_history.csv',  # state
-    'NY Times': 'NYtimes_us-states.csv',  # state
+    'COVID Tracking Project': 'COVIDTrackingProject_time_series.csv',  # state
+    'NY Times': 'NYtimes_time_series.csv',  # state
     'JHU': {
         'country': 'JHU_global_time_series.csv',  # country
         'state': 'johns_hopkins_states_time_series.csv',  # state
@@ -226,7 +225,7 @@ def get_all_data(node, date, entity_type):
             info = file_list['JHU']['country'][0].iloc[file_list['JHU']['country'][1][date], file_list['JHU']['country'][0].columns.get_loc(node)]
             ret['JHU'] = info
     elif entity_type == 'state':
-        for source in ['CDC', 'CNN', 'COVID Tracking Project']:
+        for source in ['CDC', 'CNN', 'COVID Tracking Project', 'NY Times']:
             if date in file_list[source][1]:
                 info = file_list[source][0].iloc[file_list[source][1][date], file_list[source][0].columns.get_loc(node)]
                 ret[source] = info
@@ -234,8 +233,6 @@ def get_all_data(node, date, entity_type):
         if date in file_list['JHU']['state'][1]:
             info = file_list['JHU']['state'][0].iloc[file_list['JHU']['state'][1][date], file_list['JHU']['state'][0].columns.get_loc(node)]
             ret['JHU'] = info
-
-        # NY times sucks, annoying formatting
     else:
         if date in file_list['JHU']['county'][1]:
             col_idx = None
