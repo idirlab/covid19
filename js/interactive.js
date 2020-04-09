@@ -309,8 +309,8 @@ var source_list = new Map([
             return;
           }
           var cases = info.curnode.default_stats[0];
-          var deaths = info.curnode.default_stats[1];
-          var recovered = info.curnode.default_stats[2];
+          var deaths = info.curnode.default_stats[1]==-1 ? "NA" : info.curnode.default_stats[1];
+          var recovered = info.curnode.default_stats[2]==-1 ? "NA" : info.curnode.default_stats[2];
           var variable_DOMS = Array.from(Object.entries(info.curnode.detailed_stats)).map(src_to_stats =>
             `
              <div class="variable">
@@ -320,10 +320,10 @@ var source_list = new Map([
                    <span class="confirmed-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][0]}</span>
                  </div>
                  <div class="figure">
-                   <span class="death-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][1]}</span>
+                   <span class="death-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][1]==-1 ? 'NA': src_to_stats[1][1]}</span>
                  </div>
                  <div class="figure">
-                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][2]}</span>
+                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][2]==-1 ? 'NA': src_to_stats[1][2]}</span>
                  </div>
                </div>
              </div>
