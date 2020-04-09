@@ -11,7 +11,8 @@ app = Flask(__name__)
 CORS(app)
 
 file_list = {}
-source_list_prefix = '../assets/COVID_data_collection/data/'
+# source_list_prefix = '../assets/COVID_data_collection/data/'
+source_list_prefix = '../../covid19data/COVID_data_collection/data/'
 source_list = {
     'CDC': 'cdc_time_series.csv',  # state
     'CNN': 'cnn_time_series.csv',  # state
