@@ -336,7 +336,7 @@ var source_list = new Map([
         function standard_name(string) {
           var out = string.toLowerCase().toTitleCase();
           if (out.toUpperCase() == "US")
-            out = "US";
+            out = "United States";
           return out;
         }
         var placename = standard_name(name)
