@@ -121,7 +121,7 @@ def get_children(node, entity_type):
         with open(os.path.join(source_list_prefix, 'counties.txt'), 'r') as f:
             for line in f:
                 line = line.lower().strip(' \r\t\n')
-                if node in line and not line[line.rindex(node) - 2].isdigit():
+                if ',{}'.format(node) in line and not line[line.rindex(node) - 2].isdigit():
                     ret.append(line.split(',')[1])
         return ret
     elif entity_type == 'province':
