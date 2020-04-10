@@ -309,8 +309,6 @@ var source_list = new Map([
 
       var parseInfo = (info) => {
           // Create side-panel here
-          console.log(info.curnode)
-          console.log(info.curnode.default_stats)
           var no_data = Object.entries(info.curnode.detailed_stats).length == 0;
           if (no_data) {
             $("div#aggregate-date-window > div.response-area").html(`
@@ -321,6 +319,15 @@ var source_list = new Map([
           var cases = info.curnode.default_stats[0];
           var deaths = info.curnode.default_stats[1]==-1 ? "NA" : info.curnode.default_stats[1];
           var recovered = info.curnode.default_stats[2]==-1 ? "NA" : info.curnode.default_stats[2];
+          // remove empty list from data sources
+          for(var key in info.curnode.detailed_stats){
+            console.log(info.curnode.detailed_stats[key])
+            if(info.curnode.detailed_stats[key].length == 0){
+              console.log('jjj', info.curnode.detailed_stats[key])
+              delete info.curnode.detailed_stats[key]
+            }
+          }
+          console.log(info.curnode.detailed_stats)
           var variable_DOMS = Array.from(Object.entries(info.curnode.detailed_stats)).map(src_to_stats =>
             `
              <div class="variable">
