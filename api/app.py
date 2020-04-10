@@ -72,6 +72,7 @@ def stat_query():
             node = node.replace(' county', '')
             node = node.replace(' borough', '')
             node = node.replace(' parish', '')
+            node = node.replace(' - ', '-')
         elif 'province' in entity_type:
             node = '{} - {}'.format(entity_type.split('-')[1], node)
             entity_type = 'province'
@@ -83,11 +84,11 @@ def stat_query():
             },
             'children': [{
                 'name': x,
-                'default_stats': get_data_from_source(x, date, dsrc, ('state' if entity_type == 'country' else ('county' if entity_type == 'state' else ('country' if entity_type == 'global' else '-1'))), par=node)
+                'default_stats': get_data_from_source(x, date, dsrc, ('state' if entity_type == 'country' else ('county' if entity_type == 'state' else ('country' if entity_type == 'global' else '-1'))))
             } for x in get_children(node, entity_type)]
         }
 
-        ret = jsonify(parse_into_arrays(ret))
+        ret = jsonify(parse_into_arrays(ret, entity_type))
     except Exception as e:
         logging.info('Error: {}'.format(e))
         logging.info('Terminating process with code 500')
@@ -101,17 +102,19 @@ def stat_query():
         return ret
         
 
-def parse_into_arrays(ret):
+def parse_into_arrays(ret, entity_type):
     def fn(x):
         if not x:
             return []
-        return [int(z) if z.isdigit() else -1 for z in x.split('-')]
+        return [int(z.replace(',', '')) if z.replace(',', '').isdigit() else -1 for z in x.split('-')]
 
     ret['curnode']['default_stats'] = fn(ret['curnode']['default_stats'])
     for k, _ in ret['curnode']['detailed_stats'].items():
         ret['curnode']['detailed_stats'][k] = fn(ret['curnode']['detailed_stats'][k])
     for i in range(len(ret['children'])):
         ret['children'][i]['default_stats'] = fn(ret['children'][i]['default_stats'])
+        if entity_type == 'state':
+            ret['children'][i]['name'] = ret['children'][i]['name'].split('-')[0]
 
     return ret
 
@@ -130,7 +133,7 @@ def get_children(node, entity_type):
             for line in f:
                 line = line.lower().strip(' \r\t\n')
                 if ',{}'.format(node) in line and not line[line.rindex(node) - 2].isdigit():
-                    ret.append(line.split(',')[1])
+                    ret.append('{}-{}'.format(line.split(',')[1], node))
         return ret
     elif entity_type == 'province':
         return []
@@ -156,10 +159,7 @@ def get_parent(node, entity_type):
         return -1
 
 
-def get_data_from_source(node, date, source, entity_type, par=None):
-    if entity_type == 'county':
-        node = '{}-{}'.format(node, (get_parent(node, entity_type) if par == None else par))
-
+def get_data_from_source(node, date, source, entity_type):
     if entity_type == 'global':
         if source == 'JHU':
             if date in file_list['JHU']['country'][1]:
