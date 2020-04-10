@@ -88,7 +88,7 @@ def stat_query():
             } for x in get_children(node, entity_type)]
         }
 
-        ret = jsonify(parse_into_arrays(ret))
+        ret = jsonify(parse_into_arrays(ret, entity_type))
     except Exception as e:
         logging.info('Error: {}'.format(e))
         logging.info('Terminating process with code 500')
@@ -102,7 +102,7 @@ def stat_query():
         return ret
         
 
-def parse_into_arrays(ret):
+def parse_into_arrays(ret, entity_type):
     def fn(x):
         if not x:
             return []
@@ -113,6 +113,8 @@ def parse_into_arrays(ret):
         ret['curnode']['detailed_stats'][k] = fn(ret['curnode']['detailed_stats'][k])
     for i in range(len(ret['children'])):
         ret['children'][i]['default_stats'] = fn(ret['children'][i]['default_stats'])
+        if entity_type == 'state':
+            ret['children'][i]['name'] = ret['children'][i]['name'].split('-')[0]
 
     return ret
 
