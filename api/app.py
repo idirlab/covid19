@@ -118,7 +118,7 @@ def parse_into_arrays(ret):
 
 def get_children(node, entity_type):
     if entity_type == 'global':
-        return [x.lower().strip(' \r\t\n') for x in open(os.path.join(source_list_prefix, 'countries.txt'), 'r') if ' - ' not in x]
+        return [x.lower().strip(' \r\t\n') for x in open(os.path.join(source_list_prefix, 'countries.txt'), 'r')]
     elif entity_type == 'country':
         if node == "us":
             return [x.lower().strip(' \t\r\n') for x in open(os.path.join(source_list_prefix, 'states.txt'), 'r')]
