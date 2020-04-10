@@ -321,6 +321,9 @@ var source_list = new Map([
           var cases = info.curnode.default_stats[0];
           var deaths = info.curnode.default_stats[1]==-1 ? "NA" : info.curnode.default_stats[1];
           var recovered = info.curnode.default_stats[2]==-1 ? "NA" : info.curnode.default_stats[2];
+          var num_undefined = [cases, deaths, recovered]
+                                .map(i => (i == null | i === "NA") ? 1 : 0)
+                                .reduce((acc, item) => acc + item, 0);
           var variable_DOMS = Array.from(Object.entries(info.curnode.detailed_stats)).map(src_to_stats =>
             `
              <div class="variable">
@@ -350,23 +353,33 @@ var source_list = new Map([
           return out;
         }
         var placename = standard_name(name)
-        var location_info_DOM = `
-          <div class="location-information-container root">
-              <span class="placename">${placename}</span>
-              <div class="figures">
-                <div class="figure">
-                  <span class="confirmed-count" style="color: rgb(40, 50, 55)">${cases}</span>
+        var location_info_DOM;
+        if (num_undefined == 3){
+          location_info_DOM = `
+            <div class="location-information-container root">
+                <span class="placename">${placename}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
+            </div>
+          `;
+        } else {
+          location_info_DOM = `
+            <div class="location-information-container root">
+                <span class="placename">${placename}</span>
+                <div class="figures">
+                  <div class="figure">
+                    <span class="confirmed-count" style="color: rgb(40, 50, 55)">${cases}</span>
+                  </div>
+                  <div class="figure">
+                    <span class="death-count" style="color: rgb(40, 50, 55)">${deaths}</span>
+                  </div>
+                  <div class="figure">
+                    <span class="recovered-count" style="color: rgb(40, 50, 55)">${recovered}</span>
+                  </div>
                 </div>
-                <div class="figure">
-                  <span class="death-count" style="color: rgb(40, 50, 55)">${deaths}</span>
-                </div>
-                <div class="figure">
-                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${recovered}</span>
-                </div>
-              </div>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
-          </div>
-        `;
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
+            </div>
+          `;
+        }
         var placename = (s) =>
           standard_name(is_state ? `${s.toLowerCase().toTitleCase()} ${municipalityPostfix(county_state)}`: s);
         var first_order_children_DOM = info.children.map(child_obj => `
