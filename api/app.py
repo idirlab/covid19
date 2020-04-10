@@ -106,7 +106,7 @@ def parse_into_arrays(ret):
     def fn(x):
         if not x:
             return []
-        return [int(z) if z.isdigit() else -1 for z in x.split('-')]
+        return [int(z.replace(',', '')) if z.replace(',', '').isdigit() else -1 for z in x.split('-')]
 
     ret['curnode']['default_stats'] = fn(ret['curnode']['default_stats'])
     for k, _ in ret['curnode']['detailed_stats'].items():
@@ -131,7 +131,7 @@ def get_children(node, entity_type):
             for line in f:
                 line = line.lower().strip(' \r\t\n')
                 if ',{}'.format(node) in line and not line[line.rindex(node) - 2].isdigit():
-                    ret.append(line.split(',')[1])
+                    ret.append('{}-{}'.format(line.split(',')[1], node))
         return ret
     elif entity_type == 'province':
         return []
