@@ -325,6 +325,8 @@ var source_list = new Map([
                                 .map(i => (i == null | i === "NA") ? 1 : 0)
                                 .reduce((acc, item) => acc + item, 0);
           var variable_DOMS = Array.from(Object.entries(info.curnode.detailed_stats)).map(src_to_stats =>
+            src_to_stats[1].length > 0
+            ?
             `
              <div class="variable">
                <div class="source">${src_to_stats[0]}</div>
@@ -340,7 +342,11 @@ var source_list = new Map([
                  </div>
                </div>
              </div>
-           `);
+           `
+           :
+           `
+           `
+          );
         var variable_DOM = `
           <div class="variable-display expanded">
             ${variable_DOMS.join("\n")}
@@ -355,12 +361,7 @@ var source_list = new Map([
         var placename = standard_name(name)
         var location_info_DOM;
         if (num_undefined == 3){
-          location_info_DOM = `
-            <div class="location-information-container root">
-                <span class="placename">${placename}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
-            </div>
-          `;
+          location_info_DOM = ``;
         } else {
           location_info_DOM = `
             <div class="location-information-container root">
@@ -382,7 +383,10 @@ var source_list = new Map([
         }
         var placename = (s) =>
           standard_name(is_state ? `${s.toLowerCase().toTitleCase()} ${municipalityPostfix(county_state)}`: s);
-        var first_order_children_DOM = info.children.map(child_obj => `
+        var first_order_children_DOM = info.children.map(child_obj =>
+          child_obj.default_stats.length > 0
+          ?
+          `
           <div class="location-information-container" style="margin-top:12px;">
           <span class="placename">${placename(child_obj.name)}</span>
               <div class="figures">
@@ -397,7 +401,12 @@ var source_list = new Map([
                 </div>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
-          </div>`).join("\n");
+          </div>
+          `
+          :
+          `
+          `
+        ).join("\n");
         var output_DOM = `
           <div class="geolocation-container">
             ${location_info_DOM}
