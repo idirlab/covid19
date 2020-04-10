@@ -159,7 +159,7 @@ def get_data_from_source(node, date, source, entity_type, par=None):
                 has_na = [False, False, False]
                 temp = file_list['JHU']['country'][0].iloc[file_list['JHU']['country'][1][date]]
 
-                for i in range(1, len(temp)):
+                for i in range(3, len(temp)):
                     for idx, el in enumerate(temp[i].split('-')):
                         if el.isdigit():
                             res[idx] += int(el)
