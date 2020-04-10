@@ -319,7 +319,6 @@ var source_list = new Map([
             return;
           }
           var cases = info.curnode.default_stats[0];
-          console.log("xixi", info.curnode.default_stats)
           var deaths = info.curnode.default_stats[1]==-1 ? "NA" : info.curnode.default_stats[1];
           var recovered = info.curnode.default_stats[2]==-1 ? "NA" : info.curnode.default_stats[2];
           var variable_DOMS = Array.from(Object.entries(info.curnode.detailed_stats)).map(src_to_stats =>
@@ -407,7 +406,12 @@ var source_list = new Map([
           showPlace(placename.text().trim());
         });
       }
-      queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+      if(parent) {
+        queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+      } else {
+        queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+      }
+      console.log("qwer", queryURL)
       corsHTTP(queryURL, parseInfo)
 
       if (is_county) {
