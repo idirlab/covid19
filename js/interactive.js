@@ -400,9 +400,9 @@ var source_list = new Map([
           $(this).parent().next().toggleClass("expanded");
         });
         $("div.location-information-container > svg").click(function(){
+          $(this).toggleClass("active");
           if($(this).parent().attr("class").split(/\s+/).includes("root"))
             return;
-          $(this).toggleClass("active");
           var placename = $(this).parent().find("span.placename");
           showPlace(placename.text().trim());
         });
