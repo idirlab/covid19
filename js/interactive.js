@@ -319,6 +319,7 @@ var source_list = new Map([
             return;
           }
           var cases = info.curnode.default_stats[0];
+          console.log("xixi", info.curnode.default_stats)
           var deaths = info.curnode.default_stats[1]==-1 ? "NA" : info.curnode.default_stats[1];
           var recovered = info.curnode.default_stats[2]==-1 ? "NA" : info.curnode.default_stats[2];
           var variable_DOMS = Array.from(Object.entries(info.curnode.detailed_stats)).map(src_to_stats =>
@@ -377,10 +378,10 @@ var source_list = new Map([
                   <span class="confirmed-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[0]}</span>
                 </div>
                 <div class="figure">
-                  <span class="death-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[1]}</span>
+                  <span class="death-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[1]==-1 ? 'NA': child_obj.default_stats[1]}</span>
                 </div>
                 <div class="figure">
-                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[0]}</span>
+                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[2]==-1 ? 'NA': child_obj.default_stats[2]}</span>
                 </div>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
@@ -399,9 +400,9 @@ var source_list = new Map([
           $(this).parent().next().toggleClass("expanded");
         });
         $("div.location-information-container > svg").click(function(){
+          $(this).toggleClass("active");
           if($(this).parent().attr("class").split(/\s+/).includes("root"))
             return;
-          $(this).toggleClass("active");
           var placename = $(this).parent().find("span.placename");
           showPlace(placename.text().trim());
         });
