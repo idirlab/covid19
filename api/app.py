@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, Blueprint
+from flask import Flask, request, jsonify, render_template, Blueprint, abort
 from flask_cors import CORS
 from threading import Timer
 from time import sleep
@@ -63,35 +63,43 @@ def stat_query():
 
     logging.info('Processing request...')
 
-    entity_type = select_entity_type(node)
-    logging.info('is {}'.format(entity_type))
+    ret = {}
+    try:
+        entity_type = select_entity_type(node)
+        logging.info('is {}'.format(entity_type))
 
-    if entity_type == 'county':
-        node = node.replace(' county', '')
-        node = node.replace(' borough', '')
-        node = node.replace(' parish', '')
-    elif 'province' in entity_type:
-        node = '{} - {}'.format(entity_type.split('-')[1], node)
-        entity_type = 'province'
+        if entity_type == 'county':
+            node = node.replace(' county', '')
+            node = node.replace(' borough', '')
+            node = node.replace(' parish', '')
+        elif 'province' in entity_type:
+            node = '{} - {}'.format(entity_type.split('-')[1], node)
+            entity_type = 'province'
 
-    ret = {
-        'curnode': {
-            'default_stats': get_data_from_source(node, date, dsrc, entity_type),
-            'detailed_stats': get_all_data(node, date, entity_type)
-        },
-        'children': [{
-            'name': x,
-            'default_stats': get_data_from_source(x, date, dsrc, ('state' if entity_type == 'country' else ('county' if entity_type == 'state' else ('country' if entity_type == 'global' else '-1'))), par=node)
-        } for x in get_children(node, entity_type)]
-    }
+        ret = {
+            'curnode': {
+                'default_stats': get_data_from_source(node, date, dsrc, entity_type),
+                'detailed_stats': get_all_data(node, date, entity_type)
+            },
+            'children': [{
+                'name': x,
+                'default_stats': get_data_from_source(x, date, dsrc, ('state' if entity_type == 'country' else ('county' if entity_type == 'state' else ('country' if entity_type == 'global' else '-1'))), par=node)
+            } for x in get_children(node, entity_type)]
+        }
 
-    ret = jsonify(parse_into_arrays(ret))
+        ret = jsonify(parse_into_arrays(ret))
+    except Exception as e:
+        logging.info('Error: {}'.format(e))
+        logging.info('Terminating process with code 500')
 
     query_processes.remove(pid)
     logging.info(query_processes)
 
-    return ret
-
+    if ret == {}:
+        abort(500)
+    else:
+        return ret
+        
 
 def parse_into_arrays(ret):
     def fn(x):
