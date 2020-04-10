@@ -266,6 +266,7 @@ var source_list = new Map([
     }
 
     function showPlace(name, parent=null) {
+      // console.log(name)
       name = name.toLowerCase().toTitleCase();
       var is_global = name.toUpperCase() === "GLOBAL";
       var is_state = US_States.map(s => s.toLowerCase()).includes(name.toLowerCase());
@@ -283,8 +284,17 @@ var source_list = new Map([
             <div id="hospital-info" class="info-pane smaller right ${hidden?'hidden':''}" style="margin-top:48px;">
               <div class="info-header smaller right unset-height ${hidden?'hidden':''}">
                 <i class="fas fa-hospital"></i>
-                <span>LOCAL HOSPITAL INFO</span>
+                <span class="titile_info">LOCAL HOSPITAL INFO</span>
+                <button class="close_hos_info" onclick="close_hos_info()">
+                  <i class="fas fa-times-circle" style="font-size: 24px;"></i>
+                </button>
               </div>
+              <script>
+                function close_hos_info() {
+                  console.log("close");
+                  $("div#hospital-info").css("display","none");
+                }
+              </script>
               ${msg}
             </div>
             `;
@@ -419,8 +429,17 @@ var source_list = new Map([
           <div id="hospital-info" class="info-pane smaller right hidden">
             <div class="info-header smaller right unset-height hidden">
               <i class="fas fa-hospital"></i>
-              <span>LOCAL HOSPITAL INFO</span>
+              <span class="titile_info">LOCAL HOSPITAL INFO</span>
+              <button class="close_hos_info" onclick="close_hos_info()">
+                  <i class="fas fa-times-circle" style="font-size: 24px;"></i>
+                </button>
             </div>
+            <script>
+              function close_hos_info() {
+                console.log("close");
+                $("div#hospital-info").css("display","none")
+              }
+            </script>
             Please navigate to county level to view hospitals
           </div>
           `;
@@ -506,14 +525,26 @@ var source_list = new Map([
             <div id="hospital-info" class="info-pane smaller right scrollable" style="margin-top:48px;">
               <div class="info-header smaller right unset-height">
                 <i class="fas fa-hospital"></i>
-                <span>LOCAL HOSPITAL INFO</span>
+                <span class="titile_info">LOCAL HOSPITAL INFO</span>
+                <button class="close_hos_info" onclick="close_hos_info()">
+                  <i class="fas fa-times-circle" style="font-size: 24px;"></i>
+                </button>
               </div>
+              <script>
+                function close_hos_info() {
+                  console.log("close");
+                  $("div#hospital-info").css("display","none")
+                }
+              </script>
+
+
               <div class="hospital-display">
                 ${hospitalDOMs}
                 <script>
                   $("div.hospital > div.header > svg").click(function(evt){
                     $(this).closest("div.hospital").toggleClass("active");
                   });
+
                 </script>
               </div>
             </div>
@@ -825,7 +856,8 @@ var source_list = new Map([
 
 
     function displayPlace(name) {
-      $(".placename.hidden").text(name)
+
+      $(".placename.hidden").text(name);
       places[name] = calPlace(name);
       showPlace(name);
 
