@@ -1011,3 +1011,13 @@ div.location-information-container > span.placename {
   overflow: hidden;
   white-space: nowrap;
 }
+div.response-area {
+  top: 133px;
+  width: 400px;
+  height: auto;
+  display: block;
+  bottom: 0;
+  position: fixed;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
