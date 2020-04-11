@@ -23,6 +23,12 @@ source_list = {
         'county': 'johns_hopkins_counties_time_series.csv',  # county
     }
 }
+source_list_per_level = {
+    'global': ['JHU'],
+    'country': ['JHU'],
+    'state': ['CDC', 'CNN', 'COVID Tracking Project', 'NY Times', 'JHU'],
+    'county': ['JHU']
+}
 
 refresh_interval_hrs = 1
 refreshing = False
@@ -33,9 +39,16 @@ def clear_cached_data():
     file_list.clear()
 
 
-@app.route('/api/v1/allsourcequery')
-def all_source_query():
-    return jsonify(source_list)
+@app.route('/api/v1/sourcequery')
+def source_query():
+    if 'level' in request.args:
+        lev = request.args['level']
+        if lev in ['global', 'country', 'state', 'county']:
+            return jsonify(source_list_per_level[lev])
+        else:
+            return '{} is not in the allowed list of levels: {}'.format(lev, ['global', 'country', 'state', 'county'])
+    else:
+        return jsonify(source_list)
 
 
 # ----- all countries in world -----
@@ -244,15 +257,15 @@ def select_entity_type(name):
 
 
 def get_all_data(node, date, entity_type):
-    if entity_type == 'state':
-        ret = {}
-        for source in ['CDC', 'CNN', 'COVID Tracking Project', 'NY Times', 'JHU']:
-            cur = get_data_from_source(node, date, source, entity_type)
-            if cur != []:
-                ret[source] = cur
-        return ret
-    else:
-        return {'JHU': get_data_from_source(node, date, 'JHU', entity_type)}
+    ret = {}
+
+    for source in source_list_per_level[entity_type]:
+        cur = get_data_from_source(node, date, source, entity_type)
+        if cur != []:
+            ret[source] = cur
+
+    return ret
+
 
 def refresh_data_util():
     def prc(v):
