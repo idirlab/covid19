@@ -8,4 +8,9 @@
 #  2) runs the api
 cd api
 # python3 app.py 2>&1 > api.log & disown
-nohup sh -c "python3 app.py"&>api.log&
+if [ -z "$1" ]; then
+  export PORT=3333
+else
+  export PORT=2222
+fi
+nohup sh -c "python3 app.py $PORT"&>api.log&
