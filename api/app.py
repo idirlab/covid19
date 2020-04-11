@@ -4,6 +4,7 @@ from threading import Timer
 from time import sleep
 from datetime import datetime
 from absl import logging
+from datetime import date, timedelta, datetime
 import os
 import pandas
 
@@ -39,6 +40,15 @@ def clear_cached_data():
     file_list.clear()
 
 
+def daterange(start_date, end_date):
+    for n in range(int ((end_date - start_date).days) + 1):
+        yield start_date + timedelta(n)
+
+
+def str_to_date(inp):
+    return datetime.strptime(inp, "%Y-%m-%d").date()
+
+
 @app.route('/api/v1/sourcequery')
 def source_query():
     if 'level' in request.args:
@@ -49,6 +59,59 @@ def source_query():
             return '{} is not in the allowed list of levels: {}'.format(lev, ['global', 'country', 'state', 'county'])
     else:
         return jsonify(source_list)
+
+
+@app.route('/api/v1/statquery_timeseries')
+def stat_query_time_series():
+    global refreshing, query_processes
+
+    while refreshing:
+        logging.info('query received, waiting for refresh to complete')
+        sleep(0.5)
+
+    pid = 0 if len(query_processes) == 0 else query_processes[-1] + 1
+    query_processes.append(pid)
+
+    if (all([x in request.args for x in ['node', 'date_start', 'date_end', 'dsrc']])):
+        node = request.args['node'].lower()
+        date_start = request.args['date_start']
+        date_end = request.args['date_end']
+        dsrc = request.args['dsrc']
+    else:
+        return jsonify(-1)
+
+    logging.info('Processing request...')
+
+    ret = {}
+    try:
+        entity_type = select_entity_type(node)
+        logging.info('is {}'.format(entity_type))
+
+        if entity_type == 'county':
+            node = node.replace(' county', '')
+            node = node.replace(' borough', '')
+            node = node.replace(' parish', '')
+            node = node.replace(' - ', '-')
+        elif 'province' in entity_type:
+            node = '{} - {}'.format(entity_type.split('-')[1], node)
+            entity_type = 'province'
+
+        ret = [{
+            'date': single_date.strftime("%Y-%m-%d"),
+            'stats': get_data_from_source(node, single_date.strftime("%Y-%m-%d"), dsrc, entity_type)
+        } for single_date in daterange(str_to_date(date_start), str_to_date(date_end))]
+        ret = jsonify(parse_into_arrays(ret, entity_type, timeseries=True))
+    except Exception as e:
+        logging.info('Error: {}'.format(e))
+        logging.info('Terminating process with code 500')
+
+    query_processes.remove(pid)
+    logging.info(query_processes)
+
+    if ret == {}:
+        abort(500)
+    else:
+        return ret
 
 
 # ----- all countries in world -----
@@ -115,19 +178,23 @@ def stat_query():
         return ret
         
 
-def parse_into_arrays(ret, entity_type):
+def parse_into_arrays(ret, entity_type, timeseries=False):
     def fn(x):
         if not x:
             return []
         return [int(z.replace(',', '')) if z.replace(',', '').isdigit() else -1 for z in x.split('-')]
 
-    ret['curnode']['default_stats'] = fn(ret['curnode']['default_stats'])
-    for k, _ in ret['curnode']['detailed_stats'].items():
-        ret['curnode']['detailed_stats'][k] = fn(ret['curnode']['detailed_stats'][k])
-    for i in range(len(ret['children'])):
-        ret['children'][i]['default_stats'] = fn(ret['children'][i]['default_stats'])
-        if entity_type == 'state':
-            ret['children'][i]['name'] = ret['children'][i]['name'].split('-')[0]
+    if not timeseries:
+        ret['curnode']['default_stats'] = fn(ret['curnode']['default_stats'])
+        for k, _ in ret['curnode']['detailed_stats'].items():
+            ret['curnode']['detailed_stats'][k] = fn(ret['curnode']['detailed_stats'][k])
+        for i in range(len(ret['children'])):
+            ret['children'][i]['default_stats'] = fn(ret['children'][i]['default_stats'])
+            if entity_type == 'state':
+                ret['children'][i]['name'] = ret['children'][i]['name'].split('-')[0]
+    else:
+        for i in range(len(ret)):
+            ret[i]['stats'] = fn(ret[i]['stats'])
 
     return ret
 
