@@ -240,6 +240,24 @@ def get_parent(node, entity_type):
 
 
 def get_data_from_source(node, date, source, entity_type):
+    def custom_search_df_for_county_node(df):
+        def county_is_ok(idx, full_str, county_str):
+            return idx == 0 or (full_str[idx - 1] == '-' and full_str[idx + len(county_str)] == '-')
+
+        columns = df.columns.values.tolist()
+        toks = node.split('-')
+        county, state = toks[0], toks[1]
+        
+        ans = []
+        for i, el in enumerate(columns):
+            if county_is_ok(el.find(county), el, county) and el.rfind(state) == len(el) - len(state):
+                ans.append(i)
+
+        if len(ans) == 1:
+            return ans[0]
+        else:
+            return -1
+
     if entity_type == 'global':
         if source == 'JHU':
             if date in file_list['JHU']['country'][1]:
@@ -264,6 +282,10 @@ def get_data_from_source(node, date, source, entity_type):
             try:
                 info = file_list[source][0].iloc[file_list[source][1][date], file_list[source][0].columns.get_loc(node)]
             except Exception as _:
+                if entity_type == 'county':
+                    idx = custom_search_df_for_county_node(file_list[source][entity_type][0])
+                    if idx != -1:
+                        return file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], idx]
                 return []
             return info
         else:
@@ -276,6 +298,10 @@ def get_data_from_source(node, date, source, entity_type):
             try:
                 info = file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], file_list[source][entity_type][0].columns.get_loc(node)]
             except Exception as _:
+                if entity_type == 'county':
+                    idx = custom_search_df_for_county_node(file_list[source][entity_type][0])
+                    if idx != -1:
+                        return file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], idx]
                 return []
             return info
         else:
