@@ -182,7 +182,7 @@ def parse_into_arrays(ret, entity_type, timeseries=False):
     def fn(x):
         if not x:
             return []
-        return [int(z.replace(',', '')) if z.replace(',', '').isdigit() else -1 for z in x.split('-')]
+        return [z.replace(',', '') for z in x.split('-')]
 
     if not timeseries:
         ret['curnode']['default_stats'] = fn(ret['curnode']['default_stats'])
