@@ -58,7 +58,7 @@ def source_query():
         else:
             return '{} is not in the allowed list of levels: {}'.format(lev, ['global', 'country', 'state', 'county'])
     else:
-        return jsonify(source_list)
+        return jsonify([key for key, _ in source_list.items()])
 
 
 @app.route('/api/v1/statquery_timeseries')
