@@ -247,7 +247,9 @@ def get_all_data(node, date, entity_type):
     if entity_type == 'state':
         ret = {}
         for source in ['CDC', 'CNN', 'COVID Tracking Project', 'NY Times', 'JHU']:
-            ret[source] = get_data_from_source(node, date, source, entity_type)
+            cur = get_data_from_source(node, date, source, entity_type)
+            if cur != []:
+                ret[source] = cur
         return ret
     else:
         return {'JHU': get_data_from_source(node, date, 'JHU', entity_type)}
