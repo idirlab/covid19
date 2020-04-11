@@ -327,12 +327,6 @@ var source_list = new Map([
           var cases = info.curnode.default_stats[0];
           var deaths = info.curnode.default_stats[1];
           var recovered = info.curnode.default_stats[2];
-          // remove empty list from data sources
-          for(var key in info.curnode.detailed_stats){
-            if(info.curnode.detailed_stats[key].length == 0){
-              delete info.curnode.detailed_stats[key]
-            }
-          }
           var variable_DOMS = Array.from(Object.entries(info.curnode.detailed_stats)).map(src_to_stats =>
             `
              <div class="variable">
@@ -420,13 +414,13 @@ var source_list = new Map([
         });
       }
       
-      if(parent) {
-        if(name=='United States') {
-          name = 'US'
-        }
+      if(parent && parent!='Global') {
         queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
         // queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       } else {
+        if(name=='United States') {
+          name = 'US'
+        }
         queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
         // queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       }
