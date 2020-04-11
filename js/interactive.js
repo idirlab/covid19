@@ -23,7 +23,7 @@ function select_default_source() {
 	};
 })(window);
 $(document).ready(function(){
-  var queryURL = "http://localhost:2222/api/v1/sourcequery?level={PLACEHOLDER}";
+  var queryURL = "https://idir.uta.edu/covid-19-api-dev/api/v1/sourcequery?level={PLACEHOLDER}";
   var parseSources = (level) => (
     (parseSources) => {
       var sources = parseSources.map(src => `<li class="select-source-item ${level} option"><a class="noHover" href="">${src}</a></li>`);
