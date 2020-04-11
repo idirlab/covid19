@@ -140,6 +140,13 @@ var source_list = new Map([
         'd': ['Death'],
         'a': ['Active Confirmed']
       }
+
+      // data_str = JSON.stringify(datasets[0])
+      // console.log("virus.length: ", datasets[0].length)
+      // console.log("calPlace name: "+ name)
+      // console.log('datasets : '+ data_str)
+
+
       datasets[0].forEach(function(d) {
         var USTd = new Date(d["datetime"]);
 
@@ -262,6 +269,7 @@ var source_list = new Map([
 
       });
 
+      console.log("place[name]: ", place[name])
       return place[name];
     }
 
@@ -608,7 +616,14 @@ var source_list = new Map([
       if ($(this).html().length == 0)
         return;
       var name = $(".placename.hidden").text().trim().toLowerCase();
-      showPlace(name);
+      name_list = name.split(',')
+      if (name_list.length == 1) {
+        showPlace(name_list[0]);
+      } else if (name_list.length == 2) {
+        showPlace(name_list[0], name_list[1]);
+      }
+      
+
     });
 
     function setFill(enname) {
@@ -699,6 +714,7 @@ var source_list = new Map([
       // mymap.fitBounds(e.target.getBounds());
       L.DomEvent.stopPropagation(e);
       $("#hint").text("Click here to the global trend.");
+
       displayPlace(e.target.feature.properties.enname)
 
       counties_feat = []
@@ -729,6 +745,8 @@ var source_list = new Map([
       console.log("zooming to county");
       var state = usstates[e.target.feature.properties.STATE].toTitleCase(); // to be used for filter
       var county = `${e.target.feature.properties.NAME.toTitleCase()} ${municipalityPostfix(state)}`;
+
+      $(".placename.hidden").text(county+','+state);
       showPlace(county, state);
     }
 
@@ -876,6 +894,9 @@ var source_list = new Map([
       $(".placename.hidden").text(name);
       places[name] = calPlace(name);
       showPlace(name);
+
+      // console.log('places[name].t: ' + places[name].t)
+      // console.log('places[name].c: ' + places[name].c)
 
       chart.load({
         columns: [places[name].c, places[name].a, places[name].r, places[name].d],
