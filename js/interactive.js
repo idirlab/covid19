@@ -325,17 +325,14 @@ var source_list = new Map([
             return;
           }
           var cases = info.curnode.default_stats[0];
-          var deaths = info.curnode.default_stats[1]==-1 ? "NA" : info.curnode.default_stats[1];
-          var recovered = info.curnode.default_stats[2]==-1 ? "NA" : info.curnode.default_stats[2];
+          var deaths = info.curnode.default_stats[1];
+          var recovered = info.curnode.default_stats[2];
           // remove empty list from data sources
           for(var key in info.curnode.detailed_stats){
-            console.log(info.curnode.detailed_stats[key])
             if(info.curnode.detailed_stats[key].length == 0){
-              console.log('jjj', info.curnode.detailed_stats[key])
               delete info.curnode.detailed_stats[key]
             }
           }
-          console.log(info.curnode.detailed_stats)
           var variable_DOMS = Array.from(Object.entries(info.curnode.detailed_stats)).map(src_to_stats =>
             `
              <div class="variable">
@@ -418,11 +415,15 @@ var source_list = new Map([
           if($(this).parent().attr("class").split(/\s+/).includes("root"))
             return;
           var placename = $(this).parent().find("span.placename");
-          showPlace(placename.text().trim());
+          var parent = $(this).parent().parent().find("div.geolocation-container > div.location-information-container.root > span.placename")
+          showPlace(placename.text().trim(), parent.text().trim());
         });
       }
-
+      
       if(parent) {
+        if(name=='United States') {
+          name = 'US'
+        }
         queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
         // queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       } else {
@@ -605,7 +606,6 @@ var source_list = new Map([
       var new_dates = (arrow_position === "pos-1") || (arrow_position === "pos-2") ?
                       dates.map(d => d.subtract(1, "days")) :
                       dates.map(d => d.add(1, "days"));
-      // Now update the dates TODO: bugs time offset by 1 day to real data.
       new_dates.forEach(function(new_date, idx){
         var pos_id = `pos-${idx + 2}`;
         var date_str = new_date.format("MM/DD/YYYY");
