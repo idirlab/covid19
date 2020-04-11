@@ -345,10 +345,10 @@ var source_list = new Map([
                    <span class="confirmed-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][0]}</span>
                  </div>
                  <div class="figure">
-                   <span class="death-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][1]==-1 ? 'NA': src_to_stats[1][1]}</span>
+                   <span class="death-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][1]}</span>
                  </div>
                  <div class="figure">
-                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][2]==-1 ? 'NA': src_to_stats[1][2]}</span>
+                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][2]}</span>
                  </div>
                </div>
              </div>
@@ -392,10 +392,10 @@ var source_list = new Map([
                   <span class="confirmed-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[0]}</span>
                 </div>
                 <div class="figure">
-                  <span class="death-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[1]==-1 ? 'NA': child_obj.default_stats[1]}</span>
+                  <span class="death-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[1]}</span>
                 </div>
                 <div class="figure">
-                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[2]==-1 ? 'NA': child_obj.default_stats[2]}</span>
+                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[2]}</span>
                 </div>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
@@ -431,7 +431,7 @@ var source_list = new Map([
       }
       console.log("qwer", queryURL)
 
-      corsHTTP(queryURL, parseInfo)
+      corsHTTP(encodeURI(queryURL), parseInfo)
 
       if (is_county) {
 
