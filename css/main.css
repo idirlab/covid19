@@ -1086,9 +1086,6 @@ div.apply-btn-style:hover:before {
   opacity:1;
   border-radius:16px;
 }
-div.modal-body {
-  margin-bottom: 64px;
-}
 div.modal-footer{
-  z-index:99999;
+  z-index:999;
 }
