@@ -1034,5 +1034,58 @@ div.source-description {
   margin-bottom:12px;
 }
 div.source-title {
-  font-size:20px;
+  font-size:24px;
+}
+.noHover {
+  pointer-events:none;
+  color:#212529;
+}
+.select-source-item {
+  position:relative;
+  text-align:center;
+  cursor:pointer;
+  margin: 0px 4px 0px 4px;
+}
+.select-source-item:before {
+  display:block;
+  content:" ";
+  position:absolute;
+  z-index:-1;
+  background:rgb(207, 216, 220);
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  opacity:0.5;
+}
+.select-source-item:hover:before{
+  background:rgb(163, 180, 188);
+  opacity:1;
+}
+div.apply-btn-style {
+  position:relative;
+  padding:12px;
+  cursor:pointer;
+  border-radius:16px;
+}
+div.apply-btn-style:before {
+  display:block;
+  content:" ";
+  position:absolute;
+  z-index:-1;
+  background:rgb(207, 216, 220);
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  opacity:0.5;
+  border-radius:16px;
+}
+div.apply-btn-style:hover:before {
+  background:rgb(163, 180, 188);
+  opacity:1;
+  border-radius:16px;
+}
+div.modal-footer{
+  z-index:99999;
 }

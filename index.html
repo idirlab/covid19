@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="css/classic.date.css" id="theme_base">
   <link rel="stylesheet" href="css/hospital.css">
 
+  <script src="js/popper.min.js"></script>
   <script src="js/to-title-case.js"></script>
   <script src="js/voca.min.js"></script>
   <script src="js/d3.js"></script>
@@ -41,6 +42,7 @@
   <script src="js/picker.js"></script>
   <script src="js/picker.date.js"></script>
   <script src="js/moment-with-locales.min.js"></script>
+
 </head>
 
 <body>
@@ -66,16 +68,16 @@
                    values.
                 </div>
                 <div class="source-title">Global source</div>
-                <div class="source-selector" source="global"></div>
+                <div class="source-selector-global"></div>
                 <div class="source-title">Country source</div>
-                <div class="source-selector" source="country"></div>
+                <div class="source-selector-country"></div>
                 <div class="source-title">State source</div>
-                <div class="source-selector" source="state"></div>
+                <div class="source-selector-state"></div>
                 <div class="source-title">County source</div>
-                <div class="source-selector" source="county"></div>
+                <div class="source-selector-county"></div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <div class="apply-btn-style">Apply changes</div>
               </div>
             </div>
           </div>
@@ -137,7 +139,7 @@
       <span class="selected-state hidden"></span>
       <span class="default-source-global hidden">JHU</span>
       <span class="default-source-country hidden">JHU</span>
-      <span class="default-source-state hidden">JHU</span>
+      <span class="default-source-state hidden">COVID Tracking Project</span>
       <span class="default-source-county hidden">JHU</span>
       <div class="response-area">
       </div>

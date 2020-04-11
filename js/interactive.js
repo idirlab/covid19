@@ -23,18 +23,44 @@ function select_default_source() {
 	};
 })(window);
 $(document).ready(function(){
-
   var queryURL = "http://localhost:2222/api/v1/sourcequery?level={PLACEHOLDER}";
-  var parseSources = (parseSources) => {
-      console.log(parseSources);
-  }
+  var parseSources = (level) => (
+    (parseSources) => {
+      var sources = parseSources.map(src => `<li class="select-source-item ${level} option"><a class="noHover" href="">${src}</a></li>`);
+      var dropdown_contents = sources.reduce((acc, item) => [acc, item].join("\n"));
+      var original_src = $(`span.default-source-${level}.hidden`).text();
+      var dropdown_DOM = `
+       <div class="dropdown-${level}">
+         <button class="btn btn-primary dropdown-toggle"
+                 style="background-color:rgba(207, 216, 220, 1);border:1px solid rgba(38, 50, 56, 1);color:rgba(38, 50, 56, 1);"
+                 type="button"
+                 id="dropdownMenu-${level}"
+                 data-toggle="dropdown"
+                 aria-haspopup="true"
+                 aria-expanded="false">${original_src}</span></button>
+         <ul class="dropdown-menu"
+             aria-labeledby="dropdownMenu-${level}"
+             style="background-color:rgba(207, 216, 220, 1);">
+           ${dropdown_contents}
+         </ul>
+       </div>
+      `;
+      $(`div.source-selector-${level}`).html(dropdown_DOM);
+      $(`li.${level}.option`).click(function(){
+        var src = $(this).text().trim();
+        $(`div.dropdown-${level} > button`).text(src);
+        $(`span.default-source-${level}.hidden`).text(src);
+      });
+      console.log(`sources for level=${level} are: ${dropdown_DOM}`);
+    }
+  );
   ["global", "country", "state", "county"].forEach(
     function(level){
       var url = queryURL.replace("{PLACEHOLDER}", level);
       console.log(url);
-      corsHTTP(url, parseSources);
+      corsHTTP(url, parseSources(level));
     }
-  )
+  );
 
   function getDay(num, str) {
     var today = new Date();
