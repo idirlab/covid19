@@ -1021,3 +1021,18 @@ div.response-area {
   overflow-y: scroll;
   overflow-x: hidden;
 }
+div.source-description,
+div.modal-title {
+  letter-spacing:initial;
+  font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif;
+  font-weight:bold;
+  line-height:16px;
+  text-align:left;
+  font-size:16px;
+}
+div.source-description {
+  margin-bottom:12px;
+}
+div.source-title {
+  font-size:20px;
+}

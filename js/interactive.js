@@ -1,3 +1,9 @@
+function select_default_source() {
+  $("div.modal.fade#settings-modal").modal(
+    {keyboard: false,
+     backdrop: false}
+  );
+}
 (function(window){ // https://ourcodeworld.com/articles/read/188/encode-and-decode-html-entities-using-pure-javascript
 	window.htmlentities = {
 		encode : function(str) {
@@ -17,6 +23,18 @@
 	};
 })(window);
 $(document).ready(function(){
+
+  var queryURL = "http://localhost:2222/api/v1/sourcequery?level={PLACEHOLDER}";
+  var parseSources = (parseSources) => {
+      console.log(parseSources);
+  }
+  ["global", "country", "state", "county"].forEach(
+    function(level){
+      var url = queryURL.replace("{PLACEHOLDER}", level);
+      console.log(url);
+      corsHTTP(url, parseSources);
+    }
+  )
 
   function getDay(num, str) {
     var today = new Date();
@@ -123,7 +141,7 @@ var source_list = new Map([
     ).map(arr => arr[0]);
 
     // create US dom tree
-    function selected_source() { return $("span.default-source").text().trim();}
+    function selected_source() { return $("span.default-source-global").text().trim();}
     function selected_date() { return moment($("div.info-header > div.info-header-element#pos-3").text().trim(), "MM/DD/YYYY"); }
 
     $("#date").text("Last update: " + datasets[3][0].timestamp.split(".")[0] + " PST");
@@ -416,11 +434,11 @@ var source_list = new Map([
       }
 
       if(parent) {
-        queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
-        // queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        //queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       } else {
-        queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
-        // queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        // queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       }
       console.log("qwer", queryURL)
 
@@ -615,7 +633,7 @@ var source_list = new Map([
       } else if (name_list.length == 2) {
         showPlace(name_list[0], name_list[1]);
       }
-      
+
 
     });
 

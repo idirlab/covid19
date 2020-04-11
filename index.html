@@ -47,8 +47,40 @@
   <main style="height: 100%;">
     <div id="banner">
       <div id="title" style="font-size:30px;text-align: center;background-color: rgb(79, 105, 120);color: rgb(232, 235, 238)">
+        <i style="cursor:pointer;float:left;margin-left:12px;transform:translate(0px, 6px);"
+           class="fas fa-cog"
+           onclick="javascript:select_default_source();"></i>
+        <div class="modal fade" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="settings-modal" aria-hidden="true" style="left:10%;">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" style="color:rgb(40, 50, 55);background-color:rgba(207, 216, 220, 1);">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Select the default sources</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="source-description">
+                   On the left-hand side there are 3 figures shown in the header for each location,
+                   the settings in this section change what data source is used to populate those
+                   values.
+                </div>
+                <div class="source-title">Global source</div>
+                <div class="source-selector" source="global"></div>
+                <div class="source-title">Country source</div>
+                <div class="source-selector" source="country"></div>
+                <div class="source-title">State source</div>
+                <div class="source-selector" source="state"></div>
+                <div class="source-title">County source</div>
+                <div class="source-selector" source="county"></div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
         COVID19 Pandemic - Public Information
-        <i style="cursor:pointer;float:right;margin-right:12px;transform:translate(0px, 6px);" class="fas fa-cog" onclick="javascript:"></i>
       </div>
     </div>
     <button id="btn-close_bar" class="btn-hidden-sidebar" onclick="closeBar()"></button>
@@ -103,7 +135,10 @@
       </div>
       <span class="placename hidden">Global</span>
       <span class="selected-state hidden"></span>
-      <span class="default-source hidden">JHU</span>
+      <span class="default-source-global hidden">JHU</span>
+      <span class="default-source-country hidden">JHU</span>
+      <span class="default-source-state hidden">JHU</span>
+      <span class="default-source-county hidden">JHU</span>
       <div class="response-area">
       </div>
     </div>
