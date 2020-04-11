@@ -167,7 +167,10 @@ var source_list = new Map([
     ).map(arr => arr[0]);
 
     // create US dom tree
-    function selected_source() { return $("span.default-source-global").text().trim();}
+    function selected_source() {
+      var lvl = $("span.selected-level.hidden").text().trim();
+      return $(`span.default-source-${lvl}`).text().trim();
+    }
     function selected_date() { return moment($("div.info-header > div.info-header-element#pos-3").text().trim(), "MM/DD/YYYY"); }
 
     $("#date").text("Last update: " + datasets[3][0].timestamp.split(".")[0] + " PST");
@@ -329,6 +332,15 @@ var source_list = new Map([
                               name.toUpperCase().includes("BOROUGH") |
                               name.toUpperCase().includes("PARISH")|
                               (!is_state && countylist.includes(name.toLowerCase().toTitleCase())));
+      var selected_lvl = "global";
+      if(is_county) {
+        selected_lvl = "county";
+      } else if (is_state){
+        selected_lvl = "state";
+      } else if (is_US) {
+        selected_lvl = "country";
+      }
+      $("span.selected-level.hidden").text(selected_lvl);
       var county_state = $("span.selected-state.hidden").text();
 
       function hospital_container_msg_DOM(msg, hidden) {
@@ -460,11 +472,11 @@ var source_list = new Map([
       }
 
       if(parent) {
-        //queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
-        queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        //queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       } else {
-        // queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
-        queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        //queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       }
       console.log("qwer", queryURL)
 
@@ -629,6 +641,11 @@ var source_list = new Map([
 
     }
 
+    $("div.src-selector-apply-btn").click(function(){
+      $("button.close").click()
+      var selected_node = $(".placename.hidden").text().trim();
+      showPlace(selected_node);
+    });
 
     var date_div = $("div.info-pane#aggregate-date-window > div.info-header > div.date-element#pos-3");
 
