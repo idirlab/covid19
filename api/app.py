@@ -282,7 +282,7 @@ def get_data_from_source(node, date, source, entity_type):
             try:
                 info = file_list[source][0].iloc[file_list[source][1][date], file_list[source][0].columns.get_loc(node)]
             except Exception as _:
-                if entity_type == 'county':
+                if entity_type == 'county' and source in source_list_per_level['county']:
                     idx = custom_search_df_for_county_node(file_list[source][entity_type][0])
                     if idx != -1:
                         return file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], idx]
@@ -298,7 +298,7 @@ def get_data_from_source(node, date, source, entity_type):
             try:
                 info = file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], file_list[source][entity_type][0].columns.get_loc(node)]
             except Exception as _:
-                if entity_type == 'county':
+                if entity_type == 'county' and source in source_list_per_level['county']:
                     idx = custom_search_df_for_county_node(file_list[source][entity_type][0])
                     if idx != -1:
                         return file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], idx]
