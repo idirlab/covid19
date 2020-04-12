@@ -138,7 +138,7 @@ def stat_query():
     pid = 0 if len(query_processes) == 0 else query_processes[-1] + 1
     query_processes.append(pid)
 
-    if (all([x in request.args for x in ['node', 'date', 'dsrc']])):
+    if (all([x in request.args for x in ['node', 'date', 'dsrc_parent', 'dsrc_children']])):
         node = request.args['node'].lower()
         date = request.args['date']
         dsrc_parent = request.args['dsrc_parent']
