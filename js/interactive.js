@@ -23,7 +23,7 @@ function select_default_source() {
 	};
 })(window);
 $(document).ready(function(){
-  var queryURL = "https://idir.uta.edu/covid-19-api-dev/api/v1/sourcequery?level={PLACEHOLDER}";
+  var queryURL = "http://localhost:3333/api/v1/sourcequery?level={PLACEHOLDER}";
   var parseSources = (level) => (
     (parseSources) => {
       var sources = parseSources.map(src => `<li class="select-source-item ${level} option"><a class="noHover" href="">${src}</a></li>`);
@@ -169,6 +169,10 @@ var source_list = new Map([
     // create US dom tree
     function selected_source() {
       var lvl = $("span.selected-level.hidden").text().trim();
+      return $(`span.default-source-${lvl}`).text().trim();
+    }
+    function selected_children() {
+      var lvl = $("span.selected-first-order-children.hidden").text().trim();
       return $(`span.default-source-${lvl}`).text().trim();
     }
     function selected_date() { return moment($("div.info-header > div.info-header-element#pos-3").text().trim(), "MM/DD/YYYY"); }
@@ -341,6 +345,13 @@ var source_list = new Map([
         selected_lvl = "country";
       }
       $("span.selected-level.hidden").text(selected_lvl);
+      var get_child_level = new Map([["global", "country"],
+                                     ["country", "state"],
+                                     ["state", "county"],
+                                     ["county", "county"]]);
+      $("span.selected-first-order-children.hidden").text(get_child_level.get(
+        $("span.selected-level.hidden").text().trim()
+      ));
       var county_state = $("span.selected-state.hidden").text();
 
       function hospital_container_msg_DOM(msg, hidden) {
@@ -472,10 +483,10 @@ var source_list = new Map([
       }
 
       if(parent) {
-        queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        queryURL = `http://localhost:3333/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
         //queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       } else {
-        queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        queryURL = `http://localhost:3333/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
         //queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       }
       console.log("qwer", queryURL)
