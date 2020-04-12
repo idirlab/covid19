@@ -541,11 +541,6 @@ var source_list = new Map([
 
             for (var i=0; i<info.length; i++) {
               var cur = info[i].attributes;
-              if (cur.STATE_NAME.toUpperCase() != state || cur.COUNTY_NAME.toUpperCase() != county) {
-                console.log("Error: {" + cur.STATE_NAME + " " + cur.COUNTY_NAME + "} does not match the current selection");
-                continue;
-              }
-
               var addr = `${cur.HQ_ADDRESS} ${cur.HQ_CITY}, ${cur.HQ_STATE}, ${cur.HQ_ZIP_CODE}`;
 
               var sourceDOM = `
