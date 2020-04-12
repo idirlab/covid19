@@ -413,7 +413,6 @@ var source_list = new Map([
           showPlace(placename.text().trim(), parent.text().trim());
         });
       }
-<<<<<<< HEAD
       
       if(parent && parent!='Global') {
         queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
@@ -424,15 +423,6 @@ var source_list = new Map([
         }
         queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
         // queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
-=======
-
-      if(parent) {
-        // queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
-        queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
-      } else {
-        // queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
-        queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
->>>>>>> api_edits
       }
       console.log("qwer", queryURL)
 
@@ -645,7 +635,7 @@ var source_list = new Map([
     }
 
     function style(feature) {
-      if (feature.properties.enname == "us" || feature.properties.enname == "canada") {
+      if (feature.properties.enname == "us") {
         return {
           fillColor: '#dc3545',
           fillOpacity: 0,
@@ -690,7 +680,7 @@ var source_list = new Map([
       });
       // bring the layer to the front.
       layer.bringToFront();
-      if (e.target.feature.properties.enname == "us" || e.target.feature.properties.enname == "canada") {
+      if (e.target.feature.properties.enname == "us") {
         layer.bringToBack();
       }
     }
@@ -708,7 +698,7 @@ var source_list = new Map([
       // bring the layer to the front.
       layer.bringToFront();
 
-      if (e.target.feature.properties.enname == "us" || e.target.feature.properties.enname == "canada") {
+      if (e.target.feature.properties.enname == "us") {
         layer.bringToBack();
       }
     }
