@@ -484,10 +484,13 @@ var source_list = new Map([
         });
       }
 
-      if(parent) {
+      if(parent && parent!='Global') {
         queryURL = `https://idir.uta.edu/covid-19-api-dev-2/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
         //queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       } else {
+        if(name=='United States') {
+          name = 'US'
+        }
         queryURL = `https://idir.uta.edu/covid-19-api-dev-2/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
         //queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       }
