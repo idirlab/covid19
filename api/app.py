@@ -4,6 +4,7 @@ from threading import Timer
 from time import sleep
 from datetime import datetime
 from absl import logging
+from datetime import date, timedelta, datetime
 import os
 import pandas
 
@@ -23,6 +24,12 @@ source_list = {
         'county': 'johns_hopkins_counties_time_series.csv',  # county
     }
 }
+source_list_per_level = {
+    'global': ['JHU'],
+    'country': ['JHU'],
+    'state': ['CDC', 'CNN', 'COVID Tracking Project', 'NY Times', 'JHU'],
+    'county': ['JHU']
+}
 
 refresh_interval_hrs = 1
 refreshing = False
@@ -33,9 +40,78 @@ def clear_cached_data():
     file_list.clear()
 
 
-@app.route('/api/v1/allsourcequery')
-def all_source_query():
-    return jsonify(source_list)
+def daterange(start_date, end_date):
+    for n in range(int ((end_date - start_date).days) + 1):
+        yield start_date + timedelta(n)
+
+
+def str_to_date(inp):
+    return datetime.strptime(inp, "%Y-%m-%d").date()
+
+
+@app.route('/api/v1/sourcequery')
+def source_query():
+    if 'level' in request.args:
+        lev = request.args['level']
+        if lev in ['global', 'country', 'state', 'county']:
+            return jsonify(source_list_per_level[lev])
+        else:
+            return '{} is not in the allowed list of levels: {}'.format(lev, ['global', 'country', 'state', 'county'])
+    else:
+        return jsonify([key for key, _ in source_list.items()])
+
+
+@app.route('/api/v1/statquery_timeseries')
+def stat_query_time_series():
+    global refreshing, query_processes
+
+    while refreshing:
+        logging.info('query received, waiting for refresh to complete')
+        sleep(0.5)
+
+    pid = 0 if len(query_processes) == 0 else query_processes[-1] + 1
+    query_processes.append(pid)
+
+    if (all([x in request.args for x in ['node', 'date_start', 'date_end', 'dsrc']])):
+        node = request.args['node'].lower()
+        date_start = request.args['date_start']
+        date_end = request.args['date_end']
+        dsrc = request.args['dsrc']
+    else:
+        return jsonify(-1)
+
+    logging.info('Processing request...')
+
+    ret = {}
+    try:
+        entity_type = select_entity_type(node)
+        logging.info('is {}'.format(entity_type))
+
+        if entity_type == 'county':
+            node = node.replace(' county', '')
+            node = node.replace(' borough', '')
+            node = node.replace(' parish', '')
+            node = node.replace(' - ', '-')
+        elif 'province' in entity_type:
+            node = '{} - {}'.format(entity_type.split('-')[1], node)
+            entity_type = 'province'
+
+        ret = [{
+            'date': single_date.strftime("%Y-%m-%d"),
+            'stats': get_data_from_source(node, single_date.strftime("%Y-%m-%d"), dsrc, entity_type)
+        } for single_date in daterange(str_to_date(date_start), str_to_date(date_end))]
+        ret = jsonify(parse_into_arrays(ret, entity_type, timeseries=True))
+    except Exception as e:
+        logging.info('Error: {}'.format(e))
+        logging.info('Terminating process with code 500')
+
+    query_processes.remove(pid)
+    logging.info(query_processes)
+
+    if ret == {}:
+        abort(500)
+    else:
+        return ret
 
 
 # ----- all countries in world -----
@@ -102,19 +178,23 @@ def stat_query():
         return ret
         
 
-def parse_into_arrays(ret, entity_type):
+def parse_into_arrays(ret, entity_type, timeseries=False):
     def fn(x):
         if not x:
             return []
-        return [int(z.replace(',', '')) if z.replace(',', '').isdigit() else -1 for z in x.split('-')]
+        return [z.replace(',', '') for z in x.split('-')]
 
-    ret['curnode']['default_stats'] = fn(ret['curnode']['default_stats'])
-    for k, _ in ret['curnode']['detailed_stats'].items():
-        ret['curnode']['detailed_stats'][k] = fn(ret['curnode']['detailed_stats'][k])
-    for i in range(len(ret['children'])):
-        ret['children'][i]['default_stats'] = fn(ret['children'][i]['default_stats'])
-        if entity_type == 'state':
-            ret['children'][i]['name'] = ret['children'][i]['name'].split('-')[0]
+    if not timeseries:
+        ret['curnode']['default_stats'] = fn(ret['curnode']['default_stats'])
+        for k, _ in ret['curnode']['detailed_stats'].items():
+            ret['curnode']['detailed_stats'][k] = fn(ret['curnode']['detailed_stats'][k])
+        for i in range(len(ret['children'])):
+            ret['children'][i]['default_stats'] = fn(ret['children'][i]['default_stats'])
+            if entity_type == 'state':
+                ret['children'][i]['name'] = ret['children'][i]['name'].split('-')[0]
+    else:
+        for i in range(len(ret)):
+            ret[i]['stats'] = fn(ret[i]['stats'])
 
     return ret
 
@@ -160,6 +240,24 @@ def get_parent(node, entity_type):
 
 
 def get_data_from_source(node, date, source, entity_type):
+    def custom_search_df_for_county_node(df):
+        def county_is_ok(idx, full_str, county_str):
+            return idx == 0 or (full_str[idx - 1] == '-' and full_str[idx + len(county_str)] == '-')
+
+        columns = df.columns.values.tolist()
+        toks = node.split('-')
+        county, state = toks[0], toks[1]
+        
+        ans = []
+        for i, el in enumerate(columns):
+            if county_is_ok(el.find(county), el, county) and el.rfind(state) == len(el) - len(state):
+                ans.append(i)
+
+        if len(ans) == 1:
+            return ans[0]
+        else:
+            return -1
+
     if entity_type == 'global':
         if source == 'JHU':
             if date in file_list['JHU']['country'][1]:
@@ -184,6 +282,10 @@ def get_data_from_source(node, date, source, entity_type):
             try:
                 info = file_list[source][0].iloc[file_list[source][1][date], file_list[source][0].columns.get_loc(node)]
             except Exception as _:
+                if entity_type == 'county':
+                    idx = custom_search_df_for_county_node(file_list[source][entity_type][0])
+                    if idx != -1:
+                        return file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], idx]
                 return []
             return info
         else:
@@ -196,6 +298,10 @@ def get_data_from_source(node, date, source, entity_type):
             try:
                 info = file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], file_list[source][entity_type][0].columns.get_loc(node)]
             except Exception as _:
+                if entity_type == 'county':
+                    idx = custom_search_df_for_county_node(file_list[source][entity_type][0])
+                    if idx != -1:
+                        return file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], idx]
                 return []
             return info
         else:
@@ -244,15 +350,15 @@ def select_entity_type(name):
 
 
 def get_all_data(node, date, entity_type):
-    if entity_type == 'state':
-        ret = {}
-        for source in ['CDC', 'CNN', 'COVID Tracking Project', 'NY Times', 'JHU']:
-            cur = get_data_from_source(node, date, source, entity_type)
-            if cur != []:
-                ret[source] = cur
-        return ret
-    else:
-        return {'JHU': get_data_from_source(node, date, 'JHU', entity_type)}
+    ret = {}
+
+    for source in source_list_per_level[entity_type]:
+        cur = get_data_from_source(node, date, source, entity_type)
+        if cur != []:
+            ret[source] = cur
+
+    return ret
+
 
 def refresh_data_util():
     def prc(v):
