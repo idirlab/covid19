@@ -23,7 +23,7 @@ function select_default_source() {
 	};
 })(window);
 $(document).ready(function(){
-  var queryURL = "https://idir.uta.edu/covid-19-api-dev/api/v1/sourcequery?level={PLACEHOLDER}";
+  var queryURL = "https://idir.uta.edu/covid-19-api-dev-2/api/v1/sourcequery?level={PLACEHOLDER}";
   var parseSources = (level) => (
     (parseSources) => {
       var sources = parseSources.map(src => `<li class="select-source-item ${level} option"><a class="noHover" href="">${src}</a></li>`);
@@ -339,8 +339,10 @@ var source_list = new Map([
       var selected_lvl = "global";
       if(is_county) {
         selected_lvl = "county";
+	parent = $("span.selected-state").text(name);
       } else if (is_state){
         selected_lvl = "state";
+	$("span.selected-state").text(name);
       } else if (is_US) {
         selected_lvl = "country";
       }
@@ -483,10 +485,10 @@ var source_list = new Map([
       }
 
       if(parent) {
-        queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
+        queryURL = `https://idir.uta.edu/covid-19-api-dev-2/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
         //queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       } else {
-        queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
+        queryURL = `https://idir.uta.edu/covid-19-api-dev-2/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
         //queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       }
       console.log("qwer", queryURL)
