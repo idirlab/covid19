@@ -1,3 +1,9 @@
+function select_default_source() {
+  $("div.modal.fade#settings-modal").modal(
+    {keyboard: false,
+     backdrop: false}
+  );
+}
 (function(window){ // https://ourcodeworld.com/articles/read/188/encode-and-decode-html-entities-using-pure-javascript
 	window.htmlentities = {
 		encode : function(str) {
@@ -17,6 +23,44 @@
 	};
 })(window);
 $(document).ready(function(){
+  var queryURL = "http://localhost:2222/api/v1/sourcequery?level={PLACEHOLDER}";
+  var parseSources = (level) => (
+    (parseSources) => {
+      var sources = parseSources.map(src => `<li class="select-source-item ${level} option"><a class="noHover" href="">${src}</a></li>`);
+      var dropdown_contents = sources.reduce((acc, item) => [acc, item].join("\n"));
+      var original_src = $(`span.default-source-${level}.hidden`).text();
+      var dropdown_DOM = `
+       <div class="dropdown-${level}">
+         <button class="btn btn-primary dropdown-toggle"
+                 style="background-color:rgba(207, 216, 220, 1);border:1px solid rgba(38, 50, 56, 1);color:rgba(38, 50, 56, 1);"
+                 type="button"
+                 id="dropdownMenu-${level}"
+                 data-toggle="dropdown"
+                 aria-haspopup="true"
+                 aria-expanded="false">${original_src}</span></button>
+         <ul class="dropdown-menu"
+             aria-labeledby="dropdownMenu-${level}"
+             style="background-color:rgba(207, 216, 220, 1);">
+           ${dropdown_contents}
+         </ul>
+       </div>
+      `;
+      $(`div.source-selector-${level}`).html(dropdown_DOM);
+      $(`li.${level}.option`).click(function(){
+        var src = $(this).text().trim();
+        $(`div.dropdown-${level} > button`).text(src);
+        $(`span.default-source-${level}.hidden`).text(src);
+      });
+      console.log(`sources for level=${level} are: ${dropdown_DOM}`);
+    }
+  );
+  ["global", "country", "state", "county"].forEach(
+    function(level){
+      var url = queryURL.replace("{PLACEHOLDER}", level);
+      console.log(url);
+      corsHTTP(url, parseSources(level));
+    }
+  );
 
   function getDay(num, str) {
     var today = new Date();
@@ -123,7 +167,7 @@ var source_list = new Map([
     ).map(arr => arr[0]);
 
     // create US dom tree
-    function selected_source() { return $("span.default-source").text().trim();}
+    function selected_source() { return $("span.default-source-global").text().trim();}
     function selected_date() { return moment($("div.info-header > div.info-header-element#pos-3").text().trim(), "MM/DD/YYYY"); }
 
     $("#date").text("Last update: " + datasets[3][0].timestamp.split(".")[0] + " PST");
@@ -415,14 +459,14 @@ var source_list = new Map([
       }
       
       if(parent && parent!='Global') {
-        queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
-        // queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        // queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       } else {
         if(name=='United States') {
           name = 'US'
         }
-        queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
-        // queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        // queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       }
       console.log("qwer", queryURL)
 
@@ -499,11 +543,6 @@ var source_list = new Map([
 
             for (var i=0; i<info.length; i++) {
               var cur = info[i].attributes;
-              if (cur.STATE_NAME.toUpperCase() != state || cur.COUNTY_NAME.toUpperCase() != county) {
-                console.log("Error: {" + cur.STATE_NAME + " " + cur.COUNTY_NAME + "} does not match the current selection");
-                continue;
-              }
-
               var addr = `${cur.HQ_ADDRESS} ${cur.HQ_CITY}, ${cur.HQ_STATE}, ${cur.HQ_ZIP_CODE}`;
 
               var sourceDOM = `
@@ -616,7 +655,7 @@ var source_list = new Map([
       } else if (name_list.length == 2) {
         showPlace(name_list[0], name_list[1]);
       }
-      
+
 
     });
 
