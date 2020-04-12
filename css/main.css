@@ -459,14 +459,36 @@ text {
   color: black
 }
 
-.idir-total-chart {
+.chart_panel {
   position: fixed !important;
   top:44px;
   width:500px;
-  height:280px;
+  height:320px;
   right: 0%;
   z-index:1000;
   background: rgb(227, 230, 229);
+}
+
+.idir-total-chart {
+  /* position: fixed !important; */
+  top:40px;
+  width:500px;
+  height:280px;
+  right: 0%;
+  background: rgb(227, 230, 229);
+}
+
+button.btn_close_chart {
+  width:40px;
+  height:40px;
+  /* line-height:40px; */
+  background-color: rgba(227, 230, 229);
+  /* border-radius: 20px; */
+  border-width: 0px;
+  /* display:inline-block; */
+  /* transform: translate(80px, 2px); */
+  /* right: 0%; */
+  float: right;
 }
 
 .juji {

@@ -784,7 +784,66 @@ var source_list = new Map([
       var county = `${e.target.feature.properties.NAME.toTitleCase()} ${municipalityPostfix(state)}`;
 
       $(".placename.hidden").text(county+','+state);
+
+      console.log("county name: " + county);
       showPlace(county, state);
+
+      date_list = []
+      date_list.push('t');
+      total_list = [];
+      total_list.push('Total cases');
+      death_list = [];
+      death_list.push('Fatal Cases');
+      recover_list = [];
+      recover_list.push('Recoveries');
+
+      var update_county_Chart = (data) => {
+
+        data_str = JSON.stringify(data)
+        console.log('Chart_county_data!!!: ' + data_str)
+
+        for (let index = 0; index < data.length; index++) {
+
+          const element = data[index];
+          if (element['stats'].length == 0) {
+            break
+          }
+          if (element['stats'][2] == -1) {
+            element['stats'][2] = 0
+          }
+          
+          date_list.push(element['date'])
+          total_list.push(element['stats'][0])
+          death_list.push(element['stats'][1])
+          recover_list.push(element['stats'][2])
+        }
+        $("div.chart_panel").css("display","block")
+
+        chart.load({
+          columns: [date_list, total_list, death_list, recover_list],
+          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
+        });
+
+      }
+
+      function format_date(num, str) {
+        var today = new Date();
+        var nowTime = today.getTime()
+        var ms = 24*3600*1000*num
+        today.setTime(parseInt(nowTime + ms))
+        var oYear = today.getFullYear()
+        var oMoth = (today.getMonth() + 1).toString()
+        if (oMoth.length <= 1) oMoth = '0' + oMoth
+        var oDay = today.getDate().toString()
+        if (oDay.length <= 1) oDay = '0' + oDay
+        return oYear + str + oMoth + str + oDay
+      }
+      var format_today = format_date(0, '-')
+
+      queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery_timeseries?node=${county}-${state}&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
+      corsHTTP(queryURL, update_county_Chart);
+
+      console.log('query_county_url: ' + queryURL)
     }
 
     // 3.2.3 reset the hightlighted feature when the mouse is out of its region.
@@ -832,12 +891,65 @@ var source_list = new Map([
       places["Global Trend"] = calPlace("Global Trend");
       showPlace("Global");
       // calCounts(global);
-      chart.load({
-        columns: [places["Global Trend"].c, places["Global Trend"].a, places["Global Trend"].r, places["Global Trend"].d],
-        unload: ['Aggr. Confirmed', 'Active Confirmed', 'Recovered', 'Death'],
-      });
+      // chart.load({
+      //   columns: [places["Global Trend"].c, places["Global Trend"].a, places["Global Trend"].r, places["Global Trend"].d],
+      //   unload: ['Aggr. Confirmed', 'Active Confirmed', 'Recovered', 'Death'],
+      // });
 
       $("#hint").text("Click a place to review local trend.");
+
+      date_list = []
+      date_list.push('t');
+      total_list = [];
+      total_list.push('Total cases');
+      death_list = [];
+      death_list.push('Fatal Cases');
+      recover_list = [];
+      recover_list.push('Recoveries');
+      
+
+      var updateChart = (data) => {
+        for (let index = 0; index < data.length; index++) {
+
+          const element = data[index];
+          if (element['stats'].length == 0) {
+            break
+          }
+          if (element['stats'][2] == -1) {
+            element['stats'][2] = 0
+          }
+          
+          date_list.push(element['date'])
+          total_list.push(element['stats'][0])
+          death_list.push(element['stats'][1])
+          recover_list.push(element['stats'][2])
+        }
+
+        $("div.chart_panel").css("display","block")
+
+        chart.load({
+          columns: [date_list, total_list, death_list, recover_list],
+          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
+        });
+
+      }
+
+      function format_date(num, str) {
+        var today = new Date();
+        var nowTime = today.getTime()
+        var ms = 24*3600*1000*num
+        today.setTime(parseInt(nowTime + ms))
+        var oYear = today.getFullYear()
+        var oMoth = (today.getMonth() + 1).toString()
+        if (oMoth.length <= 1) oMoth = '0' + oMoth
+        var oDay = today.getDate().toString()
+        if (oDay.length <= 1) oDay = '0' + oDay
+        return oYear + str + oMoth + str + oDay
+      }
+      var format_today = format_date(0, '-')
+
+      queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery_timeseries?node=Global&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
+      corsHTTP(queryURL, updateChart);
 
     });
 
@@ -850,80 +962,133 @@ var source_list = new Map([
 
 
     places["Global Trend"] = calPlace("Global Trend");
+
     showPlace("Global");
 
+    date_list = []
+    date_list.push('t');
+    total_list = [];
+    total_list.push('Total cases');
+    death_list = [];
+    death_list.push('Fatal Cases');
+    recover_list = [];
+    recover_list.push('Recoveries');
+    
 
-    chart = c3.generate({
-      size: {
-        height: 280,
-        width: 460
-      },
-      data: {
-        x: "t",
-        y: "confirmed",
-        columns: [places["Global Trend"].t, places["Global Trend"].c, places["Global Trend"].a, places["Global Trend"].r, places["Global Trend"].d],
-        type: 'line',
-        axes: {
-          confirmed: 'y'
-        },
-        colors: {
-          'Aggr. Confirmed': '#dc3545',
-          // Suspected: 'orange',
-          'Active Confirmed': 'orange',
-          Recovered: '#28a745',
-          Death: '#5d4f72e8'
+    var updateChart = (data) => {
+
+      data_str = JSON.stringify(data)
+      console.log('Chart_data!!!: ' + data_str)
+      
+      for (let index = 0; index < data.length; index++) {
+
+        const element = data[index];
+        if (element['stats'].length == 0) {
+          break
         }
-      },
-      zoom: {
-        enabled: true
-      },
-      axis: {
-        x: {
-          type: "timeseries",
-          tick: {
-            format: "%b %d",
-            centered: true,
-            fit: true,
-            count: 8
+        if (element['stats'][2] == -1) {
+            element['stats'][2] = 0
+          }
+        
+        date_list.push(element['date'])
+        total_list.push(element['stats'][0])
+        death_list.push(element['stats'][1])
+        recover_list.push(element['stats'][2])
+      }
+      $("div.chart_panel").css("display","block")
+
+      chart = c3.generate({
+        size: {
+          height: 280,
+          width: 460
+        },
+        data: {
+          x: "t",
+          y: "confirmed",
+          columns: [date_list, total_list, death_list, recover_list],
+          type: 'line',
+          axes: {
+            confirmed: 'y'
+          },
+          colors: {
+            'Total cases': '#dc3545',
+            // Suspected: 'orange',
+            // 'Active Confirmed': 'orange',
+            'Recoveries': '#28a745',
+            'Fatal Cases': '#5d4f72e8'
           }
         },
-        y: {
-          label: {
-            text: 'Cases',
-            position: 'outer-middle'
-          },
-          min: 0,
-          padding: {
-            bottom: 0
-          },
-          type: 'linear'
-        }
-      },
-      point: {
-        r: 3,
-        focus: {
-          expand: {
-            r: 5
-          }
-        }
-      },
-      zoom: {
-        // rescale: true,
-        enabled: false,
-        type: "scroll",
-      },
-      tooltip: {
-        linked: true,
-      },
-      legend: {
-        position: 'inset',
-        inset: {
-          anchor: "top-left",
-          y: 10
+        zoom: {
+          enabled: true
         },
-      },
-      bindto: "#total-chart"
-    });
+        axis: {
+          x: {
+            type: "timeseries",
+            tick: {
+              format: "%b %d",
+              centered: true,
+              fit: true,
+              count: 8
+            }
+          },
+          y: {
+            label: {
+              text: 'Cases',
+              position: 'outer-middle'
+            },
+            min: 0,
+            padding: {
+              bottom: 0
+            },
+            type: 'linear'
+          }
+        },
+        point: {
+          r: 3,
+          focus: {
+            expand: {
+              r: 5
+            }
+          }
+        },
+        zoom: {
+          // rescale: true,
+          enabled: false,
+          type: "scroll",
+        },
+        tooltip: {
+          linked: true,
+        },
+        legend: {
+          position: 'inset',
+          inset: {
+            anchor: "top-left",
+            y: 10
+          },
+        },
+        bindto: "#total-chart"
+      });
+
+      
+    }
+
+    function format_date(num, str) {
+      var today = new Date();
+      var nowTime = today.getTime()
+      var ms = 24*3600*1000*num
+      today.setTime(parseInt(nowTime + ms))
+      var oYear = today.getFullYear()
+      var oMoth = (today.getMonth() + 1).toString()
+      if (oMoth.length <= 1) oMoth = '0' + oMoth
+      var oDay = today.getDate().toString()
+      if (oDay.length <= 1) oDay = '0' + oDay
+      return oYear + str + oMoth + str + oDay
+    }
+    var format_today = format_date(0, '-')
+
+    queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery_timeseries?node=Global&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
+    corsHTTP(queryURL, updateChart);
+
 
 
     function displayPlace(name) {
@@ -932,13 +1097,48 @@ var source_list = new Map([
       places[name] = calPlace(name);
       showPlace(name);
 
-      // console.log('places[name].t: ' + places[name].t)
-      // console.log('places[name].c: ' + places[name].c)
+      date_list = []
+      date_list.push('t');
+      total_list = [];
+      total_list.push('Total cases');
+      death_list = [];
+      death_list.push('Fatal Cases');
+      recover_list = [];
+      recover_list.push('Recoveries');
 
-      chart.load({
-        columns: [places[name].c, places[name].a, places[name].r, places[name].d],
-        unload: ['Aggr. Confirmed', 'Active Confirmed', 'Recovered', 'Death'],
-      });
+
+      var update_state_Chart = (data) => {
+
+        // data_str = JSON.stringify(data)
+        // console.log('Chart_state_data!!!: ' + data_str)
+
+        for (let index = 0; index < data.length; index++) {
+
+          const element = data[index];
+          if (element['stats'].length == 0) {
+            break
+          }
+          if (element['stats'][2] == -1) {
+            element['stats'][2] = 0
+          }
+          
+          date_list.push(element['date'])
+          total_list.push(element['stats'][0])
+          death_list.push(element['stats'][1])
+          recover_list.push(element['stats'][2])
+        }
+
+        $("div.chart_panel").css("display","block")
+
+        chart.load({
+          columns: [date_list, total_list, death_list, recover_list],
+          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
+        });
+
+      }
+
+      queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery_timeseries?node=${name}&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
+      corsHTTP(queryURL, update_state_Chart);
 
     }
 

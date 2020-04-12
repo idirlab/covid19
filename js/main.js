@@ -139,3 +139,8 @@ function open_chatbot() {
 //         .forEach(tup => $(`div#pos-${ tup[0] + 3 }`).text(tup[1].format("MM/DD/YYYY")))
 // -- Uncomment this section to set the current date on load
 $("div#pos-2")
+
+
+function close_chart() {
+  $("div.chart_panel").css("display","none")
+}
