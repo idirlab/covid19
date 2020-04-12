@@ -62,6 +62,23 @@ def source_query():
         return jsonify([key for key, _ in source_list.items()])
 
 
+def preprocess_node(node):
+    entity_type = select_entity_type(node)
+    logging.info('is {}'.format(entity_type))
+
+    if entity_type == 'county':
+        node = node.replace(' county', '')
+        node = node.replace(' borough', '')
+        node = node.replace(' parish', '')
+        node = node.replace(' - ', '-')
+        node = node.replace("'", '')
+    elif 'province' in entity_type:
+        node = '{} - {}'.format(entity_type.split('-')[1], node)
+        entity_type = 'province'
+
+    return node, entity_type
+
+
 @app.route('/api/v1/statquery_timeseries')
 def stat_query_time_series():
     global refreshing, query_processes
@@ -85,17 +102,7 @@ def stat_query_time_series():
 
     ret = {}
     try:
-        entity_type = select_entity_type(node)
-        logging.info('is {}'.format(entity_type))
-
-        if entity_type == 'county':
-            node = node.replace(' county', '')
-            node = node.replace(' borough', '')
-            node = node.replace(' parish', '')
-            node = node.replace(' - ', '-')
-        elif 'province' in entity_type:
-            node = '{} - {}'.format(entity_type.split('-')[1], node)
-            entity_type = 'province'
+        node, entity_type = preprocess_node(node)
 
         ret = [{
             'date': single_date.strftime("%Y-%m-%d"),
@@ -134,7 +141,8 @@ def stat_query():
     if (all([x in request.args for x in ['node', 'date', 'dsrc']])):
         node = request.args['node'].lower()
         date = request.args['date']
-        dsrc = request.args['dsrc']
+        dsrc_parent = request.args['dsrc_parent']
+        dsrc_children = request.args['dsrc_children']
     else:
         return jsonify(-1)
 
@@ -142,26 +150,16 @@ def stat_query():
 
     ret = {}
     try:
-        entity_type = select_entity_type(node)
-        logging.info('is {}'.format(entity_type))
-
-        if entity_type == 'county':
-            node = node.replace(' county', '')
-            node = node.replace(' borough', '')
-            node = node.replace(' parish', '')
-            node = node.replace(' - ', '-')
-        elif 'province' in entity_type:
-            node = '{} - {}'.format(entity_type.split('-')[1], node)
-            entity_type = 'province'
+        node, entity_type = preprocess_node(node)
 
         ret = {
             'curnode': {
-                'default_stats': get_data_from_source(node, date, dsrc, entity_type),
+                'default_stats': get_data_from_source(node, date, dsrc_parent, entity_type),
                 'detailed_stats': get_all_data(node, date, entity_type)
             },
             'children': [{
                 'name': x,
-                'default_stats': get_data_from_source(x, date, dsrc, ('state' if entity_type == 'country' else ('county' if entity_type == 'state' else ('country' if entity_type == 'global' else '-1'))))
+                'default_stats': get_data_from_source(x, date, dsrc_children, ('state' if entity_type == 'country' else ('county' if entity_type == 'state' else ('country' if entity_type == 'global' else '-1'))))
             } for x in get_children(node, entity_type)]
         }
 
