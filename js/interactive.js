@@ -387,8 +387,6 @@ var source_list = new Map([
 
       var parseInfo = (info) => {
           // Create side-panel here
-          console.log(info.curnode)
-          console.log(info.curnode.default_stats)
           var no_data = Object.entries(info.curnode.detailed_stats).length == 0;
           if (no_data) {
             $("div#aggregate-date-window > div.response-area").html(`
@@ -397,8 +395,8 @@ var source_list = new Map([
             return;
           }
           var cases = info.curnode.default_stats[0];
-          var deaths = info.curnode.default_stats[1]==-1 ? "NA" : info.curnode.default_stats[1];
-          var recovered = info.curnode.default_stats[2]==-1 ? "NA" : info.curnode.default_stats[2];
+          var deaths = info.curnode.default_stats[1];
+          var recovered = info.curnode.default_stats[2];
           var variable_DOMS = Array.from(Object.entries(info.curnode.detailed_stats)).map(src_to_stats =>
             `
              <div class="variable">
@@ -408,10 +406,10 @@ var source_list = new Map([
                    <span class="confirmed-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][0]}</span>
                  </div>
                  <div class="figure">
-                   <span class="death-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][1]==-1 ? 'NA': src_to_stats[1][1]}</span>
+                   <span class="death-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][1]}</span>
                  </div>
                  <div class="figure">
-                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][2]==-1 ? 'NA': src_to_stats[1][2]}</span>
+                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][2]}</span>
                  </div>
                </div>
              </div>
@@ -455,10 +453,10 @@ var source_list = new Map([
                   <span class="confirmed-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[0]}</span>
                 </div>
                 <div class="figure">
-                  <span class="death-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[1]==-1 ? 'NA': child_obj.default_stats[1]}</span>
+                  <span class="death-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[1]}</span>
                 </div>
                 <div class="figure">
-                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[2]==-1 ? 'NA': child_obj.default_stats[2]}</span>
+                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[2]}</span>
                 </div>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
@@ -481,7 +479,8 @@ var source_list = new Map([
           if($(this).parent().attr("class").split(/\s+/).includes("root"))
             return;
           var placename = $(this).parent().find("span.placename");
-          showPlace(placename.text().trim());
+          var parent = $(this).parent().parent().find("div.geolocation-container > div.location-information-container.root > span.placename")
+          showPlace(placename.text().trim(), parent.text().trim());
         });
       }
 
@@ -494,7 +493,7 @@ var source_list = new Map([
       }
       console.log("qwer", queryURL)
 
-      corsHTTP(queryURL, parseInfo)
+      corsHTTP(encodeURI(queryURL), parseInfo)
 
       if (is_county) {
 
@@ -567,11 +566,6 @@ var source_list = new Map([
 
             for (var i=0; i<info.length; i++) {
               var cur = info[i].attributes;
-              if (cur.STATE_NAME.toUpperCase() != state || cur.COUNTY_NAME.toUpperCase() != county) {
-                console.log("Error: {" + cur.STATE_NAME + " " + cur.COUNTY_NAME + "} does not match the current selection");
-                continue;
-              }
-
               var addr = `${cur.HQ_ADDRESS} ${cur.HQ_CITY}, ${cur.HQ_STATE}, ${cur.HQ_ZIP_CODE}`;
 
               var sourceDOM = `
@@ -673,7 +667,6 @@ var source_list = new Map([
       var new_dates = (arrow_position === "pos-1") || (arrow_position === "pos-2") ?
                       dates.map(d => d.subtract(1, "days")) :
                       dates.map(d => d.add(1, "days"));
-      // Now update the dates TODO: bugs time offset by 1 day to real data.
       new_dates.forEach(function(new_date, idx){
         var pos_id = `pos-${idx + 2}`;
         var date_str = new_date.format("MM/DD/YYYY");
@@ -709,7 +702,7 @@ var source_list = new Map([
     }
 
     function style(feature) {
-      if (feature.properties.enname == "us" || feature.properties.enname == "canada") {
+      if (feature.properties.enname == "us") {
         return {
           fillColor: '#dc3545',
           fillOpacity: 0,
@@ -754,7 +747,7 @@ var source_list = new Map([
       });
       // bring the layer to the front.
       layer.bringToFront();
-      if (e.target.feature.properties.enname == "us" || e.target.feature.properties.enname == "canada") {
+      if (e.target.feature.properties.enname == "us") {
         layer.bringToBack();
       }
     }
@@ -772,7 +765,7 @@ var source_list = new Map([
       // bring the layer to the front.
       layer.bringToFront();
 
-      if (e.target.feature.properties.enname == "us" || e.target.feature.properties.enname == "canada") {
+      if (e.target.feature.properties.enname == "us") {
         layer.bringToBack();
       }
     }
