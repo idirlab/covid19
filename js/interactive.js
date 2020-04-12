@@ -23,7 +23,7 @@ function select_default_source() {
 	};
 })(window);
 $(document).ready(function(){
-  var queryURL = "http://localhost:2222/api/v1/sourcequery?level={PLACEHOLDER}";
+  var queryURL = "https://idir.uta.edu/covid-19-api-dev-2/api/v1/sourcequery?level={PLACEHOLDER}";
   var parseSources = (level) => (
     (parseSources) => {
       var sources = parseSources.map(src => `<li class="select-source-item ${level} option"><a class="noHover" href="">${src}</a></li>`);
@@ -167,7 +167,14 @@ var source_list = new Map([
     ).map(arr => arr[0]);
 
     // create US dom tree
-    function selected_source() { return $("span.default-source-global").text().trim();}
+    function selected_source() {
+      var lvl = $("span.selected-level.hidden").text().trim();
+      return $(`span.default-source-${lvl}`).text().trim();
+    }
+    function selected_children() {
+      var lvl = $("span.selected-first-order-children.hidden").text().trim();
+      return $(`span.default-source-${lvl}`).text().trim();
+    }
     function selected_date() { return moment($("div.info-header > div.info-header-element#pos-3").text().trim(), "MM/DD/YYYY"); }
 
     $("#date").text("Last update: " + datasets[3][0].timestamp.split(".")[0] + " PST");
@@ -320,6 +327,7 @@ var source_list = new Map([
     function showPlace(name, parent=null) {
       // console.log(name)
       name = name.toLowerCase().toTitleCase();
+      $("span.placename.hidden").text(name);
       var is_global = name.toUpperCase() === "GLOBAL";
       var is_state = US_States.map(s => s.toLowerCase()).includes(name.toLowerCase());
       if(is_state)
@@ -329,6 +337,24 @@ var source_list = new Map([
                               name.toUpperCase().includes("BOROUGH") |
                               name.toUpperCase().includes("PARISH")|
                               (!is_state && countylist.includes(name.toLowerCase().toTitleCase())));
+      var selected_lvl = "global";
+      if(is_county) {
+        selected_lvl = "county";
+	parent = $("span.selected-state").text();
+      } else if (is_state){
+        selected_lvl = "state";
+	$("span.selected-state").text(name);
+      } else if (is_US) {
+        selected_lvl = "country";
+      }
+      $("span.selected-level.hidden").text(selected_lvl);
+      var get_child_level = new Map([["global", "country"],
+                                     ["country", "state"],
+                                     ["state", "county"],
+                                     ["county", "county"]]);
+      $("span.selected-first-order-children.hidden").text(get_child_level.get(
+        $("span.selected-level.hidden").text().trim()
+      ));
       var county_state = $("span.selected-state.hidden").text();
 
       function hospital_container_msg_DOM(msg, hidden) {
@@ -361,8 +387,6 @@ var source_list = new Map([
 
       var parseInfo = (info) => {
           // Create side-panel here
-          console.log(info.curnode)
-          console.log(info.curnode.default_stats)
           var no_data = Object.entries(info.curnode.detailed_stats).length == 0;
           if (no_data) {
             $("div#aggregate-date-window > div.response-area").html(`
@@ -371,8 +395,8 @@ var source_list = new Map([
             return;
           }
           var cases = info.curnode.default_stats[0];
-          var deaths = info.curnode.default_stats[1]==-1 ? "NA" : info.curnode.default_stats[1];
-          var recovered = info.curnode.default_stats[2]==-1 ? "NA" : info.curnode.default_stats[2];
+          var deaths = info.curnode.default_stats[1];
+          var recovered = info.curnode.default_stats[2];
           var variable_DOMS = Array.from(Object.entries(info.curnode.detailed_stats)).map(src_to_stats =>
             `
              <div class="variable">
@@ -382,10 +406,10 @@ var source_list = new Map([
                    <span class="confirmed-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][0]}</span>
                  </div>
                  <div class="figure">
-                   <span class="death-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][1]==-1 ? 'NA': src_to_stats[1][1]}</span>
+                   <span class="death-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][1]}</span>
                  </div>
                  <div class="figure">
-                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][2]==-1 ? 'NA': src_to_stats[1][2]}</span>
+                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][2]}</span>
                  </div>
                </div>
              </div>
@@ -429,10 +453,10 @@ var source_list = new Map([
                   <span class="confirmed-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[0]}</span>
                 </div>
                 <div class="figure">
-                  <span class="death-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[1]==-1 ? 'NA': child_obj.default_stats[1]}</span>
+                  <span class="death-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[1]}</span>
                 </div>
                 <div class="figure">
-                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[2]==-1 ? 'NA': child_obj.default_stats[2]}</span>
+                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[2]}</span>
                 </div>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
@@ -455,20 +479,21 @@ var source_list = new Map([
           if($(this).parent().attr("class").split(/\s+/).includes("root"))
             return;
           var placename = $(this).parent().find("span.placename");
-          showPlace(placename.text().trim());
+          var parent = $(this).parent().parent().find("div.geolocation-container > div.location-information-container.root > span.placename")
+          showPlace(placename.text().trim(), parent.text().trim());
         });
       }
 
       if(parent) {
-        //queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
-        queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        queryURL = `https://idir.uta.edu/covid-19-api-dev-2/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
+        //queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       } else {
-        // queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
-        queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        queryURL = `https://idir.uta.edu/covid-19-api-dev-2/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
+        //queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       }
       console.log("qwer", queryURL)
 
-      corsHTTP(queryURL, parseInfo)
+      corsHTTP(encodeURI(queryURL), parseInfo)
 
       if (is_county) {
 
@@ -624,6 +649,11 @@ var source_list = new Map([
 
     }
 
+    $("div.src-selector-apply-btn").click(function(){
+      $("button.close").click()
+      var selected_node = $(".placename.hidden").text().trim();
+      showPlace(selected_node);
+    });
 
     var date_div = $("div.info-pane#aggregate-date-window > div.info-header > div.date-element#pos-3");
 
@@ -637,7 +667,6 @@ var source_list = new Map([
       var new_dates = (arrow_position === "pos-1") || (arrow_position === "pos-2") ?
                       dates.map(d => d.subtract(1, "days")) :
                       dates.map(d => d.add(1, "days"));
-      // Now update the dates TODO: bugs time offset by 1 day to real data.
       new_dates.forEach(function(new_date, idx){
         var pos_id = `pos-${idx + 2}`;
         var date_str = new_date.format("MM/DD/YYYY");
@@ -673,7 +702,7 @@ var source_list = new Map([
     }
 
     function style(feature) {
-      if (feature.properties.enname == "us" || feature.properties.enname == "canada") {
+      if (feature.properties.enname == "us") {
         return {
           fillColor: '#dc3545',
           fillOpacity: 0,
@@ -718,7 +747,7 @@ var source_list = new Map([
       });
       // bring the layer to the front.
       layer.bringToFront();
-      if (e.target.feature.properties.enname == "us" || e.target.feature.properties.enname == "canada") {
+      if (e.target.feature.properties.enname == "us") {
         layer.bringToBack();
       }
     }
@@ -736,7 +765,7 @@ var source_list = new Map([
       // bring the layer to the front.
       layer.bringToFront();
 
-      if (e.target.feature.properties.enname == "us" || e.target.feature.properties.enname == "canada") {
+      if (e.target.feature.properties.enname == "us") {
         layer.bringToBack();
       }
     }

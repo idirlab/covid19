@@ -1109,5 +1109,5 @@ div.apply-btn-style:hover:before {
   border-radius:16px;
 }
 div.modal-footer{
-  z-index:99999;
+  z-index:999;
 }

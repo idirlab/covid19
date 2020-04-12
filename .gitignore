@@ -8,3 +8,4 @@ kmeng01_testing
 .vscode
 api/__pycache__
 webapp.log
+**/api.log

@@ -5,6 +5,7 @@ from time import sleep
 from datetime import datetime
 from absl import logging
 from datetime import date, timedelta, datetime
+import sys
 import os
 import pandas
 
@@ -61,6 +62,23 @@ def source_query():
         return jsonify([key for key, _ in source_list.items()])
 
 
+def preprocess_node(node):
+    entity_type = select_entity_type(node)
+    logging.info('is {}'.format(entity_type))
+
+    if entity_type == 'county':
+        node = node.replace(' county', '')
+        node = node.replace(' borough', '')
+        node = node.replace(' parish', '')
+        node = node.replace(' - ', '-')
+        node = node.replace("'", '')
+    elif 'province' in entity_type:
+        node = '{} - {}'.format(entity_type.split('-')[1], node)
+        entity_type = 'province'
+
+    return node, entity_type
+
+
 @app.route('/api/v1/statquery_timeseries')
 def stat_query_time_series():
     global refreshing, query_processes
@@ -84,17 +102,7 @@ def stat_query_time_series():
 
     ret = {}
     try:
-        entity_type = select_entity_type(node)
-        logging.info('is {}'.format(entity_type))
-
-        if entity_type == 'county':
-            node = node.replace(' county', '')
-            node = node.replace(' borough', '')
-            node = node.replace(' parish', '')
-            node = node.replace(' - ', '-')
-        elif 'province' in entity_type:
-            node = '{} - {}'.format(entity_type.split('-')[1], node)
-            entity_type = 'province'
+        node, entity_type = preprocess_node(node)
 
         ret = [{
             'date': single_date.strftime("%Y-%m-%d"),
@@ -130,10 +138,11 @@ def stat_query():
     pid = 0 if len(query_processes) == 0 else query_processes[-1] + 1
     query_processes.append(pid)
 
-    if (all([x in request.args for x in ['node', 'date', 'dsrc']])):
+    if (all([x in request.args for x in ['node', 'date', 'dsrc_parent', 'dsrc_children']])):
         node = request.args['node'].lower()
         date = request.args['date']
-        dsrc = request.args['dsrc']
+        dsrc_parent = request.args['dsrc_parent']
+        dsrc_children = request.args['dsrc_children']
     else:
         return jsonify(-1)
 
@@ -141,26 +150,16 @@ def stat_query():
 
     ret = {}
     try:
-        entity_type = select_entity_type(node)
-        logging.info('is {}'.format(entity_type))
-
-        if entity_type == 'county':
-            node = node.replace(' county', '')
-            node = node.replace(' borough', '')
-            node = node.replace(' parish', '')
-            node = node.replace(' - ', '-')
-        elif 'province' in entity_type:
-            node = '{} - {}'.format(entity_type.split('-')[1], node)
-            entity_type = 'province'
+        node, entity_type = preprocess_node(node)
 
         ret = {
             'curnode': {
-                'default_stats': get_data_from_source(node, date, dsrc, entity_type),
+                'default_stats': get_data_from_source(node, date, dsrc_parent, entity_type),
                 'detailed_stats': get_all_data(node, date, entity_type)
             },
             'children': [{
                 'name': x,
-                'default_stats': get_data_from_source(x, date, dsrc, ('state' if entity_type == 'country' else ('county' if entity_type == 'state' else ('country' if entity_type == 'global' else '-1'))))
+                'default_stats': get_data_from_source(x, date, dsrc_children, ('state' if entity_type == 'country' else ('county' if entity_type == 'state' else ('country' if entity_type == 'global' else '-1'))))
             } for x in get_children(node, entity_type)]
         }
 
@@ -182,7 +181,7 @@ def parse_into_arrays(ret, entity_type, timeseries=False):
     def fn(x):
         if not x:
             return []
-        return [int(z.replace(',', '')) if z.replace(',', '').isdigit() else -1 for z in x.split('-')]
+        return [z.replace(',', '') for z in x.split('-')]
 
     if not timeseries:
         ret['curnode']['default_stats'] = fn(ret['curnode']['default_stats'])
@@ -282,7 +281,7 @@ def get_data_from_source(node, date, source, entity_type):
             try:
                 info = file_list[source][0].iloc[file_list[source][1][date], file_list[source][0].columns.get_loc(node)]
             except Exception as _:
-                if entity_type == 'county':
+                if entity_type == 'county' and source in source_list_per_level['county']:
                     idx = custom_search_df_for_county_node(file_list[source][entity_type][0])
                     if idx != -1:
                         return file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], idx]
@@ -298,7 +297,7 @@ def get_data_from_source(node, date, source, entity_type):
             try:
                 info = file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], file_list[source][entity_type][0].columns.get_loc(node)]
             except Exception as _:
-                if entity_type == 'county':
+                if entity_type == 'county' and source in source_list_per_level['county']:
                     idx = custom_search_df_for_county_node(file_list[source][entity_type][0])
                     if idx != -1:
                         return file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], idx]
@@ -412,5 +411,5 @@ def refresh_data():
 if __name__ == "__main__":
     logging.set_verbosity(logging.INFO)
     refresh_data()
-    
-    app.run(host="0.0.0.0", port="2222", threaded=True, debug=False, use_reloader=False)
+    port = 2222 if not len(sys.argv) > 1 else int(sys.argv[1])
+    app.run(host="0.0.0.0", port=port, threaded=True, debug=False, use_reloader=False)
