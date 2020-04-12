@@ -339,7 +339,7 @@ var source_list = new Map([
       var selected_lvl = "global";
       if(is_county) {
         selected_lvl = "county";
-	parent = $("span.selected-state").text(name);
+	parent = $("span.selected-state").text();
       } else if (is_state){
         selected_lvl = "state";
 	$("span.selected-state").text(name);
