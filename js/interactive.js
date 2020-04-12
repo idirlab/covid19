@@ -327,6 +327,7 @@ var source_list = new Map([
     function showPlace(name, parent=null) {
       // console.log(name)
       name = name.toLowerCase().toTitleCase();
+      $("span.placename.hidden").text(name);
       var is_global = name.toUpperCase() === "GLOBAL";
       var is_state = US_States.map(s => s.toLowerCase()).includes(name.toLowerCase());
       if(is_state)
