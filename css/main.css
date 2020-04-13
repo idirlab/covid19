@@ -858,6 +858,12 @@ div#aggregate-date-window > div.info-header > div.arrow.icon-container {
   width: 17px;
   height: 17px;
 }
+
+div#aggregate-date-window > div.info-header > div.arrow.icon-container.inactive {
+  color: grey;
+  pointer-events: none;
+}
+
 div#aggregate-date-window > div.info-header > div.date-element#pos-2,div.date-element#pos-4  {
   transform: translate(2px, -20%);
 }
@@ -870,6 +876,13 @@ div#aggregate-date-window > div.info-header > div.date-element#pos-3 {
   border: 2px solid rgba(38, 50, 56, 1);
   transform: translate(2px, -10%);
 }
+
+div#aggregate-date-window > div.info-header > div.date-element.inactive {
+  color: grey;
+  pointer-events: none;
+}
+
+
 div#aggregate-date-window > div.info-header > div.info-header-element {
   display:inline-flex;
   margin:0 6px 0 6px;
