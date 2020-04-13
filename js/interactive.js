@@ -83,6 +83,10 @@ $(document).ready(function(){
   document.getElementById("pos-2").innerHTML = yesterday
   document.getElementById("pos-3").innerHTML = today
   document.getElementById("pos-4").innerHTML = tomorrow
+
+  $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#pos-4`).addClass('inactive')
+  $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-5`).addClass('inactive')
+
   var mymap = L.map('map', {
     zoomControl: false,
     zoom: 0,
