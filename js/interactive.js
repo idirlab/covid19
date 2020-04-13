@@ -83,6 +83,10 @@ $(document).ready(function(){
   document.getElementById("pos-2").innerHTML = yesterday
   document.getElementById("pos-3").innerHTML = today
   document.getElementById("pos-4").innerHTML = tomorrow
+
+  $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#pos-4`).addClass('inactive')
+  $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-5`).addClass('inactive')
+
   var mymap = L.map('map', {
     zoomControl: false,
     zoom: 0,
@@ -666,6 +670,8 @@ var source_list = new Map([
     $("div.info-pane#aggregate-date-window > div.info-header > div.arrow").click(function(evt){
       var arrow_position = $(this).attr("id");
 
+      var date_today = moment(new Date()).format("MM/DD/YYYY")
+
       var date_str = date_div.text();
       var selected_date = moment(new Date(date_str));
       var dates = ["pos-2", "pos-3", "pos-4"].map(id =>
@@ -677,6 +683,22 @@ var source_list = new Map([
         var pos_id = `pos-${idx + 2}`;
         var date_str = new_date.format("MM/DD/YYYY");
         $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).text(date_str);
+        
+        if (date_today < date_str || date_str < "01/23/2020") {
+          $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).addClass('inactive')
+          if (idx == 0) {
+            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-1`).addClass('inactive')
+          } else if (idx == 2) {
+            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-5`).addClass('inactive')
+          }
+        } else {
+          $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).removeClass('inactive')
+          if (idx == 0) {
+            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-1`).removeClass('inactive')
+          } else if (idx == 2) {
+            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-5`).removeClass('inactive')
+          }
+        }
       });
     });
     date_div.on('DOMSubtreeModified', function(){
