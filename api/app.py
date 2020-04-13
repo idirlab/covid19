@@ -265,6 +265,23 @@ def get_data_from_source(node, date, source, entity_type):
                 temp = file_list['JHU']['country'][0].iloc[file_list['JHU']['country'][1][date]]
 
                 for i in range(3, len(temp)):
+                    tlist = list(temp[i])
+
+                    if tlist[0] == '-':
+                        del tlist[0]
+                        while tlist[0] != '-':
+                            del tlist[0]
+                        tlist = ['0'] + tlist
+                    charidx = 0
+                    while charidx < len(tlist) - 1:
+                        if tlist[charidx] == tlist[charidx + 1] == '-':
+                            del tlist[charidx + 1]
+                            while tlist[charidx + 1] != '-':
+                                del tlist[charidx + 1]
+                            tlist = tlist[:charidx + 1] + ['0'] + tlist[charidx + 1:]
+                        charidx += 1
+                    
+                    temp[i] = ''.join(tlist)
                     for idx, el in enumerate(temp[i].split('-')):
                         if el.isdigit():
                             res[idx] += int(el)
