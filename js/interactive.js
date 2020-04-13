@@ -1,3 +1,6 @@
+var local_testing = false;
+var api_url = local_testing ? "http://localhost:2222" : "https://idir.uta.edu/covid-19-api-dev-2";
+
 function select_default_source() {
   $("div.modal.fade#settings-modal").modal(
     {keyboard: false,
@@ -23,7 +26,7 @@ function select_default_source() {
 	};
 })(window);
 $(document).ready(function(){
-  var queryURL = "https://idir.uta.edu/covid-19-api-dev-2/api/v1/sourcequery?level={PLACEHOLDER}";
+  var queryURL = api_url + "/api/v1/sourcequery?level={PLACEHOLDER}";
   var parseSources = (level) => (
     (parseSources) => {
       var sources = parseSources.map(src => `<li class="select-source-item ${level} option"><a class="noHover" href="">${src}</a></li>`);
@@ -485,13 +488,13 @@ var source_list = new Map([
       }
 
       if(parent && parent!='Global') {
-        queryURL = `https://idir.uta.edu/covid-19-api-dev-2/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
+        queryURL = api_url + `/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
         //queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       } else {
         if(name=='United States') {
           name = 'US'
         }
-        queryURL = `https://idir.uta.edu/covid-19-api-dev-2/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
+        queryURL = api_url + `/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
         //queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       }
       console.log("qwer", queryURL)
@@ -867,7 +870,7 @@ var source_list = new Map([
       }
       var format_today = format_date(0, '-')
 
-      queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery_timeseries?node=${county}-${state}&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
+      queryURL = api_url + `/api/v1/statquery_timeseries?node=${county}-${state}&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
       corsHTTP(queryURL, update_county_Chart);
 
       console.log('query_county_url: ' + queryURL)
@@ -975,7 +978,7 @@ var source_list = new Map([
       }
       var format_today = format_date(0, '-')
 
-      queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery_timeseries?node=Global&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
+      queryURL = api_url + `/api/v1/statquery_timeseries?node=Global&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
       corsHTTP(queryURL, updateChart);
 
     });
@@ -1113,7 +1116,7 @@ var source_list = new Map([
     }
     var format_today = format_date(0, '-')
 
-    queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery_timeseries?node=Global&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
+    queryURL = api_url + `/api/v1/statquery_timeseries?node=Global&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
     corsHTTP(queryURL, updateChart);
 
 
@@ -1164,7 +1167,7 @@ var source_list = new Map([
 
       }
 
-      queryURL = `https://idir.uta.edu/covid-19-api-dev/api/v1/statquery_timeseries?node=${name}&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
+      queryURL = api_url + `/api/v1/statquery_timeseries?node=${name}&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
       corsHTTP(queryURL, update_state_Chart);
 
     }
