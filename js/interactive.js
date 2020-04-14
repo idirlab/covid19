@@ -956,7 +956,7 @@ var source_list = new Map([
         $("div.chart_panel").css("display","block")
 
         chart.load({
-          columns: [date_list, total_list, death_list, recover_list],
+          columns: [date_list, total_list, death_list],
           unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
         });
 
