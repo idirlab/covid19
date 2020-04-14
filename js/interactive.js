@@ -108,7 +108,8 @@ $(document).ready(function(){
         padding: {
           bottom: 0
         },
-        type: 'linear'
+        type: 'linear',
+        tick: { format: d3.format("d") }
       }
     },
     point: {
