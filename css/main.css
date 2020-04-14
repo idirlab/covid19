@@ -463,7 +463,7 @@ text {
   position: fixed !important;
   top:44px;
   width:500px;
-  height:320px;
+  height:365px;
   right: 0%;
   z-index:1000;
   background: rgb(227, 230, 229);
@@ -490,6 +490,20 @@ button.btn_close_chart {
   /* right: 0%; */
   float: right;
 }
+
+
+
+div.btn-group {
+  /* width:400px; */
+  /* height:25px; */
+  background-color: rgb(41, 50, 56);
+  position: relative;
+  border-radius: 20px;
+  top: 35px;
+  left: 120px;
+
+}
+
 
 .juji {
   position: fixed !important;
