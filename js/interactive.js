@@ -494,10 +494,9 @@ var source_list = new Map([
                     "name": "Texas",
                     "default_stats": [x, y, z],
                     "detailed_stats": {
-                        "CDC": [x, y, z],
-                        // ... more sources
+                        "CDC": [x, y, z]
                     }
-                },
+                }
             ],
             "children": [
                 {
@@ -512,17 +511,18 @@ var source_list = new Map([
                 }
             ]
           };
-          var no_data = Object.entries(info.curnode.detailed_stats).length == 0;
+          var curnode = info.breadcrumb[info.breadcrumb.length - 1];
+          var no_data = Object.entries(curnode.detailed_stats).length == 0;
           if (no_data) {
             $("div#aggregate-date-window > div.response-area").html(`
               No data for <br/> <tt>DATE = ${selected_date().format("YYYY-MM-DD")}</tt> and <tt>LOCATION = ${name}</tt>
             `);
             return;
           }
-          var cases = info.curnode.default_stats[0];
-          var deaths = info.curnode.default_stats[1];
-          var recovered = info.curnode.default_stats[2];
-          var variable_DOMS = Array.from(Object.entries(info.curnode.detailed_stats)).map(src_to_stats =>
+          var cases = curnode.default_stats[0];
+          var deaths = curnode.default_stats[1];
+          var recovered = curnode.default_stats[2];
+          var variable_DOMS = Array.from(Object.entries(curnode.detailed_stats)).map(src_to_stats =>
             `
              <div class="variable">
                <div class="source">${src_to_stats[0]}</div>
@@ -550,7 +550,7 @@ var source_list = new Map([
             out = "United States";
           return out;
         }
-        var placename = standard_name(name)
+        var placename = standard_name(curnode.name)
         var location_info_DOM = `
           <div class="location-information-container root">
               <span class="placename">${placename}</span>
