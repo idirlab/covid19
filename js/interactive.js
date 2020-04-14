@@ -573,7 +573,7 @@ var source_list = new Map([
         });
       }
 
-      if(parent && parent!='Global') {
+      if(parent && parent!='Global' && parent!='United States') {
         queryURL = api_url + `/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
         //queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
       } else {
