@@ -1,5 +1,5 @@
 var local_testing = false;
-var api_url = local_testing ? "http://localhost:2222" : "https://idir.uta.edu/covid-19-api-dev-2";
+var api_url = local_testing ? "http://localhost:2222" : "http://localhost:2222";
 
 function select_default_source() {
   $("div.modal.fade#settings-modal").modal(
@@ -144,7 +144,7 @@ $(document).ready(function(){
     console.log(val);
     chart.axis.types({
         y: val
-      });   
+      });
 })
 
   function getDay(num, str) {
@@ -472,10 +472,46 @@ var source_list = new Map([
           !is_county ? true : false
         )
       );
-
-
       var parseInfo = (info) => {
           // Create side-panel here
+          var x = 1;
+          var y = 2;
+          var z = 3;
+          var info = {
+            "breadcrumb": [
+                {
+                    "entity_type": "global",
+                    "name": "Global",
+                    "default_stats": [x, y, z]
+                },
+                {
+                    "entity_type": "country",
+                    "name": "United States",
+                    "default_stats": [x, y, z]
+                },
+                {
+                    "entity_type": "state",
+                    "name": "Texas",
+                    "default_stats": [x, y, z],
+                    "detailed_stats": {
+                        "CDC": [x, y, z],
+                        // ... more sources
+                    }
+                },
+            ],
+            "children": [
+                {
+                    "entity_type": "county",
+                    "name": "Collin",
+                    "default_stats": [x, y, z],
+                },
+                {
+                    "entity_type": "county",
+                    "name": "Tarrant",
+                    "default_stats": [x, y, z],
+                }
+            ]
+          };
           var no_data = Object.entries(info.curnode.detailed_stats).length == 0;
           if (no_data) {
             $("div#aggregate-date-window > div.response-area").html(`
@@ -765,7 +801,7 @@ var source_list = new Map([
         var pos_id = `pos-${idx + 2}`;
         var date_str = new_date.format("MM/DD/YYYY");
         $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).text(date_str);
-        
+
         if (date_today < date_str || date_str < "01/23/2020") {
           $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).addClass('inactive')
           if (idx == 0) {
@@ -945,14 +981,14 @@ var source_list = new Map([
           if (element['stats'][2] == -1) {
             element['stats'][2] = 0
           }
-          
+
           date_list.push(element['date'])
           total_list.push(element['stats'][0])
           death_list.push(element['stats'][1])
           recover_list.push(element['stats'][2])
         }
 
-        
+
         $("div.chart_panel").css("display","block")
 
         chart.load({
@@ -961,7 +997,7 @@ var source_list = new Map([
         });
 
         if($(".btn-group-toggle #option2").val() == 'log_select') {
-          
+
         }
 
         // chart.load({
@@ -1051,7 +1087,7 @@ var source_list = new Map([
       death_list.push('Fatal Cases');
       recover_list = [];
       recover_list.push('Recoveries');
-      
+
 
       var updateChart = (data) => {
         for (let index = 0; index < data.length; index++) {
@@ -1063,7 +1099,7 @@ var source_list = new Map([
           if (element['stats'][2] == -1) {
             element['stats'][2] = 0
           }
-          
+
           date_list.push(element['date']);
           total_list.push(element['stats'][0]);
           death_list.push(element['stats'][1]);
@@ -1122,13 +1158,13 @@ var source_list = new Map([
     death_list.push('Fatal Cases');
     recover_list = [];
     recover_list.push('Recoveries');
-    
+
 
     var updateChart = (data) => {
 
       data_str = JSON.stringify(data)
       console.log('Chart_data!!!: ' + data_str)
-      
+
       for (let index = 0; index < data.length; index++) {
 
         const element = data[index];
@@ -1138,7 +1174,7 @@ var source_list = new Map([
         if (element['stats'][2] == -1) {
             element['stats'][2] = 0
           }
-        
+
         date_list.push(element['date'])
         total_list.push(element['stats'][0])
         death_list.push(element['stats'][1])
@@ -1155,7 +1191,7 @@ var source_list = new Map([
         columns: [date_list, total_list, death_list, recover_list],
         unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
       });
-      
+
     }
 
     function format_date(num, str) {
@@ -1207,7 +1243,7 @@ var source_list = new Map([
           if (element['stats'][2] == -1) {
             element['stats'][2] = 0
           }
-          
+
           date_list.push(element['date'])
           total_list.push(element['stats'][0])
           death_list.push(element['stats'][1])
