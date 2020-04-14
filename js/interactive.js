@@ -137,84 +137,13 @@ $(document).ready(function(){
     bindto: "#total-chart"
   });
 
-  cur_date_list = []
-  cur_total_list = [];
-  cur_death_list = [];
-  cur_recover_list = [];
-  cur_type = ''
-
-  function trans_to_log(data_list) {
-    for (let index = 0; index < data_list.length; index++) {
-        if (index == 0) {
-          continue;
-        }
-        element = Math.log(data_list[index]);
-        if (element < 0) {
-          element = 0;
-        } else if (element == 0) {
-          element = 0.1;
-        }
-        data_list[index] = element;
-      }
-      return data_list;
-  }
-
-  function trans_to_linear(data_list) {
-    for (let index = 0; index < data_list.length; index++) {
-        if (index == 0) {
-          continue;
-        }
-        element = data_list[index];
-        if (element == 0) {
-          data_list[index] = element;
-          continue;
-        } else if (element == 0.1) {
-          data_list[index] = 1;
-          continue;
-        }
-        element = Math.exp(data_list[index]);
-        data_list[index] = Math.round(element);
-      }
-      return data_list;
-  }
 
   $(".btn-group-toggle input:radio").on('change', function() {
     let val = $(this).val();
-    // console.log(val);
-    console.log(cur_total_list);
-    console.log($(".btn-group-toggle #option1").val())
-    
-    if (val == 'linear') {
-      cur_total_list = trans_to_linear(cur_total_list);
-      cur_death_list = trans_to_linear(cur_death_list);
-      cur_recover_list = trans_to_linear(cur_recover_list);
-      cur_total_list[0] = 'Total cases';
-      cur_death_list[0] = 'Fatal Cases';
-      cur_recover_list[0] = 'Recoveries';
-      $(".btn-group-toggle #option1").val('linear_select');
-      $(".btn-group-toggle #option2").val('log');
-    } else {
-      cur_total_list = trans_to_log(cur_total_list);
-      cur_death_list = trans_to_log(cur_death_list);
-      cur_recover_list = trans_to_log(cur_recover_list);
-      cur_total_list[0] = 'log(Total cases)';
-      cur_death_list[0] = 'log(Fatal Cases)';
-      cur_recover_list[0] = 'log(Recoveries)';
-      $(".btn-group-toggle #option1").val('linear');
-      $(".btn-group-toggle #option2").val('log_select');
-    }
-    if (cur_type == 'county') {
-      chart.load({
-        columns: [cur_date_list, cur_total_list, cur_death_list],
-        unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries', 'log(Total cases)', 'log(Fatal Cases)', 'log(Recoveries)'],
-      });
-    } else {
-      chart.load({
-        columns: [cur_date_list, cur_total_list, cur_death_list, cur_recover_list],
-        unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries', 'log(Total cases)', 'log(Fatal Cases)', 'log(Recoveries)'],
-      });
-    }
-    
+    console.log(val);
+    chart.axis.types({
+        y: val
+      });   
 })
 
   function getDay(num, str) {
@@ -1022,32 +951,22 @@ var source_list = new Map([
           recover_list.push(element['stats'][2])
         }
 
-        if($(".btn-group-toggle #option2").val() == 'log_select') {
-          total_list = trans_to_log(total_list)
-          death_list = trans_to_log(death_list)
-          recover_list = trans_to_log(recover_list)
-          total_list[0] = 'log(Total cases)';
-          death_list[0] = 'log(Fatal Cases)';
-          recover_list[0] = 'log(Recoveries)';
-        }
-
-        cur_date_list = date_list;
-        cur_total_list = total_list;
-        cur_death_list = death_list;
-        cur_recover_list = recover_list;
-        cur_type = 'county'
-
+        
         $("div.chart_panel").css("display","block")
 
-        // chart.load({
-        //   columns: [date_list, total_list, death_list, recover_list],
-        //   unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
-        // });
-
         chart.load({
-          columns: [cur_date_list, cur_total_list, cur_death_list],
-          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries', 'log(Total cases)', 'log(Fatal Cases)', 'log(Recoveries)'],
+          columns: [date_list, total_list, death_list, recover_list],
+          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
         });
+
+        if($(".btn-group-toggle #option2").val() == 'log_select') {
+          
+        }
+
+        // chart.load({
+        //   columns: [cur_date_list, cur_total_list, cur_death_list],
+        //   unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries', 'log(Total cases)', 'log(Fatal Cases)', 'log(Recoveries)'],
+        // });
 
       }
 
@@ -1151,25 +1070,14 @@ var source_list = new Map([
         }
 
         if($(".btn-group-toggle #option2").val() == 'log_select') {
-          total_list = trans_to_log(total_list)
-          death_list = trans_to_log(death_list)
-          recover_list = trans_to_log(recover_list)
-          total_list[0] = 'log(Total cases)';
-          death_list[0] = 'log(Fatal Cases)';
-          recover_list[0] = 'log(Recoveries)';
-        }
 
-        cur_date_list = date_list;
-        cur_total_list = total_list;
-        cur_death_list = death_list;
-        cur_recover_list = recover_list;
-        cur_type = 'global'
+        }
 
         $("div.chart_panel").css("display","block");
 
         chart.load({
-          columns: [cur_date_list, cur_total_list, cur_death_list, cur_recover_list],
-          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries', 'log(Total cases)', 'log(Fatal Cases)', 'log(Recoveries)'],
+          columns: [date_list, total_list, death_list, recover_list],
+          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
         });
 
       }
@@ -1237,25 +1145,14 @@ var source_list = new Map([
       }
 
       if($(".btn-group-toggle #option2").val() == 'log_select') {
-        total_list = trans_to_log(total_list)
-        death_list = trans_to_log(death_list)
-        recover_list = trans_to_log(recover_list)
-        total_list[0] = 'log(Total cases)';
-        death_list[0] = 'log(Fatal Cases)';
-        recover_list[0] = 'log(Recoveries)';
+
       }
 
-      cur_date_list = date_list;
-      cur_total_list = total_list;
-      cur_death_list = death_list;
-      cur_recover_list = recover_list;
-      cur_type = 'global'
-
-      $("div.chart_panel").css("display","block")
+      $("div.chart_panel").css("display","block");
 
       chart.load({
-        columns: [cur_date_list, cur_total_list, cur_death_list, cur_recover_list],
-        unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries', 'log(Total cases)', 'log(Fatal Cases)', 'log(Recoveries)'],
+        columns: [date_list, total_list, death_list, recover_list],
+        unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
       });
       
     }
@@ -1317,25 +1214,15 @@ var source_list = new Map([
         }
 
         if($(".btn-group-toggle #option2").val() == 'log_select') {
-          total_list = trans_to_log(total_list)
-          death_list = trans_to_log(death_list)
-          recover_list = trans_to_log(recover_list)
-          total_list[0] = 'log(Total cases)';
-          death_list[0] = 'log(Fatal Cases)';
-          recover_list[0] = 'log(Recoveries)';
+
         }
 
-        cur_date_list = date_list;
-        cur_total_list = total_list;
-        cur_death_list = death_list;
-        cur_recover_list = recover_list;
-        cur_type = 'states'
 
-        $("div.chart_panel").css("display","block")
+        $("div.chart_panel").css("display","block");
 
         chart.load({
-          columns: [cur_date_list, cur_total_list, cur_death_list, cur_recover_list],
-          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries', 'log(Total cases)', 'log(Fatal Cases)', 'log(Recoveries)'],
+          columns: [date_list, total_list, death_list, recover_list],
+          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
         });
 
       }
