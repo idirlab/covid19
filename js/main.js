@@ -129,12 +129,15 @@ corsHTTP(api_url + "/api/v1/querylatestdate", (date) => {globalMaxDate = moment(
 createDatePicker();
 
 function pickDate() {
+  console.log(datePickerVar)
+  var picker = datePickerVar.pickadate('picker')
+  picker.set('select', moment($('#pos-3').text(), "MM/DD/YYYY").toDate())
   return;
 }
 
 function createDatePicker() {
   if (globalMaxDate == null) {
-    console.log('wiating')
+    console.log('waiting to create picker')
     setTimeout(createDatePicker, 200);
     return;
   }
