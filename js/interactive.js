@@ -536,6 +536,7 @@ var source_list = new Map([
         `;
         var placename = (s) =>
           standard_name(is_state ? `${s.toLowerCase().toTitleCase()} ${municipalityPostfix(county_state)}`: s);
+        var breadcrumb_DOM = [];
         var first_order_children_DOM = info.children.map(child_obj => `
           <div class="location-information-container" style="margin-top:12px;">
           <span class="placename">${placename(child_obj.name)}</span>
@@ -553,6 +554,7 @@ var source_list = new Map([
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
           </div>`).join("\n");
         var output_DOM = `
+          ${breadcrumb_DOM}
           <div class="geolocation-container">
             ${location_info_DOM}
             ${variable_DOM}
