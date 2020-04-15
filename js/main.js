@@ -1,5 +1,28 @@
 var local_testing = false;
-var api_url = local_testing ? "http://localhost:2222" : "https://idir.uta.edu/covid-19-api-dev-2";
+var api_url = null;
+
+jQuery.get('config.txt', function(data) {
+  console.log(data)
+  console.log(typeof data)
+
+  var folder_defined_path = data.trim(' \r\t\n') == "PROD" ? "https://idir.uta.edu/covid-19-api" : "https://idir.uta.edu/covid-19-api-dev"
+  api_url = local_testing ? "http://localhost:2222" : folder_defined_path;
+});
+
+function resolveWhenApiUrlSet() {
+  return new Promise(resolve => {
+    checkApiUrl(resolve);
+  })
+}
+
+function checkApiUrl(resolve) {
+  if (api_url == null) {
+    setTimeout(checkApiUrl, 200, resolve);
+    return;
+  }
+  resolve('done');
+  console.log(api_url);
+}
 
 $(window).ready(function() {
   $('.loader').fadeOut("slow");
@@ -125,7 +148,15 @@ function checkMaxDate(resolve) {
   }
 }
 
-corsHTTP(api_url + "/api/v1/querylatestdate", (date) => {globalMaxDate = moment(date, "YYYY-MM-DD")});
+function getLatestDate() {
+  if (api_url == null) {
+    console.log('waiting for api url')
+    setTimeout(getLatestDate, 200);
+    return;
+  }
+  corsHTTP(api_url + "/api/v1/querylatestdate", (date) => {globalMaxDate = moment(date, "YYYY-MM-DD")});
+}
+getLatestDate();
 createDatePicker();
 
 function pickDate() {

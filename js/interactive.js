@@ -24,6 +24,7 @@ function select_default_source() {
 })(window);
 $(document).ready(async function(){
   var _ = await resolveWhenMaxDateLoaded();
+  _ = await resolveWhenApiUrlSet();
 
   var queryURL = api_url + "/api/v1/sourcequery?level={PLACEHOLDER}";
   var parseSources = (level) => (
