@@ -79,6 +79,12 @@ def preprocess_node(node):
     return node, entity_type
 
 
+@app.route('/api/v1/querylatestdate')
+def query_latest_date():
+    ar = sorted([k for k, _ in file_list['JHU']['country'][1].items()])
+    return jsonify('n/a' if len(ar) == 0 else ar[-1])
+
+
 @app.route('/api/v1/statquery_timeseries')
 def stat_query_time_series():
     global refreshing, query_processes

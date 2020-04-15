@@ -1,6 +1,3 @@
-var local_testing = false;
-var api_url = local_testing ? "http://localhost:2222" : "https://idir.uta.edu/covid-19-api-dev-2";
-
 function select_default_source() {
   $("div.modal.fade#settings-modal").modal(
     {keyboard: false,
@@ -25,7 +22,9 @@ function select_default_source() {
 		}
 	};
 })(window);
-$(document).ready(function(){
+$(document).ready(async function(){
+  var _ = await resolveWhenMaxDateLoaded();
+
   var queryURL = api_url + "/api/v1/sourcequery?level={PLACEHOLDER}";
   var parseSources = (level) => (
     (parseSources) => {
@@ -147,8 +146,8 @@ $(document).ready(function(){
       });   
 })
 
-  function getDay(num, str) {
-    var today = new Date();
+  function getDay(num, str, init) {
+    var today = new Date(init);
     var nowTime = today.getTime()
     var ms = 24*3600*1000*num
     today.setTime(parseInt(nowTime + ms))
@@ -159,9 +158,9 @@ $(document).ready(function(){
     if (oDay.length <= 1) oDay = '0' + oDay
     return oMoth + str + oDay+ str+ oYear
   }
-  var today = getDay(0, '/')
-  var yesterday = getDay(-1, '/')
-  var tomorrow = getDay(1, '/')
+  var today = getDay(0, '/', globalMaxDate)
+  var yesterday = getDay(-1, '/', globalMaxDate)
+  var tomorrow = getDay(1, '/', globalMaxDate)
   document.getElementById("pos-2").innerHTML = yesterday
   document.getElementById("pos-3").innerHTML = today
   document.getElementById("pos-4").innerHTML = tomorrow
@@ -264,7 +263,7 @@ var source_list = new Map([
       var lvl = $("span.selected-first-order-children.hidden").text().trim();
       return $(`span.default-source-${lvl}`).text().trim();
     }
-    function selected_date() { return moment($("div.info-header > div.info-header-element#pos-3").text().trim(), "MM/DD/YYYY"); }
+    function selected_date() { return moment($("div.info-header > div.info-header-element#pos-3").text().trim(), globalDateFormat); }
 
     $("#date").text("Last update: " + datasets[3][0].timestamp.split(".")[0] + " PST");
 
@@ -752,21 +751,19 @@ var source_list = new Map([
     $("div.info-pane#aggregate-date-window > div.info-header > div.arrow").click(function(evt){
       var arrow_position = $(this).attr("id");
 
-      var date_today = moment(new Date()).format("MM/DD/YYYY")
-
       var date_str = date_div.text();
       var selected_date = moment(new Date(date_str));
       var dates = ["pos-2", "pos-3", "pos-4"].map(id =>
-        moment($(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${id}`).text(), "MM/DD/YYYY"));
+        moment($(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${id}`).text(), globalDateFormat));
       var new_dates = (arrow_position === "pos-1") || (arrow_position === "pos-2") ?
                       dates.map(d => d.subtract(1, "days")) :
                       dates.map(d => d.add(1, "days"));
       new_dates.forEach(function(new_date, idx){
         var pos_id = `pos-${idx + 2}`;
-        var date_str = new_date.format("MM/DD/YYYY");
+        var date_str = new_date.format(globalDateFormat);
         $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).text(date_str);
         
-        if (date_today < date_str || date_str < "01/23/2020") {
+        if (globalMaxDate.format(globalDateFormat) < date_str || date_str < globalMinDate.format(globalDateFormat)) {
           $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).addClass('inactive')
           if (idx == 0) {
             $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-1`).addClass('inactive')

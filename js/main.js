@@ -1,3 +1,6 @@
+var local_testing = false;
+var api_url = local_testing ? "http://localhost:2222" : "https://idir.uta.edu/covid-19-api-dev-2";
+
 $(window).ready(function() {
   $('.loader').fadeOut("slow");
 });
@@ -102,22 +105,61 @@ function closeBar() {
 // const element = document.getElementById('pickadate')
 // pickadate.render(element, picker)
 
-var $input = $('#datepicker').pickadate({
-  onSet:function(datecontainer){
-    function getDate(){
-      return moment(new Date(datecontainer.select));
-    }
-    var dates = [getDate().subtract(1, "days"),
-                 getDate(),
-                 getDate().add(1, "days")];
-    var datestrs = dates.map(d => d.format("MM/DD/YYYY"));
-    datestrs.forEach(function(datestr, idx){
-      var id = `pos-${2 + idx}`;
-      var selector = `div.info-pane#aggregate-date-window > div.info-header > div.date-element#${id}`;
-      $(selector).text(datestr);
-    });
+var globalDateFormat = "MM/DD/YYYY";
+var globalMinDate = moment("01/23/2020", globalDateFormat);
+var globalMaxDate = null;
+var datePickerVar = null;
+
+function resolveWhenMaxDateLoaded() {
+  return new Promise(resolve => {
+    checkMaxDate(resolve);
+  }) 
+}
+
+function checkMaxDate(resolve) {
+  if (globalMaxDate == null) {
+    setTimeout(checkMaxDate, 200, resolve);
+    return;
+  } else {
+    resolve('done');
   }
-});
+}
+
+corsHTTP(api_url + "/api/v1/querylatestdate", (date) => {globalMaxDate = moment(date, "YYYY-MM-DD")});
+createDatePicker();
+
+function pickDate() {
+  return;
+}
+
+function createDatePicker() {
+  if (globalMaxDate == null) {
+    console.log('wiating')
+    setTimeout(createDatePicker, 200);
+    return;
+  }
+
+  datePickerVar = $('#datepicker').pickadate({
+    min: globalMinDate.toDate(),
+    max: globalMaxDate.toDate(),
+    onSet:function(datecontainer){
+      if (!('select' in datecontainer)) return;
+ 
+      function getDate(){
+        return moment(new Date(datecontainer.select));
+      }
+      var dates = [getDate().subtract(1, "days"),
+                   getDate(),
+                   getDate().add(1, "days")];
+      var datestrs = dates.map(d => d.format(globalDateFormat));
+      datestrs.forEach(function(datestr, idx){
+        var id = `pos-${2 + idx}`;
+        var selector = `div.info-pane#aggregate-date-window > div.info-header > div.date-element#${id}`;
+        $(selector).text(datestr);
+      });
+    }
+  });
+}
 
 var flag_chatbot = true
 function open_chatbot() {
