@@ -643,7 +643,9 @@ var source_list = new Map([
             $(this).parent().click();
           }
         });
-        $("div.location-information-container").click(function(){
+        $("div.location-information-container").click(function(evt){
+          if(evt.target.tagName == "SPAN")
+            return;
           showPlace($(this).find(".placename").text().trim());
         });
       }
