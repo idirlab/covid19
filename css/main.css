@@ -1138,3 +1138,9 @@ div.apply-btn-style:hover:before {
 div.modal-footer{
   z-index:999;
 }
+.location-information-container.root {
+  margin-top:12px;
+}
+.location-information-container {
+  cursor:pointer;
+}

@@ -536,10 +536,29 @@ var source_list = new Map([
         `;
         var placename = (s) =>
           standard_name(is_state ? `${s.toLowerCase().toTitleCase()} ${municipalityPostfix(county_state)}`: s);
-        var breadcrumb_DOM = [];
+        var breadcrumb_DOM = info
+          .breadcrumb
+          .slice(0, info.breadcrumb.length - 1)
+          .map(d => `
+              <div class="location-information-container" style="margin-top:12px;">
+                <span class="placename">${d.name}</span>
+                <div class="figures">
+                  <div class="figure">
+                    <span class="confirmed-count" style="color: rgb(40, 50, 55)">${d.default_stats[0]}</span>
+                  </div>
+                  <div class="figure">
+                    <span class="death-count" style="color: rgb(40, 50, 55)">${d.default_stats[1]}</span>
+                  </div>
+                  <div class="figure">
+                    <span class="recovered-count" style="color: rgb(40, 50, 55)">${d.default_stats[2]}</span>
+                  </div>
+                </div>
+              </div>
+            `)
+          .join("\n");
         var first_order_children_DOM = info.children.map(child_obj => `
           <div class="location-information-container" style="margin-top:12px;">
-          <span class="placename">${placename(child_obj.name)}</span>
+              <span class="placename">${placename(child_obj.name)}</span>
               <div class="figures">
                 <div class="figure">
                   <span class="confirmed-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[0]}</span>
@@ -551,7 +570,7 @@ var source_list = new Map([
                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[2]}</span>
                 </div>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" ><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
           </div>`).join("\n");
         var output_DOM = `
           ${breadcrumb_DOM}
@@ -567,17 +586,16 @@ var source_list = new Map([
         $("div.location-information-container.root > svg").click(function(){
           $(this).parent().next().toggleClass("expanded");
         });
-        $("div.location-information-container > svg").click(function(){
-          $(this).toggleClass("active");
-          if($(this).parent().attr("class").split(/\s+/).includes("root"))
+        $("div.location-information-container").click(function(){
+          if($(this).attr("class").split(/\s+/).includes("root"))
             return;
-          var placename = $(this).parent().find("span.placename");
-          var parent = $(this).parent().parent().find("div.geolocation-container > div.location-information-container.root > span.placename")
+          var placename = $(this).find("span.placename");
+          var parent = $(this).parent().find("div.geolocation-container > div.location-information-container.root > span.placename")
           showPlace(placename.text().trim(), parent.text().trim());
         });
       }
 
-      if(parent && parent!='Global' && parent!='United States') {
+      if(parent && parent!='Global' && parent!='United States' && is_county) {
         queryURL = api_url + `/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&${default_sources_querystr}`
       } else {
         if(name=='United States') {
