@@ -3,8 +3,7 @@ var api_url = null;
 
 jQuery.get('config.txt', function(data) {
   console.log(data)
-  console.log(typeof data)
-
+  
   var folder_defined_path = data.trim(' \r\t\n') == "PROD" ? "https://idir.uta.edu/covid-19-api" : "https://idir.uta.edu/covid-19-api-dev"
   api_url = local_testing ? "http://localhost:2222" : folder_defined_path;
 });
