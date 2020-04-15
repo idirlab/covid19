@@ -441,6 +441,10 @@ var source_list = new Map([
                                      ["country", "state"],
                                      ["state", "county"],
                                      ["county", "county"]]);
+      var default_sources_querystr = Array.from(get_child_level.keys())
+        .map(lvl => `dsrc_${lvl}=` + $(`span.default-source-${lvl}.hidden`).text().trim())
+        .reduce((acc, src_str) => `${acc}&${src_str}`);
+      var original_src =
       $("span.selected-first-order-children.hidden").text(get_child_level.get(
         $("span.selected-level.hidden").text().trim()
       ));
@@ -473,44 +477,6 @@ var source_list = new Map([
         )
       );
       var parseInfo = (info) => {
-          // Create side-panel here
-          var x = 1;
-          var y = 2;
-          var z = 3;
-          var info = {
-            "breadcrumb": [
-                {
-                    "entity_type": "global",
-                    "name": "Global",
-                    "default_stats": [x, y, z]
-                },
-                {
-                    "entity_type": "country",
-                    "name": "United States",
-                    "default_stats": [x, y, z]
-                },
-                {
-                    "entity_type": "state",
-                    "name": "Texas",
-                    "default_stats": [x, y, z],
-                    "detailed_stats": {
-                        "CDC": [x, y, z]
-                    }
-                }
-            ],
-            "children": [
-                {
-                    "entity_type": "county",
-                    "name": "Collin",
-                    "default_stats": [x, y, z],
-                },
-                {
-                    "entity_type": "county",
-                    "name": "Tarrant",
-                    "default_stats": [x, y, z],
-                }
-            ]
-          };
           var curnode = info.breadcrumb[info.breadcrumb.length - 1];
           var no_data = Object.entries(curnode.detailed_stats).length == 0;
           if (no_data) {
@@ -610,14 +576,12 @@ var source_list = new Map([
       }
 
       if(parent && parent!='Global' && parent!='United States') {
-        queryURL = api_url + `/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
-        //queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        queryURL = api_url + `/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&${default_sources_querystr}`
       } else {
         if(name=='United States') {
           name = 'US'
         }
-        queryURL = api_url + `/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
-        //queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        queryURL = api_url + `/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&${default_sources_querystr}`
       }
       console.log("qwer", queryURL)
 
