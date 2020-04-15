@@ -906,7 +906,7 @@ div#aggregate-date-window > div.info-header > div.info-header-element {
   margin:0 6px 0 6px;
 }
 div.variable-toggle {
-  z-index:9999;
+  z-index:9998;
   height: 44px;
   font-size:12px;
   line-height: 30px;
