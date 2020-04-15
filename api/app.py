@@ -198,7 +198,7 @@ def stat_query():
             'breadcrumb': [],
             'children': [{
                 'entity_type': child_entity_type,
-                'name': string.capwords(x if child_entity_type != 'county' else '-'.join(x.split('-')[:-1])),
+                'name': capitalize_names(x, child_entity_type),
                 'default_stats': get_data_from_source(x, date, sources[child_entity_type], child_entity_type)
             } for x in get_children(node, entity_type)]
         }
@@ -208,7 +208,7 @@ def stat_query():
         while cur_entity_type != -1:
             ret['breadcrumb'] = [{
                 "entity_type": cur_entity_type,
-                "name": string.capwords(cur_node),
+                "name": capitalize_names(cur_node, cur_entity_type),
                 "default_stats": get_data_from_source(cur_node, date, sources[cur_entity_type], cur_entity_type)
             }] + ret['breadcrumb']
 
@@ -230,6 +230,13 @@ def stat_query():
         abort(500)
     else:
         return ret
+
+
+def capitalize_names(x, entity_type):
+    if entity_type == 'county':
+        x = '-'.join(x.split('-')[:-1])
+
+    return '-'.join([string.capwords(z) for z in x.split('-')])
 
 
 def parse_into_arrays(x):
