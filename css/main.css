@@ -927,7 +927,6 @@ div.variable-toggle > div.variable-button {
 }
 div.variable-display {
   width:100%;
-  margin-top: 12px;
   line-height:24px;
   display:block;
   -moz-transition: height .5s;
@@ -999,6 +998,23 @@ div.location-information-container > svg {
   position:absolute;
   right:12px;
   z-index:9000;
+  transition: 0.3s;
+}
+div.location-information-container > .remove-filter {
+  transform: translate(0px, 20px);
+  line-height: 18px;
+  cursor: pointer;
+  transition: 0.3s;
+  position: absolute;
+  right: 12px;
+  z-index: 9000;
+  font-size: 18px;
+  color: #cfd8dc;
+  transition: 0.3s;
+  opacity:0.6;
+}
+div.location-information-container > .remove-filter:hover {
+  opacity: 1;
 }
 div.location-information-container > svg.active {
   transform:rotate(180deg) translate(0px, -22px);

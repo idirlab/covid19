@@ -553,6 +553,7 @@ var source_list = new Map([
                     <span class="recovered-count" style="color: rgb(40, 50, 55)">${d.default_stats[2]}</span>
                   </div>
                 </div>
+                <i class="fa fa-window-close remove-filter" aria-hidden="true"></i>
               </div>
             `)
           .join("\n");
@@ -583,21 +584,71 @@ var source_list = new Map([
         $("div#aggregate-date-window > div.response-area").html(`
           ${output_DOM}
         `);
-        $("div.location-information-container.root > svg").click(function(){
-          $(this).parent().next().toggleClass("expanded");
+        $("div.location-information-container > svg").click(function(evt){
+          evt.stopPropagation();
+          if ($(this).parent().next().attr("class").includes("variable-display")){
+            $(this).parent().next().toggleClass("expanded");
+            return;
+          }
+          var placename = $(this).parent().find(".placename").text().trim();
+          $(".placename.hidden").text(placename);
+          var is_county = Boolean(placename.toUpperCase().includes("COUNTY") |
+                                  placename.toUpperCase().includes("BOROUGH") |
+                                  placename.toUpperCase().includes("PARISH"));
+          if (is_county) {
+            var queryUrl = `${api_url}/api/v1/statquery_details?node=${placename}-${$("span.selected-state.hidden").text().trim()}&date=${selected_date().format("YYYY-MM-DD")}`;
+            console.log(queryUrl);
+            var t = this;
+            function toggleVisibility() {
+              $(t).parent().next().toggleClass("expanded");
+            }
+            var queryCallback = (info) => {
+              var variables_DOM = Array.from(Object.entries(info))
+                                       .map(arr => `
+                                         <div class="variable">
+                                           <div class="source">
+                                             ${arr[0]}
+                                           </div>
+                                           <div class="figures">
+                                             <div class="figure">
+                                               <span class="confirmed-count"
+                                                     style="color: rgb(40, 50, 55)">
+                                                 ${arr[1][0]}
+                                               </span>
+                                             </div>
+                                             <div class="figure">
+                                               <span class="death-count"
+                                                     style="color: rgb(40, 50, 55)">
+                                                  ${arr[1][1]}
+                                               </span>
+                                             </div>
+                                             <div class="figure">
+                                               <span class="recovered-count"
+                                                     style="color: rgb(40, 50, 55)">
+                                                  ${arr[1][2]}
+                                               </span>
+                                             </div>
+                                           </div>
+                                         </div>`).join("\n");
+              var variable_DOM = `
+                <div class="variable-display">
+                  ${variables_DOM}
+                </div>
+              `;
+              $(variable_DOM).insertAfter($(t).parent());
+              toggleVisibility();
+            }
+            corsHTTP(queryUrl, queryCallback)
+          } else {
+            $(this).parent().click();
+          }
         });
         $("div.location-information-container").click(function(){
-          if($(this).attr("class").split(/\s+/).includes("root"))
-            return;
-          var placename = $(this).find("span.placename");
-          var parent = $(this).parent().find("div.geolocation-container > div.location-information-container.root > span.placename")
-          showPlace(placename.text().trim(), parent.text().trim());
+          showPlace($(this).find(".placename").text().trim());
         });
       }
 
-      if(parent && parent!='Global' && parent!='United States' && is_county) {
-        queryURL = api_url + `/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&${default_sources_querystr}`
-      } else {
+      if(!(parent && parent!='Global' && parent!='United States' && is_county)) {
         if(name=='United States') {
           name = 'US'
         }
