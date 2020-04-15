@@ -750,6 +750,13 @@ div#banner > div#title {
   transform: translate(0.5px, 0.5px);
 }
 
+div.picker__year {
+  color: black;
+}
+
+th.picker__weekday {
+  color: black;
+}
 
 div.location-information-container {
   width:100%;
