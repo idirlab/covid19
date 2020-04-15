@@ -73,9 +73,6 @@ def preprocess_node(node):
         node = node.replace(' parish', '')
         node = node.replace(' - ', '-')
         node = node.replace("'", '')
-    elif 'province' in entity_type:
-        node = '{} - {}'.format(entity_type.split('-')[1], node)
-        entity_type = 'province'
 
     return node, entity_type
 
@@ -261,8 +258,6 @@ def get_children(node, entity_type):
                 if ',{}'.format(node) in line and not line[line.rindex(node) - 2].isdigit():
                     ret.append('{}-{}'.format(line.split(',')[1], node))
         return ret
-    elif entity_type == 'province':
-        return []
     else:
         return []
 
@@ -287,8 +282,6 @@ def get_parent(node, entity_type):
         return 'us'
     elif entity_type == 'country':
         return 'global'
-    elif entity_type == 'province':
-        return node.split(' - ')[0]
     else:
         return -1
 
@@ -362,9 +355,6 @@ def get_data_from_source(node, date, source, entity_type):
         else:
             return []
     else:
-        if entity_type == 'province':
-            entity_type = 'country'
-
         if date in file_list[source][entity_type][1]:
             try:
                 info = file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], file_list[source][entity_type][0].columns.get_loc(node)]
@@ -381,7 +371,6 @@ def get_data_from_source(node, date, source, entity_type):
 
 # county: COUNTY, PARISH, BOROUGH
 # state: contained in united-states.txt
-# province: contained in either China or Canada list
 # country: all other?
 def select_entity_type(name):
     def is_state():
@@ -391,21 +380,6 @@ def select_entity_type(name):
                     return True
             return False
 
-    def is_province():
-        def prc_file(fname):
-            with open(os.path.join(source_list_prefix, fname), 'r') as f:
-                states = [x.lower() for x in f.readline().strip(' \r\n\t').split(',')]
-                if name in states:
-                    return True
-            return False
-
-        if prc_file('provinces-china.csv'):
-            return 'china'
-        elif prc_file('provinces-canada.csv'):
-            return 'canada'
-        else:
-            return None
-
     if name == 'global':
         return 'global'
     elif any([x in name for x in ['county', 'parish', 'borough']]):
@@ -413,11 +387,7 @@ def select_entity_type(name):
     elif is_state():
         return 'state'
     else:
-        is_prov = is_province()
-        if is_prov is None:
-            return 'country'
-        else:
-            return 'province-{}'.format(is_prov)
+        return 'country'
 
 
 def get_all_data(node, date, entity_type):
