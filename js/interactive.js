@@ -1193,7 +1193,7 @@ var source_list = new Map([
       var update_state_Chart = (data) => {
 
         data_str = JSON.stringify(data)
-        console.log('Chart_state_data!!!: ' + data_str)
+        // console.log('Chart_state_data!!!: ' + data_str)
 
         for (let index = 0; index < data.length; index++) {
 
