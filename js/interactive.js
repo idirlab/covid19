@@ -1,5 +1,5 @@
 var local_testing = false;
-var api_url = local_testing ? "http://localhost:2222" : "http://localhost:2222";
+var api_url = local_testing ? "http://localhost:2222" : "https://idir.uta.edu/covid-19-api-dev-2";
 
 function select_default_source() {
   $("div.modal.fade#settings-modal").modal(
