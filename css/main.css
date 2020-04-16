@@ -1008,7 +1008,7 @@ div.location-information-container > svg {
   transition:0.3s;
   position:absolute;
   right:12px;
-  z-index:9000;
+  z-index:99999;
   transition: 0.3s;
   border-radius: 16px;
 }
@@ -1172,6 +1172,18 @@ div.modal-footer{
 .location-information-container.root {
   margin-top:12px;
 }
+.location-information-container.root:not(.global) > .remove-filter {
+  transform: translate(0px, 10px);
+}
+.location-information-container.root:not(.global) > svg {
+  transform: translate(0px, 32px);
+}
+.location-information-container.root:not(.global) > svg.active {
+  transform: rotate(180deg) translate(0px, -32px);
+}
 .location-information-container {
   cursor:pointer;
+}
+.location-information-container.dashboard-breadcrumb {
+  background-color:#495b64;
 }

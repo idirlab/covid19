@@ -518,7 +518,7 @@ var source_list = new Map([
         }
         var placename = standard_name(curnode.name)
         var location_info_DOM = `
-          <div class="location-information-container root">
+          <div class="location-information-container root ${placename === "Global" ? 'global' : ''}">
               <span class="placename">${placename}</span>
               <div class="figures">
                 <div class="figure">
@@ -532,6 +532,7 @@ var source_list = new Map([
                 </div>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
+              ${placename === "Global" ? '' : '<i class="fa fa-window-close remove-filter" aria-hidden="true"></i>'}
           </div>
         `;
         var placename = (s) =>
@@ -540,7 +541,7 @@ var source_list = new Map([
           .breadcrumb
           .slice(0, info.breadcrumb.length - 1)
           .map(d => `
-              <div class="location-information-container" style="margin-top:12px;">
+              <div class="location-information-container dashboard-breadcrumb" style="margin-top:12px;">
                 <span class="placename">${d.name}</span>
                 <div class="figures">
                   <div class="figure">
@@ -553,7 +554,7 @@ var source_list = new Map([
                     <span class="recovered-count" style="color: rgb(40, 50, 55)">${d.default_stats[2]}</span>
                   </div>
                 </div>
-                <i class="fa fa-window-close remove-filter" aria-hidden="true"></i>
+                ${d.name === "Global" ? '' : '<i class="fa fa-window-close remove-filter" aria-hidden="true"></i>'}
               </div>
             `)
           .join("\n");
@@ -584,8 +585,21 @@ var source_list = new Map([
         $("div#aggregate-date-window > div.response-area").html(`
           ${output_DOM}
         `);
+        $("div.location-information-container > span.placename").click(function(evt){
+          evt.stopPropagation();
+          $(this).parent().click();
+        });
+        $("div.location-information-container > .remove-filter").click(function(evt){
+          var parent = $(this).parent();
+          if($(this).parent().attr("class").split(/\s+/).includes("root"))
+            parent = parent.parent();
+          var target = parent.prev();
+          target.click();
+          evt.stopPropagation();
+        });
         $("div.location-information-container > svg").click(function(evt){
           evt.stopPropagation();
+          $(this).toggleClass("active");
           if ($(this).parent().next().attr("class").includes("variable-display")){
             $(this).parent().next().toggleClass("expanded");
             return;
@@ -595,56 +609,55 @@ var source_list = new Map([
           var is_county = Boolean(placename.toUpperCase().includes("COUNTY") |
                                   placename.toUpperCase().includes("BOROUGH") |
                                   placename.toUpperCase().includes("PARISH"));
-          if (is_county) {
-            var queryUrl = `${api_url}/api/v1/statquery_details?node=${placename}-${$("span.selected-state.hidden").text().trim()}&date=${selected_date().format("YYYY-MM-DD")}`;
-            console.log(queryUrl);
-            var t = this;
-            function toggleVisibility() {
-              $(t).parent().next().toggleClass("expanded");
-            }
-            var queryCallback = (info) => {
-              var variables_DOM = Array.from(Object.entries(info))
-                                       .map(arr => `
-                                         <div class="variable">
-                                           <div class="source">
-                                             ${arr[0]}
-                                           </div>
-                                           <div class="figures">
-                                             <div class="figure">
-                                               <span class="confirmed-count"
-                                                     style="color: rgb(40, 50, 55)">
-                                                 ${arr[1][0]}
-                                               </span>
-                                             </div>
-                                             <div class="figure">
-                                               <span class="death-count"
-                                                     style="color: rgb(40, 50, 55)">
-                                                  ${arr[1][1]}
-                                               </span>
-                                             </div>
-                                             <div class="figure">
-                                               <span class="recovered-count"
-                                                     style="color: rgb(40, 50, 55)">
-                                                  ${arr[1][2]}
-                                               </span>
-                                             </div>
-                                           </div>
-                                         </div>`).join("\n");
-              var variable_DOM = `
-                <div class="variable-display">
-                  ${variables_DOM}
-                </div>
-              `;
-              $(variable_DOM).insertAfter($(t).parent());
-              toggleVisibility();
-            }
-            corsHTTP(queryUrl, queryCallback)
-          } else {
-            $(this).parent().click();
+          var node = is_county ? `${placename}-${$("span.selected-state.hidden").text().trim()}` : `${placename}`;
+          var queryUrl = `${api_url}/api/v1/statquery_details?node=${node}&date=${selected_date().format("YYYY-MM-DD")}`;
+          console.log(queryUrl);
+          var t = this;
+          function toggleVisibility() {
+            $(t).parent().next().toggleClass("expanded");
           }
+          var queryCallback = (info) => {
+            var variables_DOM = Array.from(Object.entries(info))
+                                     .map(arr => `
+                                       <div class="variable">
+                                         <div class="source">
+                                           ${arr[0]}
+                                         </div>
+                                         <div class="figures">
+                                           <div class="figure">
+                                             <span class="confirmed-count"
+                                                   style="color: rgb(40, 50, 55)">
+                                               ${arr[1][0]}
+                                             </span>
+                                           </div>
+                                           <div class="figure">
+                                             <span class="death-count"
+                                                   style="color: rgb(40, 50, 55)">
+                                                ${arr[1][1]}
+                                             </span>
+                                           </div>
+                                           <div class="figure">
+                                             <span class="recovered-count"
+                                                   style="color: rgb(40, 50, 55)">
+                                                ${arr[1][2]}
+                                             </span>
+                                           </div>
+                                         </div>
+                                       </div>`).join("\n");
+            var variable_DOM = `
+              <div class="variable-display">
+                ${variables_DOM}
+              </div>
+            `;
+            $(variable_DOM).insertAfter($(t).parent());
+            toggleVisibility();
+          }
+          corsHTTP(queryUrl, queryCallback)
         });
         $("div.location-information-container").click(function(evt){
           if(evt.target.tagName == "SPAN")
+            return;
+          if(evt.target.tagName == "SVG")
             return;
           showPlace($(this).find(".placename").text().trim());
         });

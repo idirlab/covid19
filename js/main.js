@@ -3,7 +3,6 @@ var api_url = null;
 
 jQuery.get('config.txt', function(data) {
   console.log(data)
-  console.log(typeof data)
 
   var folder_defined_path = data.trim(' \r\t\n') == "PROD" ? "https://idir.uta.edu/covid-19-api" : "https://idir.uta.edu/covid-19-api-dev"
   api_url = local_testing ? "http://localhost:2222" : folder_defined_path;
@@ -136,7 +135,7 @@ var datePickerVar = null;
 function resolveWhenMaxDateLoaded() {
   return new Promise(resolve => {
     checkMaxDate(resolve);
-  }) 
+  })
 }
 
 function checkMaxDate(resolve) {
@@ -178,7 +177,7 @@ function createDatePicker() {
     max: globalMaxDate.toDate(),
     onSet:function(datecontainer){
       if (!('select' in datecontainer)) return;
- 
+
       function getDate(){
         return moment(new Date(datecontainer.select));
       }
