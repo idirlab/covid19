@@ -65,6 +65,15 @@ $(document).ready(async function(){
     }
   );
 
+  states_list = ['Alabama','Alaska','Arizona','Arkansas','California', 'Colorado','Connecticut','Delaware', 'District of Columbia','Florida',
+          'Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts',
+          'Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York',
+          'North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Puerto Rico','Rhode Island','South Carolina','South Dakota',
+          'Tennessee','Texas','US Virgin Islands','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
+
+  for (let index = 0; index < states_list.length; index++) {
+    states_list[index] = states_list[index].toString().toLowerCase().trim();
+  }
 
   chart = c3.generate({
     size: {
@@ -80,12 +89,9 @@ $(document).ready(async function(){
         confirmed: 'y'
       },
       colors: {
-        'Total cases': '#dc3545',
+        'Total Cases': '#dc3545',
         'Recoveries': '#28a745',
         'Fatal Cases': '#5d4f72e8',
-        'log(Total cases)': '#dc3545',
-        'log(Recoveries)': '#28a745',
-        'log(Fatal Cases)': '#5d4f72e8',
       }
     },
     axis: {
@@ -1013,7 +1019,7 @@ var source_list = new Map([
       date_list = []
       date_list.push('t');
       total_list = [];
-      total_list.push('Total cases');
+      total_list.push('Total Cases');
       death_list = [];
       death_list.push('Fatal Cases');
       recover_list = [];
@@ -1045,17 +1051,12 @@ var source_list = new Map([
 
         chart.load({
           columns: [date_list, total_list, death_list],
-          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
+          unload: ['t', 'Total Cases' , 'Fatal Cases', 'Recoveries'],
         });
 
         if($(".btn-group-toggle #option2").val() == 'log_select') {
 
         }
-
-        // chart.load({
-        //   columns: [cur_date_list, cur_total_list, cur_death_list],
-        //   unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries', 'log(Total cases)', 'log(Fatal Cases)', 'log(Recoveries)'],
-        // });
 
       }
 
@@ -1134,7 +1135,7 @@ var source_list = new Map([
       date_list = []
       date_list.push('t');
       total_list = [];
-      total_list.push('Total cases');
+      total_list.push('Total Cases');
       death_list = [];
       death_list.push('Fatal Cases');
       recover_list = [];
@@ -1166,7 +1167,7 @@ var source_list = new Map([
 
         chart.load({
           columns: [date_list, total_list, death_list, recover_list],
-          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
+          unload: ['t', 'Total Cases' , 'Fatal Cases', 'Recoveries'],
         });
 
       }
@@ -1205,7 +1206,7 @@ var source_list = new Map([
     date_list = []
     date_list.push('t');
     total_list = [];
-    total_list.push('Total cases');
+    total_list.push('Total Cases');
     death_list = [];
     death_list.push('Fatal Cases');
     recover_list = [];
@@ -1241,7 +1242,7 @@ var source_list = new Map([
 
       chart.load({
         columns: [date_list, total_list, death_list, recover_list],
-        unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
+        unload: ['t', 'Total Cases' , 'Fatal Cases', 'Recoveries'],
       });
 
     }
@@ -1274,17 +1275,22 @@ var source_list = new Map([
       date_list = []
       date_list.push('t');
       total_list = [];
-      total_list.push('Total cases');
+      total_list.push('Total Cases');
       death_list = [];
       death_list.push('Fatal Cases');
       recover_list = [];
       recover_list.push('Recoveries');
 
+      
+
 
       var update_state_Chart = (data) => {
 
-        data_str = JSON.stringify(data)
-        // console.log('Chart_state_data!!!: ' + data_str)
+        data_str = JSON.stringify(data);
+        console.log('Chart_state_data!!!: ' + data_str);
+        console.log(name)
+
+        // console.log(states_list)
 
         for (let index = 0; index < data.length; index++) {
 
@@ -1306,13 +1312,20 @@ var source_list = new Map([
 
         }
 
-
         $("div.chart_panel").css("display","block");
-
-        chart.load({
-          columns: [date_list, total_list, death_list, recover_list],
-          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
-        });
+        
+        // states level
+        if (states_list.includes(name)) {
+          chart.load({
+            columns: [date_list, total_list, death_list],
+            unload: ['t', 'Total Cases' , 'Fatal Cases', 'Recoveries'],
+          });
+        } else {  //country level
+          chart.load({
+            columns: [date_list, total_list, death_list, recover_list],
+            unload: ['t', 'Total Cases' , 'Fatal Cases', 'Recoveries'],
+          });
+        }       
 
       }
 
