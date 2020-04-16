@@ -1190,3 +1190,6 @@ div.modal-footer{
 .hidden-important {
   display:none !important;
 }
+div.info-pane.smaller.right.scrollable#hospital-info {
+  height: calc(100% - 92px);
+}
