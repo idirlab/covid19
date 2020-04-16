@@ -1187,3 +1187,6 @@ div.modal-footer{
 .location-information-container.dashboard-breadcrumb {
   background-color:#495b64;
 }
+.hidden-important {
+  display:none !important;
+}

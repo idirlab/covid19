@@ -118,6 +118,7 @@ function closeBar() {
   $("div#floating-side-panel-info-container").css("display", flag ? "block" : "none")
   $("div#aggregate-date-window > div.info-header").css("display", flag ? "block" : "none")
   $("div#aggregate-date-window > div.variable-toggle").css("display", flag ? "block" : "none")
+  $("div.response-area").css("display", flag ? "block" : "none")
 
   // toggle the map to get wider to cover the closed area
   $("body > main > div#map").toggleClass("closed");
