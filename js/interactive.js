@@ -65,6 +65,15 @@ $(document).ready(async function(){
     }
   );
 
+  states_list = ['Alabama','Alaska','Arizona','Arkansas','California', 'Colorado','Connecticut','Delaware', 'District of Columbia','Florida',
+          'Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts',
+          'Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York',
+          'North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Puerto Rico','Rhode Island','South Carolina','South Dakota',
+          'Tennessee','Texas','US Virgin Islands','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
+
+  for (let index = 0; index < states_list.length; index++) {
+    states_list[index] = states_list[index].toString().toLowerCase().trim();
+  }
 
   chart = c3.generate({
     size: {
@@ -141,8 +150,8 @@ $(document).ready(async function(){
     console.log(val);
     chart.axis.types({
         y: val
-      });   
-})
+    });   
+  })
 
   function getDay(num, str, init) {
     var today = new Date(init);
@@ -1182,11 +1191,16 @@ var source_list = new Map([
       recover_list = [];
       recover_list.push('Recoveries');
 
+      
+
 
       var update_state_Chart = (data) => {
 
-        data_str = JSON.stringify(data)
-        // console.log('Chart_state_data!!!: ' + data_str)
+        data_str = JSON.stringify(data);
+        console.log('Chart_state_data!!!: ' + data_str);
+        console.log(name)
+
+        // console.log(states_list)
 
         for (let index = 0; index < data.length; index++) {
 
@@ -1208,13 +1222,20 @@ var source_list = new Map([
 
         }
 
-
         $("div.chart_panel").css("display","block");
-
-        chart.load({
-          columns: [date_list, total_list, death_list, recover_list],
-          unload: ['t', 'Total Cases' , 'Fatal Cases', 'Recoveries'],
-        });
+        
+        // states level
+        if (states_list.includes(name)) {
+          chart.load({
+            columns: [date_list, total_list, death_list],
+            unload: ['t', 'Total Cases' , 'Fatal Cases', 'Recoveries'],
+          });
+        } else {  //country level
+          chart.load({
+            columns: [date_list, total_list, death_list, recover_list],
+            unload: ['t', 'Total Cases' , 'Fatal Cases', 'Recoveries'],
+          });
+        }       
 
       }
 
