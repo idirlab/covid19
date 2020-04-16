@@ -260,6 +260,9 @@ var source_list = new Map([
       var lvl = $("span.selected-level.hidden").text().trim();
       return $(`span.default-source-${lvl}`).text().trim();
     }
+    function selected_state() {
+      return $("span.selected-state.hidden").text().trim().toLowerCase().toTitleCase();
+    }
     function selected_children() {
       var lvl = $("span.selected-first-order-children.hidden").text().trim();
       return $(`span.default-source-${lvl}`).text().trim();
@@ -668,6 +671,8 @@ var source_list = new Map([
           name = 'US'
         }
         queryURL = api_url + `/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&${default_sources_querystr}`
+      } else {
+        queryURL = api_url + `/api/v1/statquery?node=${name}-${selected_state()}&date=${selected_date().format("YYYY-MM-DD")}&${default_sources_querystr}`
       }
       console.log("qwer", queryURL)
 
