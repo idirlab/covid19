@@ -186,10 +186,27 @@ function createDatePicker() {
                    getDate(),
                    getDate().add(1, "days")];
       var datestrs = dates.map(d => d.format(globalDateFormat));
-      datestrs.forEach(function(datestr, idx){
-        var id = `pos-${2 + idx}`;
-        var selector = `div.info-pane#aggregate-date-window > div.info-header > div.date-element#${id}`;
-        $(selector).text(datestr);
+      datestrs.forEach(function(date_str, idx){
+        var pos_id = `pos-${2 + idx}`;
+        var selector = `div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`;
+        $(selector).text(date_str);
+
+        $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).text(date_str);
+        if (globalMaxDate.format(globalDateFormat) < date_str || date_str < globalMinDate.format(globalDateFormat)) {
+          $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).addClass('inactive')
+          if (idx == 0) {
+            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-1`).addClass('inactive')
+          } else if (idx == 2) {
+            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-5`).addClass('inactive')
+          }
+        } else {
+          $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).removeClass('inactive')
+          if (idx == 0) {
+            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-1`).removeClass('inactive')
+          } else if (idx == 2) {
+            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-5`).removeClass('inactive')
+          }
+        }
       });
     }
   });
