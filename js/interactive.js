@@ -80,12 +80,9 @@ $(document).ready(async function(){
         confirmed: 'y'
       },
       colors: {
-        'Total cases': '#dc3545',
+        'Total Cases': '#dc3545',
         'Recoveries': '#28a745',
         'Fatal Cases': '#5d4f72e8',
-        'log(Total cases)': '#dc3545',
-        'log(Recoveries)': '#28a745',
-        'log(Fatal Cases)': '#5d4f72e8',
       }
     },
     axis: {
@@ -923,7 +920,7 @@ var source_list = new Map([
       date_list = []
       date_list.push('t');
       total_list = [];
-      total_list.push('Total cases');
+      total_list.push('Total Cases');
       death_list = [];
       death_list.push('Fatal Cases');
       recover_list = [];
@@ -955,17 +952,12 @@ var source_list = new Map([
 
         chart.load({
           columns: [date_list, total_list, death_list],
-          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
+          unload: ['t', 'Total Cases' , 'Fatal Cases', 'Recoveries'],
         });
 
         if($(".btn-group-toggle #option2").val() == 'log_select') {
           
         }
-
-        // chart.load({
-        //   columns: [cur_date_list, cur_total_list, cur_death_list],
-        //   unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries', 'log(Total cases)', 'log(Fatal Cases)', 'log(Recoveries)'],
-        // });
 
       }
 
@@ -1044,7 +1036,7 @@ var source_list = new Map([
       date_list = []
       date_list.push('t');
       total_list = [];
-      total_list.push('Total cases');
+      total_list.push('Total Cases');
       death_list = [];
       death_list.push('Fatal Cases');
       recover_list = [];
@@ -1076,7 +1068,7 @@ var source_list = new Map([
 
         chart.load({
           columns: [date_list, total_list, death_list, recover_list],
-          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
+          unload: ['t', 'Total Cases' , 'Fatal Cases', 'Recoveries'],
         });
 
       }
@@ -1115,7 +1107,7 @@ var source_list = new Map([
     date_list = []
     date_list.push('t');
     total_list = [];
-    total_list.push('Total cases');
+    total_list.push('Total Cases');
     death_list = [];
     death_list.push('Fatal Cases');
     recover_list = [];
@@ -1151,7 +1143,7 @@ var source_list = new Map([
 
       chart.load({
         columns: [date_list, total_list, death_list, recover_list],
-        unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
+        unload: ['t', 'Total Cases' , 'Fatal Cases', 'Recoveries'],
       });
       
     }
@@ -1184,7 +1176,7 @@ var source_list = new Map([
       date_list = []
       date_list.push('t');
       total_list = [];
-      total_list.push('Total cases');
+      total_list.push('Total Cases');
       death_list = [];
       death_list.push('Fatal Cases');
       recover_list = [];
@@ -1221,7 +1213,7 @@ var source_list = new Map([
 
         chart.load({
           columns: [date_list, total_list, death_list, recover_list],
-          unload: ['t', 'Total cases' , 'Fatal Cases', 'Recoveries'],
+          unload: ['t', 'Total Cases' , 'Fatal Cases', 'Recoveries'],
         });
 
       }
