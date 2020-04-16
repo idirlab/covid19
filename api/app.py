@@ -201,7 +201,7 @@ def stat_query():
             'breadcrumb': [],
             'children': [{
                 'entity_type': child_entity_type,
-                'name': capitalize_names(x, child_entity_type),
+                'name': process_names(x, child_entity_type),
                 'default_stats': get_data_from_source(x, date, sources[child_entity_type], child_entity_type)
             } for x in get_children(node, entity_type)]
         }
@@ -211,7 +211,7 @@ def stat_query():
         while cur_entity_type != -1:
             ret['breadcrumb'] = [{
                 "entity_type": cur_entity_type,
-                "name": capitalize_names(cur_node, cur_entity_type),
+                "name": process_names(cur_node, cur_entity_type),
                 "default_stats": get_data_from_source(cur_node, date, sources[cur_entity_type], cur_entity_type)
             }] + ret['breadcrumb']
 
@@ -235,7 +235,10 @@ def stat_query():
         return ret
 
 
-def capitalize_names(x, entity_type):
+def process_names(x, entity_type):
+    if x == 'us':
+        x = 'united states'
+
     if entity_type == 'county':
         x = '-'.join(x.split('-')[:-1])
 
