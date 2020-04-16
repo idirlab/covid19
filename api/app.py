@@ -284,7 +284,7 @@ def get_parent(node, entity_type):
         with open(os.path.join(source_list_prefix, 'counties.txt'), 'r') as f:
             for line in f:
                 line = line.lower().strip(' \r\t\n')
-                if ',{},'.format(node) in line:
+                if ',{},{}'.format('-'.join(node.split('-')[:-1]), node.split('-')[-1]) in line:
                     return line.split(',')[2]
             return -1
     elif entity_type == 'state':
