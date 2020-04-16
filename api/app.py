@@ -100,7 +100,9 @@ def stat_query_time_series():
         date_end = request.args['date_end']
         dsrc = request.args['dsrc']
     else:
-        return jsonify(-1)
+        query_processes.remove(pid)
+        logging.info(query_processes)
+        abort(400)
 
     logging.info('Processing request...')
 
