@@ -1215,7 +1215,7 @@ var source_list = new Map([
     var updateChart = (data) => {
 
       data_str = JSON.stringify(data)
-      console.log('Chart_data!!!: ' + data_str)
+      // console.log('Chart_data!!!: ' + data_str)
 
       for (let index = 0; index < data.length; index++) {
 
