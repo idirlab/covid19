@@ -144,7 +144,7 @@ $(document).ready(async function(){
     console.log(val);
     chart.axis.types({
         y: val
-      });
+    });
   })
 
   function getDay(num, str, init) {
