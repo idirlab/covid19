@@ -145,7 +145,7 @@ $(document).ready(async function(){
     chart.axis.types({
         y: val
       });
-})
+  })
 
   function getDay(num, str, init) {
     var today = new Date(init);
