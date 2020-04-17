@@ -817,6 +817,12 @@ var source_list = new Map([
 
                 </script>
               </div>
+
+              <div class="info-header twitter">
+                <i class="fab fa-twitter" style="cursor:pointer;"></i>
+                <span>LOCAL TWEETS</span>
+              </div>
+              <div id="tweeet" class="tweet-frame"></div>
             </div>
             `;
 
@@ -830,6 +836,8 @@ var source_list = new Map([
               $("div#floating-side-panel-info-container").html(DOM);
               adjustHospitalPaneHeight();
             }
+
+            displayTweet()
           }
 
           corsHTTP(queryURL, updateLeftPanel);
@@ -1413,8 +1421,6 @@ var source_list = new Map([
     $(".leaflet-control-attribution")
       .css("background-color", "transparent")
       .html("");
-
-
 
   });
 });
