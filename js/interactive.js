@@ -667,11 +667,11 @@ var source_list = new Map([
         $("div#tweets-all").html("Loading...")
 
         var dFormat = "YYYY-MM-DD";
-        var dateEnd = moment(new Date).format(dFormat);
-        var dateStart = moment(new Date).subtract(7, "days").format(dFormat);
+        var dateEnd = moment(new Date);
+        var dateStart = moment(new Date).subtract(7, "days");
         var curState = selected_state();
 
-        var tweetQueryURL = `https://idir.uta.edu/claimportal/api/v1/tweet?claimbuster_from=0&claimbuster_to=1&keywords=COVID&state=${curState}&start_date=${dateStart}&end_date=${dateEnd}`;
+        var tweetQueryURL = `https://idir.uta.edu/claimportal/api/v1/tweet?claimbuster_from=0&claimbuster_to=1&keywords=COVID&state=${curState}&start_date=${dateStart.format(dFormat)}&end_date=${dateEnd.format(dFormat)}`;
 
         var displayAllTweets = tweetInfo => {
           $("div#tweets-all").html("");
@@ -681,6 +681,10 @@ var source_list = new Map([
           }
           for (var i=0; i<tweetInfo.tweets.length; i++) {
             displayTweet(document.getElementById(`tw-${i}`), tweetInfo.tweets[i].tweet_id);
+          }
+
+          if (tweetInfo.tweets.length == 0) {
+            $("div#tweets-all").html(`No tweets available between ${dateStart.format(globalDateFormat)} and ${dateEnd.format(globalDateFormat)}`);
           }
         }
 

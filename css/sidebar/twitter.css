@@ -17,3 +17,8 @@ div.info-pane.twitter {
     top: calc(50% + 48px);
     height: calc(50% - 48px);
 }
+
+div#tweets-all {
+    line-height: normal;
+    margin-top: 12px;
+}
