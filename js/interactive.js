@@ -684,7 +684,8 @@ var source_list = new Map([
           }
 
           if (tweetInfo.tweets.length == 0) {
-            $("div#tweets-all").html(`No tweets available between ${dateStart.format(globalDateFormat)} and ${dateEnd.format(globalDateFormat)}`);
+            // $("div#tweets-all").html(`No tweets available between ${dateStart.format(globalDateFormat)} and ${dateEnd.format(globalDateFormat)} for ${selected_state()}`);
+            $("div#tweets-all").html(`No tweets available in the past week for ${selected_state()}`);
           }
         }
 

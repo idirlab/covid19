@@ -5,6 +5,6 @@ function displayTweet(elementID, tweetID) {
         conversation : 'all',    // or all
         cards        : 'hidden',  // or visible
         linkColor    : '#cc0000', // default is blue
-        theme        : 'light'    // or dark
+        theme        : 'light'    // or light
     })
 }
