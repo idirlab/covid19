@@ -384,6 +384,7 @@ visibility: visible;
 
 span {
   margin-right: 10px;
+  cursor:default;
 }
 
 #info a {
@@ -785,15 +786,18 @@ div.location-information-container > span.placename {
   display:inline-block;
   margin-left:12px;
   font-size:13px;
-  cursor:auto;
+  cursor:pointer;
   transform: translate(0px, 0px);
 }
 div.location-information-container > div.figures {
   line-height:24px;
-  cursor:auto;
+  cursor:default;
   transform:translate(0px, 16px);
   right:36px;
   position:absolute;
+}
+div.figures {
+  cursor:default;
 }
 div.location-information-container > div.figures > div.figure{
   border-radius: 32px;
@@ -934,7 +938,6 @@ div.variable-toggle > div.variable-button {
 }
 div.variable-display {
   width:100%;
-  margin-top: 12px;
   line-height:24px;
   display:block;
   -moz-transition: height .5s;
@@ -1005,7 +1008,28 @@ div.location-information-container > svg {
   transition:0.3s;
   position:absolute;
   right:12px;
-  z-index:9000;
+  z-index:99999;
+  transition: 0.3s;
+  border-radius: 16px;
+}
+div.location-information-container > svg:hover {
+  border: 1px solid white;
+}
+div.location-information-container > .remove-filter {
+  transform: translate(0px, 20px);
+  line-height: 18px;
+  cursor: pointer;
+  transition: 0.3s;
+  position: absolute;
+  right: 12px;
+  z-index: 9000;
+  font-size: 18px;
+  color: #cfd8dc;
+  transition: 0.3s;
+  opacity:0.6;
+}
+div.location-information-container > .remove-filter:hover {
+  opacity: 1;
 }
 div.location-information-container > svg.active {
   transform:rotate(180deg) translate(0px, -22px);
@@ -1144,4 +1168,28 @@ div.apply-btn-style:hover:before {
 }
 div.modal-footer{
   z-index:999;
+}
+.location-information-container.root {
+  margin-top:12px;
+}
+.location-information-container.root:not(.global) > .remove-filter {
+  transform: translate(0px, 10px);
+}
+.location-information-container.root:not(.global) > svg {
+  transform: translate(0px, 32px);
+}
+.location-information-container.root:not(.global) > svg.active {
+  transform: rotate(180deg) translate(0px, -32px);
+}
+.location-information-container {
+  cursor:pointer;
+}
+.location-information-container.dashboard-breadcrumb {
+  background-color:#495b64;
+}
+.hidden-important {
+  display:none !important;
+}
+div.info-pane.smaller.right.scrollable#hospital-info {
+  height: calc(100% - 92px);
 }

@@ -3,7 +3,7 @@ var api_url = null;
 
 jQuery.get('config.txt', function(data) {
   console.log(data)
-  
+
   var folder_defined_path = data.trim(' \r\t\n') == "PROD" ? "https://idir.uta.edu/covid-19-api" : "https://idir.uta.edu/covid-19-api-dev"
   api_url = local_testing ? "http://localhost:2222" : folder_defined_path;
 });
@@ -118,6 +118,7 @@ function closeBar() {
   $("div#floating-side-panel-info-container").css("display", flag ? "block" : "none")
   $("div#aggregate-date-window > div.info-header").css("display", flag ? "block" : "none")
   $("div#aggregate-date-window > div.variable-toggle").css("display", flag ? "block" : "none")
+  $("div.response-area").css("display", flag ? "block" : "none")
 
   // toggle the map to get wider to cover the closed area
   $("body > main > div#map").toggleClass("closed");
@@ -135,7 +136,7 @@ var datePickerVar = null;
 function resolveWhenMaxDateLoaded() {
   return new Promise(resolve => {
     checkMaxDate(resolve);
-  }) 
+  })
 }
 
 function checkMaxDate(resolve) {
@@ -177,7 +178,7 @@ function createDatePicker() {
     max: globalMaxDate.toDate(),
     onSet:function(datecontainer){
       if (!('select' in datecontainer)) return;
- 
+
       function getDate(){
         return moment(new Date(datecontainer.select));
       }
@@ -185,10 +186,27 @@ function createDatePicker() {
                    getDate(),
                    getDate().add(1, "days")];
       var datestrs = dates.map(d => d.format(globalDateFormat));
-      datestrs.forEach(function(datestr, idx){
-        var id = `pos-${2 + idx}`;
-        var selector = `div.info-pane#aggregate-date-window > div.info-header > div.date-element#${id}`;
-        $(selector).text(datestr);
+      datestrs.forEach(function(date_str, idx){
+        var pos_id = `pos-${2 + idx}`;
+        var selector = `div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`;
+        $(selector).text(date_str);
+
+        $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).text(date_str);
+        if (globalMaxDate.format(globalDateFormat) < date_str || date_str < globalMinDate.format(globalDateFormat)) {
+          $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).addClass('inactive')
+          if (idx == 0) {
+            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-1`).addClass('inactive')
+          } else if (idx == 2) {
+            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-5`).addClass('inactive')
+          }
+        } else {
+          $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).removeClass('inactive')
+          if (idx == 0) {
+            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-1`).removeClass('inactive')
+          } else if (idx == 2) {
+            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-5`).removeClass('inactive')
+          }
+        }
       });
     }
   });

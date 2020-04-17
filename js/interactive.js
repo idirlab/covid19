@@ -150,7 +150,7 @@ $(document).ready(async function(){
     console.log(val);
     chart.axis.types({
         y: val
-    });   
+    });
   })
 
   function getDay(num, str, init) {
@@ -265,6 +265,9 @@ var source_list = new Map([
     function selected_source() {
       var lvl = $("span.selected-level.hidden").text().trim();
       return $(`span.default-source-${lvl}`).text().trim();
+    }
+    function selected_state() {
+      return $("span.selected-state.hidden").text().trim().toLowerCase().toTitleCase();
     }
     function selected_children() {
       var lvl = $("span.selected-first-order-children.hidden").text().trim();
@@ -447,6 +450,10 @@ var source_list = new Map([
                                      ["country", "state"],
                                      ["state", "county"],
                                      ["county", "county"]]);
+      var default_sources_querystr = Array.from(get_child_level.keys())
+        .map(lvl => `dsrc_${lvl}=` + $(`span.default-source-${lvl}.hidden`).text().trim())
+        .reduce((acc, src_str) => `${acc}&${src_str}`);
+      var original_src =
       $("span.selected-first-order-children.hidden").text(get_child_level.get(
         $("span.selected-level.hidden").text().trim()
       ));
@@ -478,21 +485,19 @@ var source_list = new Map([
           !is_county ? true : false
         )
       );
-
-
       var parseInfo = (info) => {
-          // Create side-panel here
-          var no_data = Object.entries(info.curnode.detailed_stats).length == 0;
+          var curnode = info.breadcrumb[info.breadcrumb.length - 1];
+          var no_data = Object.entries(curnode.detailed_stats).length == 0;
           if (no_data) {
             $("div#aggregate-date-window > div.response-area").html(`
               No data for <br/> <tt>DATE = ${selected_date().format("YYYY-MM-DD")}</tt> and <tt>LOCATION = ${name}</tt>
             `);
             return;
           }
-          var cases = info.curnode.default_stats[0];
-          var deaths = info.curnode.default_stats[1];
-          var recovered = info.curnode.default_stats[2];
-          var variable_DOMS = Array.from(Object.entries(info.curnode.detailed_stats)).map(src_to_stats =>
+          var cases = curnode.default_stats[0];
+          var deaths = curnode.default_stats[1];
+          var recovered = curnode.default_stats[2];
+          var variable_DOMS = Array.from(Object.entries(curnode.detailed_stats)).map(src_to_stats =>
             `
              <div class="variable">
                <div class="source">${src_to_stats[0]}</div>
@@ -520,9 +525,9 @@ var source_list = new Map([
             out = "United States";
           return out;
         }
-        var placename = standard_name(name)
+        var placename = standard_name(curnode.name)
         var location_info_DOM = `
-          <div class="location-information-container root">
+          <div class="location-information-container root ${placename === "Global" ? 'global' : ''}">
               <span class="placename">${placename}</span>
               <div class="figures">
                 <div class="figure">
@@ -536,13 +541,35 @@ var source_list = new Map([
                 </div>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
+              ${placename === "Global" ? '' : '<i class="fa fa-window-close remove-filter" aria-hidden="true"></i>'}
           </div>
         `;
         var placename = (s) =>
           standard_name(is_state ? `${s.toLowerCase().toTitleCase()} ${municipalityPostfix(county_state)}`: s);
+        var breadcrumb_DOM = info
+          .breadcrumb
+          .slice(0, info.breadcrumb.length - 1)
+          .map(d => `
+              <div class="location-information-container dashboard-breadcrumb" style="margin-top:12px;">
+                <span class="placename">${d.name}</span>
+                <div class="figures">
+                  <div class="figure">
+                    <span class="confirmed-count" style="color: rgb(40, 50, 55)">${d.default_stats[0]}</span>
+                  </div>
+                  <div class="figure">
+                    <span class="death-count" style="color: rgb(40, 50, 55)">${d.default_stats[1]}</span>
+                  </div>
+                  <div class="figure">
+                    <span class="recovered-count" style="color: rgb(40, 50, 55)">${d.default_stats[2]}</span>
+                  </div>
+                </div>
+                ${d.name === "Global" ? '' : '<i class="fa fa-window-close remove-filter" aria-hidden="true"></i>'}
+              </div>
+            `)
+          .join("\n");
         var first_order_children_DOM = info.children.map(child_obj => `
           <div class="location-information-container" style="margin-top:12px;">
-          <span class="placename">${placename(child_obj.name)}</span>
+              <span class="placename">${placename(child_obj.name)}</span>
               <div class="figures">
                 <div class="figure">
                   <span class="confirmed-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[0]}</span>
@@ -554,9 +581,10 @@ var source_list = new Map([
                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[2]}</span>
                 </div>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" ><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
           </div>`).join("\n");
         var output_DOM = `
+          ${breadcrumb_DOM}
           <div class="geolocation-container">
             ${location_info_DOM}
             ${variable_DOM}
@@ -566,28 +594,91 @@ var source_list = new Map([
         $("div#aggregate-date-window > div.response-area").html(`
           ${output_DOM}
         `);
-        $("div.location-information-container.root > svg").click(function(){
-          $(this).parent().next().toggleClass("expanded");
+        $("div.location-information-container > span.placename").click(function(evt){
+          evt.stopPropagation();
+          $(this).parent().click();
         });
-        $("div.location-information-container > svg").click(function(){
-          $(this).toggleClass("active");
+        $("div.location-information-container > .remove-filter").click(function(evt){
+          var parent = $(this).parent();
           if($(this).parent().attr("class").split(/\s+/).includes("root"))
+            parent = parent.parent();
+          var target = parent.prev();
+          target.click();
+          evt.stopPropagation();
+        });
+        $("div.location-information-container > svg").click(function(evt){
+          evt.stopPropagation();
+          $(this).toggleClass("active");
+          if ($(this).parent().next().attr("class").includes("variable-display")){
+            $(this).parent().next().toggleClass("expanded");
             return;
-          var placename = $(this).parent().find("span.placename");
-          var parent = $(this).parent().parent().find("div.geolocation-container > div.location-information-container.root > span.placename")
-          showPlace(placename.text().trim(), parent.text().trim());
+          }
+          var placename = $(this).parent().find(".placename").text().trim();
+          $(".placename.hidden").text(placename);
+          var is_county = Boolean(placename.toUpperCase().includes("COUNTY") |
+                                  placename.toUpperCase().includes("BOROUGH") |
+                                  placename.toUpperCase().includes("PARISH"));
+          var node = is_county ? `${placename}-${$("span.selected-state.hidden").text().trim()}` : `${placename}`;
+          var queryUrl = `${api_url}/api/v1/statquery_details?node=${node}&date=${selected_date().format("YYYY-MM-DD")}`;
+          console.log(queryUrl);
+          var t = this;
+          function toggleVisibility() {
+            $(t).parent().next().toggleClass("expanded");
+          }
+          var queryCallback = (info) => {
+            var variables_DOM = Array.from(Object.entries(info))
+                                     .map(arr => `
+                                       <div class="variable">
+                                         <div class="source">
+                                           ${arr[0]}
+                                         </div>
+                                         <div class="figures">
+                                           <div class="figure">
+                                             <span class="confirmed-count"
+                                                   style="color: rgb(40, 50, 55)">
+                                               ${arr[1][0]}
+                                             </span>
+                                           </div>
+                                           <div class="figure">
+                                             <span class="death-count"
+                                                   style="color: rgb(40, 50, 55)">
+                                                ${arr[1][1]}
+                                             </span>
+                                           </div>
+                                           <div class="figure">
+                                             <span class="recovered-count"
+                                                   style="color: rgb(40, 50, 55)">
+                                                ${arr[1][2]}
+                                             </span>
+                                           </div>
+                                         </div>
+                                       </div>`).join("\n");
+            var variable_DOM = `
+              <div class="variable-display">
+                ${variables_DOM}
+              </div>
+            `;
+            $(variable_DOM).insertAfter($(t).parent());
+            toggleVisibility();
+          }
+          corsHTTP(queryUrl, queryCallback)
+        });
+        $("div.location-information-container").click(function(evt){
+          if(evt.target.tagName == "SPAN")
+            return;
+          if(evt.target.tagName == "SVG")
+            return;
+          showPlace($(this).find(".placename").text().trim());
         });
       }
 
-      if(parent && parent!='Global' && parent!='United States') {
-        queryURL = api_url + `/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
-        //queryURL = `http://localhost:2222/api/v1/statquery?node=${name+'-'+parent}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
-      } else {
+      if(!(parent && parent!='Global' && parent!='United States' && is_county)) {
         if(name=='United States') {
           name = 'US'
         }
-        queryURL = api_url + `/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc_parent=${selected_source()}&dsrc_children=${selected_children()}`
-        //queryURL = `http://localhost:2222/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&dsrc=${selected_source()}`
+        queryURL = api_url + `/api/v1/statquery?node=${name}&date=${selected_date().format("YYYY-MM-DD")}&${default_sources_querystr}`
+      } else {
+        queryURL = api_url + `/api/v1/statquery?node=${name}-${selected_state()}&date=${selected_date().format("YYYY-MM-DD")}&${default_sources_querystr}`
       }
       console.log("qwer", queryURL)
 
@@ -769,7 +860,6 @@ var source_list = new Map([
         var pos_id = `pos-${idx + 2}`;
         var date_str = new_date.format(globalDateFormat);
         $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).text(date_str);
-        
         if (globalMaxDate.format(globalDateFormat) < date_str || date_str < globalMinDate.format(globalDateFormat)) {
           $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).addClass('inactive')
           if (idx == 0) {
@@ -938,7 +1028,7 @@ var source_list = new Map([
       var update_county_Chart = (data) => {
 
         data_str = JSON.stringify(data)
-        console.log('Chart_county_data!!!: ' + data_str)
+        // console.log('Chart_county_data!!!: ' + data_str)
 
         for (let index = 0; index < data.length; index++) {
 
@@ -949,14 +1039,14 @@ var source_list = new Map([
           if (element['stats'][2] == -1) {
             element['stats'][2] = 0
           }
-          
+
           date_list.push(element['date'])
           total_list.push(element['stats'][0])
           death_list.push(element['stats'][1])
           recover_list.push(element['stats'][2])
         }
 
-        
+
         $("div.chart_panel").css("display","block")
 
         chart.load({
@@ -965,7 +1055,7 @@ var source_list = new Map([
         });
 
         if($(".btn-group-toggle #option2").val() == 'log_select') {
-          
+
         }
 
       }
@@ -1050,7 +1140,7 @@ var source_list = new Map([
       death_list.push('Fatal Cases');
       recover_list = [];
       recover_list.push('Recoveries');
-      
+
 
       var updateChart = (data) => {
         for (let index = 0; index < data.length; index++) {
@@ -1062,7 +1152,7 @@ var source_list = new Map([
           if (element['stats'][2] == -1) {
             element['stats'][2] = 0
           }
-          
+
           date_list.push(element['date']);
           total_list.push(element['stats'][0]);
           death_list.push(element['stats'][1]);
@@ -1121,13 +1211,13 @@ var source_list = new Map([
     death_list.push('Fatal Cases');
     recover_list = [];
     recover_list.push('Recoveries');
-    
+
 
     var updateChart = (data) => {
 
       data_str = JSON.stringify(data)
-      console.log('Chart_data!!!: ' + data_str)
-      
+      // console.log('Chart_data!!!: ' + data_str)
+
       for (let index = 0; index < data.length; index++) {
 
         const element = data[index];
@@ -1137,7 +1227,7 @@ var source_list = new Map([
         if (element['stats'][2] == -1) {
             element['stats'][2] = 0
           }
-        
+
         date_list.push(element['date'])
         total_list.push(element['stats'][0])
         death_list.push(element['stats'][1])
@@ -1154,7 +1244,7 @@ var source_list = new Map([
         columns: [date_list, total_list, death_list, recover_list],
         unload: ['t', 'Total Cases' , 'Fatal Cases', 'Recoveries'],
       });
-      
+
     }
 
     function format_date(num, str) {
@@ -1211,7 +1301,7 @@ var source_list = new Map([
           if (element['stats'][2] == -1) {
             element['stats'][2] = 0
           }
-          
+
           date_list.push(element['date'])
           total_list.push(element['stats'][0])
           death_list.push(element['stats'][1])

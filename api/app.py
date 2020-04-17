@@ -8,6 +8,7 @@ from datetime import date, timedelta, datetime
 import sys
 import os
 import pandas
+import string
 
 app = Flask(__name__)
 CORS(app)
@@ -72,9 +73,6 @@ def preprocess_node(node):
         node = node.replace(' parish', '')
         node = node.replace(' - ', '-')
         node = node.replace("'", '')
-    elif 'province' in entity_type:
-        node = '{} - {}'.format(entity_type.split('-')[1], node)
-        entity_type = 'province'
 
     return node, entity_type
 
@@ -102,7 +100,9 @@ def stat_query_time_series():
         date_end = request.args['date_end']
         dsrc = request.args['dsrc']
     else:
-        return jsonify(-1)
+        query_processes.remove(pid)
+        logging.info(query_processes)
+        abort(400)
 
     logging.info('Processing request...')
 
@@ -114,7 +114,8 @@ def stat_query_time_series():
             'date': single_date.strftime("%Y-%m-%d"),
             'stats': get_data_from_source(node, single_date.strftime("%Y-%m-%d"), dsrc, entity_type)
         } for single_date in daterange(str_to_date(date_start), str_to_date(date_end))]
-        ret = jsonify(parse_into_arrays(ret, entity_type, timeseries=True))
+
+        ret = jsonify(ret)
     except Exception as e:
         logging.info('Error: {}'.format(e))
         logging.info('Terminating process with code 500')
@@ -128,11 +129,44 @@ def stat_query_time_series():
         return ret
 
 
-# ----- all countries in world -----
-# country level data -> 1) jhu global time series.tsv
-# ----- united states only -----
-# state level data -> 1) CNN 2) CDC 3) JHU States 4) ny times us states 5) covidtracking states time series
-# county level data -> 1) jhu counties time series
+@app.route('/api/v1/statquery_details')
+def stat_query_details():
+    global refreshing, query_processes
+
+    while refreshing:
+        logging.info('query received, waiting for refresh to complete')
+        sleep(0.5)
+
+    pid = 0 if len(query_processes) == 0 else query_processes[-1] + 1
+    query_processes.append(pid)
+
+    if (all([x in request.args for x in ['node', 'date']])):
+        node = request.args['node'].lower()
+        date = request.args['date']
+    else:
+        query_processes.remove(pid)
+        logging.info(query_processes)
+        abort(400)
+
+    logging.info('Processing request...')
+
+    ret = {}
+    try:
+        node, entity_type = preprocess_node(node)
+        ret = jsonify(get_all_data(node, date, entity_type))
+    except Exception as e:
+        logging.info('Error: {}'.format(e))
+        logging.info('Terminating process with code 500')
+
+    query_processes.remove(pid)
+    logging.info(query_processes)
+
+    if ret == {}:
+        abort(500)
+    else:
+        return ret
+
+
 @app.route('/api/v1/statquery')
 def stat_query():
     global refreshing, query_processes
@@ -144,32 +178,52 @@ def stat_query():
     pid = 0 if len(query_processes) == 0 else query_processes[-1] + 1
     query_processes.append(pid)
 
-    if (all([x in request.args for x in ['node', 'date', 'dsrc_parent', 'dsrc_children']])):
+    if (all([x in request.args for x in ['node', 'date', 'dsrc_global', 'dsrc_country', 'dsrc_state', 'dsrc_county']])):
         node = request.args['node'].lower()
         date = request.args['date']
-        dsrc_parent = request.args['dsrc_parent']
-        dsrc_children = request.args['dsrc_children']
+        sources = {
+            'global': request.args['dsrc_global'],
+            'country': request.args['dsrc_country'],
+            'state': request.args['dsrc_state'],
+            'county': request.args['dsrc_county'],
+        }
     else:
-        return jsonify(-1)
+        query_processes.remove(pid)
+        logging.info(query_processes)
+        abort(400)
 
     logging.info('Processing request...')
 
     ret = {}
     try:
         node, entity_type = preprocess_node(node)
+        child_entity_type = get_children_type(entity_type)
 
         ret = {
-            'curnode': {
-                'default_stats': get_data_from_source(node, date, dsrc_parent, entity_type),
-                'detailed_stats': get_all_data(node, date, entity_type)
-            },
+            'breadcrumb': [],
             'children': [{
-                'name': x,
-                'default_stats': get_data_from_source(x, date, dsrc_children, ('state' if entity_type == 'country' else ('county' if entity_type == 'state' else ('country' if entity_type == 'global' else '-1'))))
+                'entity_type': child_entity_type,
+                'name': process_names(x, child_entity_type),
+                'default_stats': get_data_from_source(x, date, sources[child_entity_type], child_entity_type)
             } for x in get_children(node, entity_type)]
         }
 
-        ret = jsonify(parse_into_arrays(ret, entity_type))
+        cur_node = node
+        cur_entity_type = entity_type
+        while cur_entity_type != -1:
+            ret['breadcrumb'] = [{
+                "entity_type": cur_entity_type,
+                "name": process_names(cur_node, cur_entity_type),
+                "default_stats": get_data_from_source(cur_node, date, sources[cur_entity_type], cur_entity_type)
+            }] + ret['breadcrumb']
+
+            if cur_node == node:
+                ret['breadcrumb'][-1]['detailed_stats'] = get_all_data(cur_node, date, cur_entity_type)
+
+            cur_node = get_parent(cur_node, cur_entity_type)
+            cur_entity_type = get_parent_type(cur_entity_type)
+
+        ret = jsonify(ret)
     except Exception as e:
         logging.info('Error: {}'.format(e))
         logging.info('Terminating process with code 500')
@@ -181,27 +235,22 @@ def stat_query():
         abort(500)
     else:
         return ret
-        
 
-def parse_into_arrays(ret, entity_type, timeseries=False):
-    def fn(x):
-        if not x:
-            return []
-        return [z.replace(',', '') for z in x.split('-')]
 
-    if not timeseries:
-        ret['curnode']['default_stats'] = fn(ret['curnode']['default_stats'])
-        for k, _ in ret['curnode']['detailed_stats'].items():
-            ret['curnode']['detailed_stats'][k] = fn(ret['curnode']['detailed_stats'][k])
-        for i in range(len(ret['children'])):
-            ret['children'][i]['default_stats'] = fn(ret['children'][i]['default_stats'])
-            if entity_type == 'state':
-                ret['children'][i]['name'] = ret['children'][i]['name'].split('-')[0]
-    else:
-        for i in range(len(ret)):
-            ret[i]['stats'] = fn(ret[i]['stats'])
+def process_names(x, entity_type):
+    if x == 'us':
+        x = 'united states'
 
-    return ret
+    if entity_type == 'county':
+        x = '-'.join(x.split('-')[:-1])
+
+    return '-'.join([string.capwords(z) for z in x.split('-')])
+
+
+def parse_into_arrays(x):
+    if not x:
+        return []
+    return [z.replace(',', '') for z in x.split('-')]    
 
 
 def get_children(node, entity_type):
@@ -220,10 +269,16 @@ def get_children(node, entity_type):
                 if ',{}'.format(node) in line and not line[line.rindex(node) - 2].isdigit():
                     ret.append('{}-{}'.format(line.split(',')[1], node))
         return ret
-    elif entity_type == 'province':
-        return []
     else:
         return []
+
+
+def get_children_type(entity_type):
+    return ('state' if entity_type == 'country' else ('county' if entity_type == 'state' else ('country' if entity_type == 'global' else -1)))
+
+
+def get_parent_type(entity_type):
+    return ('country' if entity_type == 'state' else ('state' if entity_type == 'county' else ('global' if entity_type == 'country' else -1)))
 
 
 def get_parent(node, entity_type):
@@ -231,15 +286,13 @@ def get_parent(node, entity_type):
         with open(os.path.join(source_list_prefix, 'counties.txt'), 'r') as f:
             for line in f:
                 line = line.lower().strip(' \r\t\n')
-                if ',{},'.format(node) in line:
+                if ',{},{}'.format('-'.join(node.split('-')[:-1]), node.split('-')[-1]) in line:
                     return line.split(',')[2]
             return -1
     elif entity_type == 'state':
         return 'us'
     elif entity_type == 'country':
         return 'global'
-    elif entity_type == 'province':
-        return node.split(' - ')[0]
     else:
         return -1
 
@@ -294,7 +347,7 @@ def get_data_from_source(node, date, source, entity_type):
                         else:
                             has_na[idx] = True
 
-                return '-'.join(['NA' if x == 0 and has_na[i] else str(x) for i, x in enumerate(res)])
+                return parse_into_arrays('-'.join(['NA' if x == 0 and has_na[i] else str(x) for i, x in enumerate(res)]))
             else:
                 return []
         else:
@@ -307,15 +360,12 @@ def get_data_from_source(node, date, source, entity_type):
                 if entity_type == 'county' and source in source_list_per_level['county']:
                     idx = custom_search_df_for_county_node(file_list[source][entity_type][0])
                     if idx != -1:
-                        return file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], idx]
+                        return parse_into_arrays(file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], idx])
                 return []
-            return info
+            return parse_into_arrays(info)
         else:
             return []
     else:
-        if entity_type == 'province':
-            entity_type = 'country'
-
         if date in file_list[source][entity_type][1]:
             try:
                 info = file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], file_list[source][entity_type][0].columns.get_loc(node)]
@@ -323,16 +373,15 @@ def get_data_from_source(node, date, source, entity_type):
                 if entity_type == 'county' and source in source_list_per_level['county']:
                     idx = custom_search_df_for_county_node(file_list[source][entity_type][0])
                     if idx != -1:
-                        return file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], idx]
+                        return parse_into_arrays(file_list[source][entity_type][0].iloc[file_list[source][entity_type][1][date], idx])
                 return []
-            return info
+            return parse_into_arrays(info)
         else:
             return []
 
 
 # county: COUNTY, PARISH, BOROUGH
 # state: contained in united-states.txt
-# province: contained in either China or Canada list
 # country: all other?
 def select_entity_type(name):
     def is_state():
@@ -342,21 +391,6 @@ def select_entity_type(name):
                     return True
             return False
 
-    def is_province():
-        def prc_file(fname):
-            with open(os.path.join(source_list_prefix, fname), 'r') as f:
-                states = [x.lower() for x in f.readline().strip(' \r\n\t').split(',')]
-                if name in states:
-                    return True
-            return False
-
-        if prc_file('provinces-china.csv'):
-            return 'china'
-        elif prc_file('provinces-canada.csv'):
-            return 'canada'
-        else:
-            return None
-
     if name == 'global':
         return 'global'
     elif any([x in name for x in ['county', 'parish', 'borough']]):
@@ -364,11 +398,7 @@ def select_entity_type(name):
     elif is_state():
         return 'state'
     else:
-        is_prov = is_province()
-        if is_prov is None:
-            return 'country'
-        else:
-            return 'province-{}'.format(is_prov)
+        return 'country'
 
 
 def get_all_data(node, date, entity_type):
