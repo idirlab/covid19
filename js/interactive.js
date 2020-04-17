@@ -472,7 +472,7 @@ var source_list = new Map([
               <script>
                 function close_hos_info() {
                   console.log("close");
-                  $("div#hospital-info").css("display","none");
+                  $("div#floating-side-panel-info-container").hide();
                 }
               </script>
               ${msg}
@@ -685,6 +685,7 @@ var source_list = new Map([
       corsHTTP(encodeURI(queryURL), parseInfo)
 
       if (is_county) {
+        $("div#floating-side-panel-info-container").show();
 
         // Update hospitals and render hospitals
         var DOM ="";
@@ -723,7 +724,6 @@ var source_list = new Map([
 
           if (!is_global){
             $("div.variable-display").html(DOM);
-            adjustHospitalPaneHeight();
           }
         } else {
           var state = county_state.toUpperCase();
@@ -792,7 +792,7 @@ var source_list = new Map([
             }
 
             var retDOM = `
-            <div id="hospital-info" class="info-pane smaller right scrollable" style="margin-top:48px;">
+            <div id="hospital-info" class="info-pane right smaller hospital" style="margin-top:48px;">
               <div class="info-header smaller right unset-height">
                 <i class="fas fa-hospital"></i>
                 <span class="titile_info">LOCAL HOSPITAL INFO</span>
@@ -803,10 +803,9 @@ var source_list = new Map([
               <script>
                 function close_hos_info() {
                   console.log("close");
-                  $("div#hospital-info").css("display","none")
+                  $("div#floating-side-panel-info-container").css("display", "none")
                 }
               </script>
-
 
               <div class="hospital-display">
                 ${hospitalDOMs}
@@ -814,10 +813,11 @@ var source_list = new Map([
                   $("div.hospital > div.header > svg").click(function(evt){
                     $(this).closest("div.hospital").toggleClass("active");
                   });
-
                 </script>
               </div>
+            </div>
 
+            <div id="twitter-info" class="info-pane twitter right smaller">
               <div class="info-header twitter">
                 <i class="fab fa-twitter" style="cursor:pointer;"></i>
                 <span>LOCAL TWEETS</span>
@@ -834,10 +834,9 @@ var source_list = new Map([
 
             if (!is_global){
               $("div#floating-side-panel-info-container").html(DOM);
-              adjustHospitalPaneHeight();
             }
 
-            displayTweet()
+            displayTweet(document.getElementById("tweeet"), "1222478745514184705");
           }
 
           corsHTTP(queryURL, updateLeftPanel);
@@ -1295,7 +1294,7 @@ var source_list = new Map([
       var update_state_Chart = (data) => {
 
         data_str = JSON.stringify(data);
-        console.log('Chart_state_data!!!: ' + data_str);
+        // console.log('Chart_state_data!!!: ' + data_str);
         console.log(name)
 
         // console.log(states_list)
@@ -1424,19 +1423,3 @@ var source_list = new Map([
 
   });
 });
-
-function adjustHospitalPaneHeight() {
-  var sum = 0;
-  console.log('asdfasdfsafdf');
-  $("div.variable-display").children().each(function() {
-    var cls = $(this).attr('class');
-    var id = $(this).attr('id');
-    console.log($(this));
-    if (cls == "variable") {
-      sum += 12 + 32;
-    } else if (cls == undefined && id == "variable-loading-no-data") {
-      sum += $("#variable-loading-no-data").height();
-    }
-  })
-  console.log(sum);
-}

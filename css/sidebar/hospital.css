@@ -189,11 +189,15 @@ div.right {
   left:400px;
 }
 div.smaller {
+  height: calc(50% - 2 * 44px);
+  top: 44px;
+}
+div.bigger {
   height: calc(100% - 44px);
   top: 44px;
 }
-div.scrollable {
-  overflow-y:auto;
+div.info-pane.hospital {
+  overflow-y:scroll;
 }
 div.info-header.smaller.unset-height {
   height:unset;
