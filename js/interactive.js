@@ -664,7 +664,27 @@ var source_list = new Map([
 
       if (is_state) {
         $("div#floating-side-panel-info-container").show();
-        displayTweet(document.getElementById("tweeet"), "1222478745514184705");
+        $("div#tweets-all").html("Loading...")
+
+        var dFormat = "YYYY-MM-DD";
+        var dateEnd = moment(new Date).format(dFormat);
+        var dateStart = moment(new Date).subtract(7, "days").format(dFormat);
+        var curState = selected_state();
+
+        var tweetQueryURL = `https://idir.uta.edu/claimportal/api/v1/tweet?claimbuster_from=0&claimbuster_to=1&keywords=COVID&state=${curState}&start_date=${dateStart}&end_date=${dateEnd}`;
+
+        var displayAllTweets = tweetInfo => {
+          $("div#tweets-all").html("");
+
+          for (var i=0; i<tweetInfo.tweets.length; i++) {
+            $("div#tweets-all").html($("div#tweets-all").html() + `<div id="tw-${i}" class="tweet-frame"></div>`);
+          }
+          for (var i=0; i<tweetInfo.tweets.length; i++) {
+            displayTweet(document.getElementById(`tw-${i}`), tweetInfo.tweets[i].tweet_id);
+          }
+        }
+
+        corsHTTP(tweetQueryURL, displayAllTweets);
       } else if (is_county) {
         $("div#floating-side-panel-info-container").show();
 
