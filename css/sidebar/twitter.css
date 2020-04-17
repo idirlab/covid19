@@ -15,5 +15,5 @@ div.info-header.twitter {
 div.info-pane.twitter {
     overflow-y: scroll;
     top: calc(50% + 48px);
-    height: calc(50%);
+    height: calc(50% - 48px);
 }

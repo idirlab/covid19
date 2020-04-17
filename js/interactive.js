@@ -459,31 +459,9 @@ var source_list = new Map([
       ));
       var county_state = $("span.selected-state.hidden").text();
 
-      function hospital_container_msg_DOM(msg, hidden) {
-        return `
-            <div id="hospital-info" class="info-pane smaller right ${hidden?'hidden':''}" style="margin-top:48px;">
-              <div class="info-header smaller right unset-height ${hidden?'hidden':''}">
-                <i class="fas fa-hospital"></i>
-                <span class="titile_info">LOCAL HOSPITAL INFO</span>
-                <button class="close_hos_info" onclick="close_hos_info()">
-                  <i class="fas fa-times-circle" style="font-size: 24px;"></i>
-                </button>
-              </div>
-              <script>
-                function close_hos_info() {
-                  console.log("close");
-                  $("div#floating-side-panel-info-container").hide();
-                }
-              </script>
-              ${msg}
-            </div>
-            `;
-      }
-      $("div#floating-side-panel-info-container").html(
-        hospital_container_msg_DOM(
-          !is_county ? "Please navigate to county level to view hospitals" : "Loading...",
-          !is_county ? true : false
-        )
+      $("div#floating-side-panel-info-container").hide();
+      $("div#hospitalDOMs").html(
+        !is_county ? "Please navigate to county level to view hospitals" : "Loading...",
       );
       var parseInfo = (info) => {
           var curnode = info.breadcrumb[info.breadcrumb.length - 1];
@@ -684,7 +662,10 @@ var source_list = new Map([
 
       corsHTTP(encodeURI(queryURL), parseInfo)
 
-      if (is_county) {
+      if (is_state) {
+        $("div#floating-side-panel-info-container").show();
+        displayTweet(document.getElementById("tweeet"), "1222478745514184705");
+      } else if (is_county) {
         $("div#floating-side-panel-info-container").show();
 
         // Update hospitals and render hospitals
@@ -700,147 +681,80 @@ var source_list = new Map([
           }
         }
 
-        if (countyType == null) {
-          var curDOM = `
-          <div id="hospital-info" class="info-pane smaller right hidden">
-            <div class="info-header smaller right unset-height hidden">
-              <i class="fas fa-hospital"></i>
-              <span class="titile_info">LOCAL HOSPITAL INFO</span>
-              <button class="close_hos_info" onclick="close_hos_info()">
-                  <i class="fas fa-times-circle" style="font-size: 24px;"></i>
-                </button>
-            </div>
-            <script>
-              function close_hos_info() {
-                console.log("close");
-                $("div#hospital-info").css("display","none")
-              }
-            </script>
-            Please navigate to county level to view hospitals
-          </div>
-          `;
+        var state = county_state.toUpperCase();
+        var county = name.toUpperCase().replace(" " + countyType, "");
 
-          DOM += curDOM;
+        var queryURL = `https://services7.arcgis.com/LXCny1HyhQCUSueu/arcgis/rest/services/Definitive_Healthcare_USA_Hospital_Beds/FeatureServer/0/query?where=UPPER(STATE_NAME)%20like%20'%25${state.toUpperCase()}%25'%20AND%20UPPER(COUNTY_NAME)%20like%20'%25${county.toUpperCase()}%25'&outFields=*&outSR=4326&f=json`;
+        console.log("Retrieving hospital info for " + county + ", " + state);
+        console.log(queryURL);
 
-          if (!is_global){
-            $("div.variable-display").html(DOM);
+        var getHospitalHTML = (info) => {
+          console.log(info);
+
+          info = info.features;
+          var hospitalDOMs = "";
+
+          if (info.length == 0) {
+            hospitalDOMs += "This county does not have a major hospital";
           }
-        } else {
-          var state = county_state.toUpperCase();
-          var county = name.toUpperCase().replace(" " + countyType, "");
 
-          var queryURL = `https://services7.arcgis.com/LXCny1HyhQCUSueu/arcgis/rest/services/Definitive_Healthcare_USA_Hospital_Beds/FeatureServer/0/query?where=UPPER(STATE_NAME)%20like%20'%25${state.toUpperCase()}%25'%20AND%20UPPER(COUNTY_NAME)%20like%20'%25${county.toUpperCase()}%25'&outFields=*&outSR=4326&f=json`;
-          console.log("Retrieving hospital info for " + county + ", " + state);
-          console.log(queryURL);
+          info.sort(function(l, r) {
+            return l.attributes.HOSPITAL_NAME < r.attributes.HOSPITAL_NAME ? -1 : 1;
+          });
 
-          var getHospitalHTML = (info) => {
-            console.log(info);
+          var maxCapacity = 0;
+          for (var i=0; i<info.length; i++) {
+            maxCapacity = Math.max(maxCapacity, info[i].attributes.NUM_LICENSED_BEDS);
+          }
+          console.log(maxCapacity);
 
-            info = info.features;
-            var hospitalDOMs = "";
+          for (var i=0; i<info.length; i++) {
+            var cur = info[i].attributes;
+            var addr = `${cur.HQ_ADDRESS} ${cur.HQ_CITY}, ${cur.HQ_STATE}, ${cur.HQ_ZIP_CODE}`;
 
-            if (info.length == 0) {
-              hospitalDOMs += "This county does not have a major hospital";
-            }
-
-            info.sort(function(l, r) {
-              return l.attributes.HOSPITAL_NAME < r.attributes.HOSPITAL_NAME ? -1 : 1;
-            });
-
-            var maxCapacity = 0;
-            for (var i=0; i<info.length; i++) {
-              maxCapacity = Math.max(maxCapacity, info[i].attributes.NUM_LICENSED_BEDS);
-            }
-            console.log(maxCapacity);
-
-            for (var i=0; i<info.length; i++) {
-              var cur = info[i].attributes;
-              var addr = `${cur.HQ_ADDRESS} ${cur.HQ_CITY}, ${cur.HQ_STATE}, ${cur.HQ_ZIP_CODE}`;
-
-              var sourceDOM = `
-              <div class="hospital">
-                <div class="header">
-                  <div class="name"><full-count style="background: ${cur.BED_UTILIZATION == null ? "purple" : (cur.BED_UTILIZATION < 0.33 ? 'green' : (cur.BED_UTILIZATION < 0.66 ? '#ee7600' : 'red'))}">${cur.BED_UTILIZATION == null ? "No Data" : Math.round(cur.BED_UTILIZATION * 100) + "% Full"}</full-count> ${cur.HOSPITAL_NAME}</div>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
+            var sourceDOM = `
+            <div class="hospital">
+              <div class="header">
+                <div class="name"><full-count style="background: ${cur.BED_UTILIZATION == null ? "purple" : (cur.BED_UTILIZATION < 0.33 ? 'green' : (cur.BED_UTILIZATION < 0.66 ? '#ee7600' : 'red'))}">${cur.BED_UTILIZATION == null ? "No Data" : Math.round(cur.BED_UTILIZATION * 100) + "% Full"}</full-count> ${cur.HOSPITAL_NAME}</div>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/><path d="M0 0h24v24H0V0z" fill="none"/></svg>
+              </div>
+              <div class="information">
+                <div class="info-item blue-border">
+                  <i class="fas fa-hospital-alt"></i>
+                  <span>${cur.HOSPITAL_TYPE}</span>
                 </div>
-                <div class="information">
-                  <div class="info-item blue-border">
-                    <i class="fas fa-hospital-alt"></i>
-                    <span>${cur.HOSPITAL_TYPE}</span>
-                  </div>
-                  <div class="info-item ${cur.NUM_LICENSED_BEDS == null ? "black" : cur.NUM_LICENSED_BEDS / maxCapacity < 0.33 ? 'red' : (cur.NUM_LICENSED_BEDS / maxCapacity < 0.66 ? 'orange' : 'green')}-border">
-                    <i class="fas fa-bed"></i>
-                    <span>${cur.NUM_LICENSED_BEDS == null ? "No Bed Data" : cur.NUM_LICENSED_BEDS + " Total Beds"}${cur.NUM_ICU_BEDS != null ? " (" + cur.NUM_ICU_BEDS + " ICU)" : ""}</span>
-                  </div>
-                  <div class="info-item ${cur.BED_UTILIZATION == null ? "black" : cur.BED_UTILIZATION < 0.33 ? 'green' : (cur.BED_UTILIZATION < 0.66 ? 'orange' : 'red')}-border">
-                    <i class="fas fa-briefcase-medical"></i>
-                    <!-- <span>${Math.round(cur.BED_UTILIZATION * 100)}% (${Math.round(cur.BED_UTILIZATION * cur.NUM_LICENSED_BEDS)}/${cur.NUM_LICENSED_BEDS}) of beds occupied</span> -->
-                    <span>${cur.BED_UTILIZATION == null ? "No Data for" : Math.round(cur.BED_UTILIZATION *100) + "%"} Average Bed Utilization</span>
-                  </div>
-                  <div class="info-item ${cur.NUM_STAFFED_BEDS == null ? "black" : cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS < 0.33 ? 'red' : (cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS < 0.66 ? 'orange' : 'green')}-border">
-                    <i class="fas fa-user-nurse"></i>
-                    <span>${cur.NUM_LICENSED_BEDS == null || cur.NUM_STAFFED_BEDS == null ? "No Data for Staffed Beds" : Math.round(cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS * 100) + "% (" + cur.NUM_STAFFED_BEDS + "/" + cur.NUM_LICENSED_BEDS + ") of Beds Staffed"}</span>
-                  </div>
-                  <div class="info-item cursor blueviolet-border" onclick="window.open('https://www.google.com/maps/place/${encodeURI(addr)}')">
-                    <i class="fas fa-map-marked-alt"></i>
-                    <span>Get Directions</span>
-                  </div>
+                <div class="info-item ${cur.NUM_LICENSED_BEDS == null ? "black" : cur.NUM_LICENSED_BEDS / maxCapacity < 0.33 ? 'red' : (cur.NUM_LICENSED_BEDS / maxCapacity < 0.66 ? 'orange' : 'green')}-border">
+                  <i class="fas fa-bed"></i>
+                  <span>${cur.NUM_LICENSED_BEDS == null ? "No Bed Data" : cur.NUM_LICENSED_BEDS + " Total Beds"}${cur.NUM_ICU_BEDS != null ? " (" + cur.NUM_ICU_BEDS + " ICU)" : ""}</span>
+                </div>
+                <div class="info-item ${cur.BED_UTILIZATION == null ? "black" : cur.BED_UTILIZATION < 0.33 ? 'green' : (cur.BED_UTILIZATION < 0.66 ? 'orange' : 'red')}-border">
+                  <i class="fas fa-briefcase-medical"></i>
+                  <!-- <span>${Math.round(cur.BED_UTILIZATION * 100)}% (${Math.round(cur.BED_UTILIZATION * cur.NUM_LICENSED_BEDS)}/${cur.NUM_LICENSED_BEDS}) of beds occupied</span> -->
+                  <span>${cur.BED_UTILIZATION == null ? "No Data for" : Math.round(cur.BED_UTILIZATION *100) + "%"} Average Bed Utilization</span>
+                </div>
+                <div class="info-item ${cur.NUM_STAFFED_BEDS == null ? "black" : cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS < 0.33 ? 'red' : (cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS < 0.66 ? 'orange' : 'green')}-border">
+                  <i class="fas fa-user-nurse"></i>
+                  <span>${cur.NUM_LICENSED_BEDS == null || cur.NUM_STAFFED_BEDS == null ? "No Data for Staffed Beds" : Math.round(cur.NUM_STAFFED_BEDS / cur.NUM_LICENSED_BEDS * 100) + "% (" + cur.NUM_STAFFED_BEDS + "/" + cur.NUM_LICENSED_BEDS + ") of Beds Staffed"}</span>
+                </div>
+                <div class="info-item cursor blueviolet-border" onclick="window.open('https://www.google.com/maps/place/${encodeURI(addr)}')">
+                  <i class="fas fa-map-marked-alt"></i>
+                  <span>Get Directions</span>
                 </div>
               </div>
-              `
-              hospitalDOMs += sourceDOM;
-            }
-
-            var retDOM = `
-            <div id="hospital-info" class="info-pane right smaller hospital" style="margin-top:48px;">
-              <div class="info-header smaller right unset-height">
-                <i class="fas fa-hospital"></i>
-                <span class="titile_info">LOCAL HOSPITAL INFO</span>
-                <button class="close_hos_info" onclick="close_hos_info()">
-                  <i class="fas fa-times-circle" style="font-size: 24px;"></i>
-                </button>
-              </div>
-              <script>
-                function close_hos_info() {
-                  console.log("close");
-                  $("div#floating-side-panel-info-container").css("display", "none")
-                }
-              </script>
-
-              <div class="hospital-display">
-                ${hospitalDOMs}
-                <script>
-                  $("div.hospital > div.header > svg").click(function(evt){
-                    $(this).closest("div.hospital").toggleClass("active");
-                  });
-                </script>
-              </div>
             </div>
-
-            <div id="twitter-info" class="info-pane twitter right smaller">
-              <div class="info-header twitter">
-                <i class="fab fa-twitter" style="cursor:pointer;"></i>
-                <span>LOCAL TWEETS</span>
-              </div>
-              <div id="tweeet" class="tweet-frame"></div>
-            </div>
-            `;
-
-            return retDOM;
+            `
+            hospitalDOMs += sourceDOM;
           }
-
-          var updateLeftPanel = (hosInfo) => {
-            DOM = DOM + getHospitalHTML(hosInfo);
-
-            if (!is_global){
-              $("div#floating-side-panel-info-container").html(DOM);
-            }
-
-            displayTweet(document.getElementById("tweeet"), "1222478745514184705");
-          }
-
-          corsHTTP(queryURL, updateLeftPanel);
+          return hospitalDOMs;
         }
+
+        var updateHosPanel = (hosInfo) => {
+          if (!is_global){
+            $("div#hospitalDOMs").html(getHospitalHTML(hosInfo));
+          }
+        }
+
+        corsHTTP(queryURL, updateHosPanel);
       }
 
     }

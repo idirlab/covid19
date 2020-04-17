@@ -113,12 +113,35 @@
     <div id="left-side-bar" class="side-panel">
     
     <div id="floating-side-panel-info-container" class="right bigger">
-      <div id="hospital-info" class="info-pane right hidden">
-        <div class="info-header smaller unset-height hidden">
-          <i class="fas fa-hospital" style="cursor:pointer;"></i>
-          <span>LOCAL HOSPITAL INFO</span>
+      <div id="hospital-info" class="info-pane right smaller hospital" style="margin-top:48px;">
+        <div class="info-header smaller right unset-height">
+          <i class="fas fa-hospital"></i>
+          <span class="titile_info">LOCAL HOSPITAL INFO</span>
+          <button class="close_hos_info" onclick="close_hos_info()">
+            <i class="fas fa-times-circle" style="font-size: 24px;"></i>
+          </button>
         </div>
-        Please navigate to county level to view hospitals
+        <script>
+          function close_hos_info() {
+            console.log("close");
+            $("div#floating-side-panel-info-container").css("display", "none")
+          }
+        </script>
+        <div class="hospital-display">
+          <div id="hospitalDOMs"></div>
+          <script>
+            $("div.hospital > div.header > svg").click(function(evt){
+              $(this).closest("div.hospital").toggleClass("active");
+            });
+          </script>
+        </div>
+      </div>
+      <div id="twitter-info" class="info-pane twitter right smaller">
+        <div class="info-header twitter">
+          <i class="fab fa-twitter" style="cursor:pointer;"></i>
+          <span>LOCAL TWEETS</span>
+        </div>
+        <div id="tweeet" class="tweet-frame"></div>
       </div>
     </div>
     <div id="aggregate-date-window" class="info-pane top">
