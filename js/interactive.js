@@ -668,7 +668,7 @@ var source_list = new Map([
 
         var dFormat = "YYYY-MM-DD";
         var dateEnd = moment(new Date);
-        var dateStart = moment(new Date).subtract(7, "days");
+        var dateStart = moment(new Date).subtract(14, "days");
         var curState = selected_state();
 
         var tweetQueryURL = `https://idir.uta.edu/claimportal/api/v1/tweet?claimbuster_from=0&claimbuster_to=1&keywords=COVID&state=${curState}&start_date=${dateStart.format(dFormat)}&end_date=${dateEnd.format(dFormat)}`;
