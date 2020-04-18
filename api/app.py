@@ -442,6 +442,11 @@ def refresh_data_util():
                 file_list[key][subkey] = prc(subvalue)
 
 
+def clear_api_logs(loc='./api.log'):
+    if os.path.isfile(loc):
+        os.remove(loc)
+
+
 def refresh_data():
     global refreshing, query_processes
 
@@ -452,6 +457,7 @@ def refresh_data():
     refreshing = True
     logging.info('{}: starting refresh'.format(datetime.now()))
 
+    clear_api_logs()
     clear_cached_data()
     refresh_data_util()
 
