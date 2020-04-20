@@ -605,6 +605,19 @@ var source_list = new Map([
           var target = parent.prev();
           target.click();
           evt.stopPropagation();
+          curr_place = parent.find(".placename").text().trim().toLowerCase()
+          if(curr_place=='united states') {
+            curr_place = 'us'
+          }
+          mymap.eachLayer(function(layer) {
+            try {
+              if(layer.feature.properties.enname === curr_place.toLowerCase()) {
+                areas.resetStyle(layer)
+                counties.resetStyle(layer)
+              }
+            }
+            catch(err) {}
+          })
         });
         $("div.location-information-container > svg").click(function(evt){
           evt.stopPropagation();
