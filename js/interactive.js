@@ -597,7 +597,9 @@ var source_list = new Map([
         $("div.location-information-container > span.placename").click(function(evt){
           evt.stopPropagation();
           $(this).parent().click();
-          mymap.removeLayer(counties)
+          if(typeof counties !== 'undefined') {
+            mymap.removeLayer(counties)
+          }
         });
         $("div.location-information-container > .remove-filter").click(function(evt){
           var parent = $(this).parent();
@@ -618,7 +620,9 @@ var source_list = new Map([
             }
             catch(err) {}
           })
-          mymap.removeLayer(counties)
+          if(typeof counties !== 'undefined') {
+            mymap.removeLayer(counties)
+          }
         });
         $("div.location-information-container > svg").click(function(evt){
           evt.stopPropagation();
