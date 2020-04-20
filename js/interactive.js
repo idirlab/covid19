@@ -597,6 +597,7 @@ var source_list = new Map([
         $("div.location-information-container > span.placename").click(function(evt){
           evt.stopPropagation();
           $(this).parent().click();
+          mymap.removeLayer(counties)
         });
         $("div.location-information-container > .remove-filter").click(function(evt){
           var parent = $(this).parent();
@@ -609,7 +610,6 @@ var source_list = new Map([
           if(curr_place=='united states') {
             curr_place = 'us'
           }
-          console.log('xixi', curr_place)
           mymap.eachLayer(function(layer) {
             try {
               if(layer.feature.properties.enname === curr_place.toLowerCase()) {
@@ -693,7 +693,6 @@ var source_list = new Map([
                 console.log(curr_place.toLowerCase())
                 mymap.fitBounds(layer._bounds, {maxZoom: 6}); 
                 if(curr_place.toLowerCase() === 'us') {
-                  console.log('lala')
                   mymap.setView([37, -90], 5) // (x, y):x+[up] y+[right]
                 }
                 layer.setStyle({
