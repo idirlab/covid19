@@ -181,7 +181,7 @@ $(document).ready(async function(){
     maxZoom: 10,
     minZoom: 0,
     worldCopyJump: true,
-  }).fitWorld().setView([37, -80], 4) // (x, y):x+[up] y+[right]
+  }).fitWorld().setView([37, -80], 3) // (x, y):x+[up] y+[right]
   $("body > main > div#map").toggleClass("closed");
   new L.Control.Zoom({
     position: 'bottomright'
@@ -678,6 +678,9 @@ var source_list = new Map([
           corsHTTP(queryUrl, queryCallback)
         });
         $("div.location-information-container").click(function(evt){
+          try{
+            areas.resetStyle(mymap._layers[curr_polyid])
+          } catch{}
           if(evt.target.tagName == "SPAN")
             return;
           if(evt.target.tagName == "SVG")
@@ -690,7 +693,6 @@ var source_list = new Map([
           mymap.eachLayer(function(layer) {
             try {
               if(layer.feature.properties.enname === curr_place.toLowerCase()) {
-                console.log(curr_place.toLowerCase())
                 mymap.fitBounds(layer._bounds, {maxZoom: 6}); 
                 if(curr_place.toLowerCase() === 'us') {
                   mymap.setView([37, -90], 5) // (x, y):x+[up] y+[right]
@@ -703,6 +705,7 @@ var source_list = new Map([
                   fillOpacity: 0.1
                 });
                 layer.bringToFront();
+                curr_polyid = layer._leaflet_id
               }
             }
             catch(err) {}
