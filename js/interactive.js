@@ -609,15 +609,16 @@ var source_list = new Map([
           if(curr_place=='united states') {
             curr_place = 'us'
           }
+          console.log("dada", curr_place)
           mymap.eachLayer(function(layer) {
             try {
               if(layer.feature.properties.enname === curr_place.toLowerCase()) {
                 areas.resetStyle(layer)
-                counties.resetStyle(layer)
               }
             }
             catch(err) {}
           })
+          mymap.removeLayer(counties)
         });
         $("div.location-information-container > svg").click(function(evt){
           evt.stopPropagation();
