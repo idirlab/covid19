@@ -668,11 +668,27 @@ var source_list = new Map([
             return;
           if(evt.target.tagName == "SVG")
             return;
-          showPlace($(this).find(".placename").text().trim());
-          $.get(location.protocol + '//nominatim.openstreetmap.org/search?format=json&q='+$(this).find(".placename").text().trim(), function(data){
-            console.log('moving camera', $(this).find(".placename").text().trim())
-            mymap.panTo(new L.LatLng(data[0].lat, data[0].lon))
-          });
+          curr_place = $(this).find(".placename").text().trim()
+          showPlace(curr_place);
+          if(curr_place.toLowerCase()=='united states') {
+            curr_place = 'us'
+          }
+          mymap.eachLayer(function(layer) {
+            try {
+              if(layer.feature.properties.enname === curr_place.toLowerCase()) {
+                mymap.fitBounds(layer._bounds);
+                layer.setStyle({
+                  weight: 2,
+                  opacity: 0.8,
+                  color: '#DC143C',
+                  fillColor: '#FFFFFF',
+                  fillOpacity: 0.1
+                });
+                layer.bringToFront();
+              }
+            }
+            catch(err) {}
+          })
         });
       }
 
