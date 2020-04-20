@@ -181,7 +181,7 @@ $(document).ready(async function(){
     maxZoom: 10,
     minZoom: 0,
     worldCopyJump: true,
-  }).fitWorld().setView([37, -107], 5)
+  }).fitWorld().setView([37, -80], 4) // (x, y):x+[up] y+[right]
   $("body > main > div#map").toggleClass("closed");
   new L.Control.Zoom({
     position: 'bottomright'
@@ -609,7 +609,7 @@ var source_list = new Map([
           if(curr_place=='united states') {
             curr_place = 'us'
           }
-          console.log("dada", curr_place)
+          console.log('xixi', curr_place)
           mymap.eachLayer(function(layer) {
             try {
               if(layer.feature.properties.enname === curr_place.toLowerCase()) {
@@ -690,7 +690,12 @@ var source_list = new Map([
           mymap.eachLayer(function(layer) {
             try {
               if(layer.feature.properties.enname === curr_place.toLowerCase()) {
-                mymap.fitBounds(layer._bounds);
+                console.log(curr_place.toLowerCase())
+                mymap.fitBounds(layer._bounds, {maxZoom: 6}); 
+                if(curr_place.toLowerCase() === 'us') {
+                  console.log('lala')
+                  mymap.setView([37, -90], 5) // (x, y):x+[up] y+[right]
+                }
                 layer.setStyle({
                   weight: 2,
                   opacity: 0.8,
