@@ -169357,7 +169357,7 @@
 				],
 				"type": "MultiPolygon",
 				"properties": {
-					"enname": "the bahamas"
+					"enname": "bahamas"
 				}
 			}, {
 				"arcs": [
@@ -169381,7 +169381,7 @@
 				],
 				"type": "Polygon",
 				"properties": {
-					"enname": "saint barthelemy"
+					"enname": "france - saint barthelemy"
 				}
 			}, {
 				"arcs": [
@@ -169410,7 +169410,7 @@
 				],
 				"type": "Polygon",
 				"properties": {
-					"enname": "bermuda"
+					"enname": "united kingdom - bermuda"
 				}
 			}, {
 				"arcs": [
@@ -170024,7 +170024,7 @@
 				],
 				"type": "MultiPolygon",
 				"properties": {
-					"enname": "ivory coast"
+					"enname": "cote d'ivoire"
 				}
 			}, {
 				"arcs": [
@@ -170069,7 +170069,7 @@
 				],
 				"type": "MultiPolygon",
 				"properties": {
-					"enname": "dr congo"
+					"enname": "congo (kinshasa)"
 				}
 			}, {
 				"arcs": [
@@ -170077,7 +170077,7 @@
 				],
 				"type": "Polygon",
 				"properties": {
-					"enname": "republic of the congo"
+					"enname": "congo (brazzaville)"
 				}
 			}, {
 				"arcs": [
@@ -170135,7 +170135,7 @@
 				],
 				"type": "MultiPolygon",
 				"properties": {
-					"enname": "cape verde"
+					"enname": "cabo verde"
 				}
 			}, {
 				"arcs": [
@@ -170184,7 +170184,7 @@
 				],
 				"type": "Polygon",
 				"properties": {
-					"enname": "cayman islands"
+					"enname": "united kingdom - cayman islands"
 				}
 			}, {
 				"arcs": [
@@ -170353,7 +170353,7 @@
 				],
 				"type": "MultiPolygon",
 				"properties": {
-					"enname": "faroe islands"
+					"enname": "denmark - faroe islands"
 				}
 			}, {
 				"arcs": [
@@ -170403,7 +170403,7 @@
 				],
 				"type": "Polygon",
 				"properties": {
-					"enname": "gibraltar"
+					"enname": "united kingdom - gibraltar"
 				}
 			}, {
 				"arcs": [
@@ -170794,7 +170794,7 @@
 				],
 				"type": "MultiPolygon",
 				"properties": {
-					"enname": "greenland"
+					"enname": "denmark - greenland"
 				}
 			}, {
 				"arcs": [
@@ -171419,7 +171419,7 @@
 				],
 				"type": "Polygon",
 				"properties": {
-					"enname": "isle of man"
+					"enname": "united kingdom - isle of man"
 				}
 			}, {
 				"arcs": [
@@ -171607,7 +171607,7 @@
 				],
 				"type": "Polygon",
 				"properties": {
-					"enname": "saint martin"
+					"enname": "france - st martin"
 				}
 			}, {
 				"arcs": [
@@ -171806,7 +171806,7 @@
 				],
 				"type": "Polygon",
 				"properties": {
-					"enname": "montserrat"
+					"enname": "united kingdom - montserrat"
 				}
 			}, {
 				"arcs": [
@@ -171862,7 +171862,7 @@
 				],
 				"type": "MultiPolygon",
 				"properties": {
-					"enname": "new caledonia"
+					"enname": "france - new caledonia"
 				}
 			}, {
 				"arcs": [
@@ -172209,7 +172209,7 @@
 				],
 				"type": "MultiPolygon",
 				"properties": {
-					"enname": "french polynesia"
+					"enname": "france - french polynesia"
 				}
 			}, {
 				"arcs": [
@@ -172616,7 +172616,7 @@
 				],
 				"type": "MultiPolygon",
 				"properties": {
-					"enname": "east timor"
+					"enname": "timor-leste"
 				}
 			}, {
 				"arcs": [
@@ -172849,7 +172849,7 @@
 				],
 				"type": "MultiPolygon",
 				"properties": {
-					"enname": "united states virgin islands"
+					"enname": "us virgin islands"
 				}
 			}, {
 				"arcs": [
@@ -173032,7 +173032,7 @@
 				],
 				"type": "Polygon",
 				"properties": {
-					"enname": "taiwan"
+					"enname": "taiwan*"
 				}
 			}, {
 				"arcs": [
@@ -173297,7 +173297,7 @@
 				],
 				"type": "MultiPolygon",
 				"properties": {
-					"enname": "south korea"
+					"enname": "korea"
 				}
 			}, {
 				"arcs": [
@@ -175344,7 +175344,7 @@
 				],
 				"type": "MultiPolygon",
 				"properties": {
-					"enname": "uk"
+					"enname": "united kingdom"
 				}
 			}, {
 				"arcs": [
@@ -176394,7 +176394,7 @@
 				],
 				"type": "Polygon",
 				"properties": {
-					"enname": "french guiana"
+					"enname": "france - french guiana"
 				}
 			}, {
 				"arcs": [

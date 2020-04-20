@@ -54,7 +54,7 @@ $(document).ready(async function(){
         $(`div.dropdown-${level} > button`).text(src);
         $(`span.default-source-${level}.hidden`).text(src);
       });
-      console.log(`sources for level=${level} are: ${dropdown_DOM}`);
+      // console.log(`sources for level=${level} are: ${dropdown_DOM}`);
     }
   );
   ["global", "country", "state", "county"].forEach(
@@ -669,6 +669,10 @@ var source_list = new Map([
           if(evt.target.tagName == "SVG")
             return;
           showPlace($(this).find(".placename").text().trim());
+          $.get(location.protocol + '//nominatim.openstreetmap.org/search?format=json&q='+$(this).find(".placename").text().trim(), function(data){
+            console.log('moving camera', $(this).find(".placename").text().trim())
+            mymap.panTo(new L.LatLng(data[0].lat, data[0].lon))
+          });
         });
       }
 
@@ -887,8 +891,6 @@ var source_list = new Map([
       } else if (name_list.length == 2) {
         showPlace(name_list[0], name_list[1]);
       }
-
-
     });
 
     function setFill(enname) {
@@ -976,10 +978,10 @@ var source_list = new Map([
 
     // 3.2.2 zoom to the highlighted feature when the mouse is clicking onto it.
     function zoomToFeature(e) {
-      // mymap.fitBounds(e.target.getBounds());
+      console.log('zoom to State/Country')
+      mymap.fitBounds(e.target.getBounds());
       L.DomEvent.stopPropagation(e);
       $("#hint").text("Click here to the global trend.");
-
       displayPlace(e.target.feature.properties.enname)
 
       counties_feat = []
@@ -995,19 +997,17 @@ var source_list = new Map([
       } catch(err) {
         console.log(err)
       }
-
-
       counties = new L.geoJSON(counties_feat, {
         // TODO: add
         style: countyStyle,
         onEachFeature: onEachCountyFeature
       }).addTo(mymap);
-      mymap.fitBounds(counties.getBounds());
     }
 
     // TODO:
     function zoomToCountyFeature(e) {
       console.log("zooming to county");
+      mymap.fitBounds(e.target._bounds);
       var state = usstates[e.target.feature.properties.STATE].toTitleCase(); // to be used for filter
       var county = `${e.target.feature.properties.NAME.toTitleCase()} ${municipalityPostfix(state)}`;
 
@@ -1083,17 +1083,10 @@ var source_list = new Map([
     // 3.2.3 reset the hightlighted feature when the mouse is out of its region.
     function resetHighlight(e) {
       areas.resetStyle(e.target);
-      // mymap.removeLayer(counties)
-      // mymap.eachLayer(function(layer) {
-      //   if(layer.myTag && layer.myTag==="counties") {
-      //     mymap.removeLayer(layer)
-      //   }
-      // })
     }
 
     function resetCountyHighlight(e) {
       counties.resetStyle(e.target);
-      // mymap.removeLayer(counties)
     }
 
     // 3.3 add these event the layer obejct.
@@ -1287,8 +1280,8 @@ var source_list = new Map([
       var update_state_Chart = (data) => {
 
         data_str = JSON.stringify(data);
-        console.log('Chart_state_data!!!: ' + data_str);
-        console.log(name)
+        // console.log('Chart_state_data!!!: ' + data_str);
+        // console.log(name)
 
         // console.log(states_list)
 
