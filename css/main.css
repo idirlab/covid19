@@ -1193,3 +1193,23 @@ div.modal-footer{
 div.info-pane.smaller.right.scrollable#hospital-info {
   height: calc(100% - 92px);
 }
+.contrib,
+.affiliation,
+.abt,
+p.full-name {
+  letter-spacing: initial;
+  font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif;
+  font-weight: bold;
+  line-height: 16px;
+  text-align: left;
+  font-size: 16px;
+}
+p.full-name {
+  text-align:center;
+}
+a {
+  color: inherit;
+}
+.modal-body > h3 {
+  text-decoration:underline;
+}
