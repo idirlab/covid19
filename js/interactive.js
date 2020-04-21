@@ -4,6 +4,12 @@ function select_default_source() {
      backdrop: false}
   );
 }
+function displayInformationPane() {
+  $("div.modal.fade#information-modal").modal(
+    {keyboard: false,
+     backdrop: false}
+  );
+}
 (function(window){ // https://ourcodeworld.com/articles/read/188/encode-and-decode-html-entities-using-pure-javascript
 	window.htmlentities = {
 		encode : function(str) {
