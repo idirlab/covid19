@@ -130,7 +130,7 @@ def mapquery_country_state():
     query_processes.remove(pid)
     logging.info(query_processes)
 
-    if ret == {} or fail:
+    if fail:
         abort(500)
     else:
         return ret
@@ -178,7 +178,7 @@ def mapquery_county():
     query_processes.remove(pid)
     logging.info(query_processes)
 
-    if ret == {} or fail:
+    if fail:
         abort(500)
     else:
         return ret
@@ -232,7 +232,7 @@ def stat_query_time_series():
     query_processes.remove(pid)
     logging.info(query_processes)
 
-    if ret == {} or fail:
+    if fail:
         abort(500)
     else:
         return ret
@@ -272,7 +272,7 @@ def stat_query_details():
     query_processes.remove(pid)
     logging.info(query_processes)
 
-    if ret == {} or fail:
+    if fail:
         abort(500)
     else:
         return ret
@@ -344,7 +344,7 @@ def stat_query():
     query_processes.remove(pid)
     logging.info(query_processes)
 
-    if ret == {} or fail:
+    if fail:
         abort(500)
     else:
         return ret
