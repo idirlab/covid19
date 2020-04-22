@@ -128,12 +128,13 @@
           }
         </script>
         <div class="hospital-display">
-          <div id="hospitalDOMs"></div>
-          <script>
-            $("div.hospital > div.header > svg").click(function(evt){
-              $(this).closest("div.hospital").toggleClass("active");
-            });
-          </script>
+          <div id="hospitalDOMs">
+            <script>
+              $("div.hospital > div.header > svg").click(function(evt){
+                $(this).closest("div.hospital").toggleClass("active");
+              });
+            </script>
+          </div>
         </div>
       </div>
       <div id="twitter-info" class="info-pane twitter right smaller">

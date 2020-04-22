@@ -721,7 +721,13 @@ var source_list = new Map([
           console.log(info);
 
           info = info.features;
-          var hospitalDOMs = "";
+          var hospitalDOMs = `
+            <script>
+              $("div.hospital > div.header > svg").click(function(evt){
+                $(this).closest("div.hospital").toggleClass("active");
+              });
+            </script>
+          `;
 
           if (info.length == 0) {
             hospitalDOMs += "This county does not have a major hospital";
