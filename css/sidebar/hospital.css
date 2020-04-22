@@ -11,14 +11,14 @@ div.hospital-display::-webkit-scrollbar-thumb {
     outline: 1px solid black;
 }
 
-div.hospital-display > div.hospital > div.information {
+div.hospital > div.information {
     display:none;
 }
-div.hospital-display > div.hospital.active > div.information {
+div.hospital.active > div.information {
     display:block;
 }
 
-div.hospital-display > div.hospital > div.header {
+div.hospital > div.header {
     height: 32px;
     line-height: 32px;
     width: 360px;
@@ -35,7 +35,7 @@ div.hospital-display > div.hospital > div.header {
     font-family: 'Noto Sans', Helvetica, arial, sans-serif;
     overflow: hidden;
 }
-div.hospital-display > div.hospital > div.header > div.name {
+div.hospital > div.header > div.name {
     float:left;
     text-align:left;
     margin-left:12px;
@@ -44,10 +44,10 @@ div.hospital-display > div.hospital > div.header > div.name {
     overflow:hidden;
     white-space:nowrap;
 }
-div.hospital-display > div.hospital.active > div.header {
+div.hospital.active > div.header {
     height: auto;
 }
-div.hospital-display > div.hospital.active > div.header > div.name {
+div.hospital.active > div.header > div.name {
     height: auto;
     overflow: unset;
     white-space: unset;
@@ -57,7 +57,7 @@ div.hospital-display > div.hospital.active > div.header > div.name {
     padding-bottom: 10px;
 }
 
-div.hospital-display > div.hospital > div.information > div.info-item {
+div.hospital > div.information > div.info-item {
     color: rgba(38, 50, 56, 1);
     background-color: rgba(207, 216, 220, 1);
     border: 1px solid rgba(38, 50, 56, 1);
@@ -73,53 +73,53 @@ div.hospital-display > div.hospital > div.information > div.info-item {
     font-size:0.8em;
     font-family: 'Noto Sans', Helvetica, arial, sans-serif;
 }
-div.hospital-display > div.hospital > div.information > div.info-item > i, div.hospital-display > div.hospital > div.information > div.info-item > svg, div.hospital-display > div.hospital > div.information > div.info-item > a > i{
+div.hospital > div.information > div.info-item > i, div.hospital > div.information > div.info-item > svg, div.hospital > div.information > div.info-item > a > i{
     float:left;
     margin:0 12px 0 12px;
     width:16px;
     transform:translate(0, 40%);
 }
-div.hospital-display > div.hospital > div.information > div.info-item > i {
+div.hospital > div.information > div.info-item > i {
     transform:translate(0, 80%);
 }
 
-div.hospital-display > div.hospital > div.information > div.info-item.cursor{
+div.hospital > div.information > div.info-item.cursor{
     cursor:pointer;
     z-index:9999;
 }
-div.hospital-display > div.hospital > div.information > div.info-item.red-border {
+div.hospital > div.information > div.info-item.red-border {
     border: 2px solid rgba(183, 28, 28, 1);
 }
-div.hospital-display > div.hospital > div.information > div.info-item.green-border {
+div.hospital > div.information > div.info-item.green-border {
     border: 2px solid #32CD32;
 }
-div.hospital-display > div.hospital > div.information > div.info-item.orange-border {
+div.hospital > div.information > div.info-item.orange-border {
     border: 2px solid #ee7600;
 }
-div.hospital-display > div.hospital > div.information > div.info-item.blueviolet-border {
+div.hospital > div.information > div.info-item.blueviolet-border {
     border: 2px solid blueviolet;
 }
-div.hospital-display > div.hospital > div.information > div.info-item.blue-border {
+div.hospital > div.information > div.info-item.blue-border {
     border: 2px solid blue;
 }
-div.hospital-display > div.hospital > div.information > div.info-item.black-border {
+div.hospital > div.information > div.info-item.black-border {
     border: 2px solid black;
 }
 
-div.hospital-display > div.hospital > div.information > div.info-item.long-text {
+div.hospital > div.information > div.info-item.long-text {
     height: auto;
     padding-top: 5px;
     padding-bottom: 5px;
     line-height: initial;
 }
 
-div.hospital-display > div.hospital > div.header > svg {
+div.hospital > div.header > svg {
     float:right;
     transform:translate(0, 40%);
     margin-right:12px;
     cursor:pointer;
 }
-div.hospital-display > div.hospital.active > div.header > svg {
+div.hospital.active > div.header > svg {
     transform:translate(0, 40%) rotate(180deg);
 }
 div.hospital > div.header > div.information {
@@ -189,11 +189,15 @@ div.right {
   left:400px;
 }
 div.smaller {
+  height: calc(50% - 2 * 44px);
+  top: 44px;
+}
+div.bigger {
   height: calc(100% - 44px);
   top: 44px;
 }
-div.scrollable {
-  overflow-y:auto;
+div.info-pane.hospital {
+  overflow-y:scroll;
 }
 div.info-header.smaller.unset-height {
   height:unset;
@@ -217,4 +221,9 @@ i.fas.fa-hospital {
 span.titile_info {
     display: inline-block;
     transform: translate(30px, 0px);
+}
+
+div#hospitalDOMs {
+    line-height: normal;
+    margin-top: 12px;
 }
