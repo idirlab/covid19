@@ -115,7 +115,9 @@ def mapquery_country_state():
 
             ret[dict_loc] = [{
                 'name': process_names(x, child_entity_type),
-                'default_stats': get_data_from_source(x, date, sources[child_entity_type], child_entity_type)
+                'default_stats': get_data_from_source(x, date, sources[child_entity_type], child_entity_type),
+                'lat': coord.get_coords(x, child_entity_type)[0],
+                'long': coord.get_coords(x, child_entity_type)[1]
             } for x in get_children(node, entity_type)]
 
         ret = jsonify(ret)
