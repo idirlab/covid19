@@ -5,6 +5,7 @@ from time import sleep
 from datetime import datetime
 from absl import logging
 from datetime import date, timedelta, datetime
+import coord
 import sys
 import os
 import pandas
@@ -564,5 +565,6 @@ def refresh_data():
 if __name__ == "__main__":
     logging.set_verbosity(logging.INFO)
     refresh_data()
+    coord.load_coords()
     port = 2222 if not len(sys.argv) > 1 else int(sys.argv[1])
     app.run(host="0.0.0.0", port=port, threaded=True, debug=False, use_reloader=False)
