@@ -77,6 +77,106 @@ def preprocess_node(node):
     return node, entity_type
 
 
+@app.route('/api/v1/mapquery_country_state')
+def mapquery_country_state():
+    global refreshing, query_processes
+
+    while refreshing:
+        logging.info('query received, waiting for refresh to complete')
+        sleep(0.5)
+
+    pid = 0 if len(query_processes) == 0 else query_processes[-1] + 1
+    query_processes.append(pid)
+
+    if (all([x in request.args for x in ['date', 'dsrc_country', 'dsrc_state']])):
+        date = request.args['date']
+        sources = {
+            'country': request.args['dsrc_country'],
+            'state': request.args['dsrc_state'],
+        }
+    else:
+        query_processes.remove(pid)
+        logging.info(query_processes)
+        abort(400)
+
+    logging.info('Processing request...')
+
+    ret = {
+        "states": [],
+        "countries": []
+    }
+    try:
+        for node in [('global', 'countries'), ('us', 'states')]:
+            node, dict_loc = node
+
+            node, entity_type = preprocess_node(node)
+            child_entity_type = get_children_type(entity_type)
+
+            ret[dict_loc] = [{
+                'name': process_names(x, child_entity_type),
+                'default_stats': get_data_from_source(x, date, sources[child_entity_type], child_entity_type)
+            } for x in get_children(node, entity_type)]
+
+        ret = jsonify(ret)
+    except Exception as e:
+        logging.info('Error: {}'.format(e))
+        logging.info('Terminating process with code 500')
+
+    query_processes.remove(pid)
+    logging.info(query_processes)
+
+    if ret == {}:
+        abort(500)
+    else:
+        return ret
+
+
+@app.route('/api/v1/mapquery_county')
+def mapquery_county():
+    global refreshing, query_processes
+
+    while refreshing:
+        logging.info('query received, waiting for refresh to complete')
+        sleep(0.5)
+
+    pid = 0 if len(query_processes) == 0 else query_processes[-1] + 1
+    query_processes.append(pid)
+
+    if (all([x in request.args for x in ['node_state', 'date', 'dsrc_county']])):
+        node_state = request.args['node_state'].lower()
+        date = request.args['date']
+        dsrc_county = request.args['dsrc_county']
+    else:
+        query_processes.remove(pid)
+        logging.info(query_processes)
+        abort(400)
+
+    logging.info('Processing request...')
+
+    ret = {}
+    try:
+        node_state, entity_type = preprocess_node(node_state)
+        child_entity_type = get_children_type(entity_type)
+
+        ret = [{
+            'name': process_names(x, child_entity_type),
+            'default_stats': get_data_from_source(x, date, dsrc_county, child_entity_type)
+        } for x in get_children(node_state, entity_type)]
+
+        ret = jsonify(ret)
+    except Exception as e:
+        logging.info('Error: {}'.format(e))
+        logging.info('Terminating process with code 500')
+
+    query_processes.remove(pid)
+    logging.info(query_processes)
+
+    if ret == {}:
+        abort(500)
+    else:
+        return ret
+
+
 @app.route('/api/v1/querylatestdate')
 def query_latest_date():
     ar = sorted([k for k, _ in file_list['JHU']['country'][1].items()])
