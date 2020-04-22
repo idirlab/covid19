@@ -51,3 +51,7 @@ WA	47.751074	-120.740139	Washington
 WI	43.78444	-88.787868	Wisconsin
 WV	38.597626	-80.454903	West Virginia
 WY	43.075968	-107.290284	Wyoming
+??	-14.2710	170.1322	American Samoa
+??	13.4443	144.7937	Guam
+??	15.0979	145.6739	Northern Mariana Islands
+??	18.3358	-64.8963	US Virgin Islands

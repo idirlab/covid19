@@ -102,6 +102,7 @@ def mapquery_country_state():
 
     logging.info('Processing request...')
 
+    fail = False
     ret = {
         "states": [],
         "countries": []
@@ -124,11 +125,12 @@ def mapquery_country_state():
     except Exception as e:
         logging.info('Error: {}'.format(e))
         logging.info('Terminating process with code 500')
+        fail = True
 
     query_processes.remove(pid)
     logging.info(query_processes)
 
-    if ret == {}:
+    if ret == {} or fail:
         abort(500)
     else:
         return ret
@@ -156,6 +158,7 @@ def mapquery_county():
 
     logging.info('Processing request...')
 
+    fail = False
     ret = {}
     try:
         node_state, entity_type = preprocess_node(node_state)
@@ -170,11 +173,12 @@ def mapquery_county():
     except Exception as e:
         logging.info('Error: {}'.format(e))
         logging.info('Terminating process with code 500')
+        fail = True
 
     query_processes.remove(pid)
     logging.info(query_processes)
 
-    if ret == {}:
+    if ret == {} or fail:
         abort(500)
     else:
         return ret
@@ -209,6 +213,7 @@ def stat_query_time_series():
 
     logging.info('Processing request...')
 
+    fail = False
     ret = {}
     try:
         node, entity_type = preprocess_node(node)
@@ -222,11 +227,12 @@ def stat_query_time_series():
     except Exception as e:
         logging.info('Error: {}'.format(e))
         logging.info('Terminating process with code 500')
+        fail = True
 
     query_processes.remove(pid)
     logging.info(query_processes)
 
-    if ret == {}:
+    if ret == {} or fail:
         abort(500)
     else:
         return ret
@@ -253,6 +259,7 @@ def stat_query_details():
 
     logging.info('Processing request...')
 
+    fail = False
     ret = {}
     try:
         node, entity_type = preprocess_node(node)
@@ -260,11 +267,12 @@ def stat_query_details():
     except Exception as e:
         logging.info('Error: {}'.format(e))
         logging.info('Terminating process with code 500')
+        fail = True
 
     query_processes.remove(pid)
     logging.info(query_processes)
 
-    if ret == {}:
+    if ret == {} or fail:
         abort(500)
     else:
         return ret
@@ -297,6 +305,7 @@ def stat_query():
 
     logging.info('Processing request...')
 
+    fail = False
     ret = {}
     try:
         node, entity_type = preprocess_node(node)
@@ -330,11 +339,12 @@ def stat_query():
     except Exception as e:
         logging.info('Error: {}'.format(e))
         logging.info('Terminating process with code 500')
+        fail = True
 
     query_processes.remove(pid)
     logging.info(query_processes)
 
-    if ret == {}:
+    if ret == {} or fail:
         abort(500)
     else:
         return ret
