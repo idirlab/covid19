@@ -667,7 +667,7 @@ var source_list = new Map([
       corsHTTP(encodeURI(queryURL), parseInfo)
 
       if (is_state) {
-        $("div#floating-side-panel-info-container").show();
+        if (flag) $("div#floating-side-panel-info-container").show();
         $("div#tweets-all").html("Loading...")
 
         var dFormat = "YYYY-MM-DD";
@@ -695,7 +695,7 @@ var source_list = new Map([
 
         corsHTTP(tweetQueryURL, displayAllTweets);
       } else if (is_county) {
-        $("div#floating-side-panel-info-container").show();
+        if (flag) $("div#floating-side-panel-info-container").show();
 
         // Update hospitals and render hospitals
         var DOM ="";
