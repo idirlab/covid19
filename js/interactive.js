@@ -1005,6 +1005,12 @@ var source_list = new Map([
 
     // TODO:
     function zoomToCountyFeature(e) {
+      // Keep polygon when click country/state
+      keepCounty = true
+      try {
+        counties.resetStyle(keepCountyLayer);
+      } catch {}
+      keepCountyLayer = e.target
       console.log("zooming to county");
       mymap.fitBounds(e.target._bounds, {maxZoom: 6});
       var state = usstates[e.target.feature.properties.STATE].toTitleCase(); // to be used for filter
@@ -1094,7 +1100,16 @@ var source_list = new Map([
     }
 
     function resetCountyHighlight(e) {
-      counties.resetStyle(e.target);
+      if(typeof keepCounty == 'undefined') {
+        keepCounty = false
+      }
+      if(typeof keepCountyLayer == 'undefined') {
+        keepCountyLayer = null
+      }
+      if(!keepCounty && keepCountyLayer!=e.target) {
+        counties.resetStyle(e.target);
+      }
+      keepCounty = false
     }
 
     // 3.3 add these event the layer obejct.
