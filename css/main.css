@@ -847,9 +847,10 @@ div.info-pane {
   line-height:58px;
   left:0px;
   z-index:1000;
-  border-right: 1px solid rgba(38, 50, 56, 1);
+
+  /* border-right: 1px solid rgba(38, 50, 56, 1);
   border-radius: 0px;
-  box-shadow: 0px 2px 3px 0px rgba(38, 50, 56, 1);
+  box-shadow: 0px 2px 3px 0px rgba(38, 50, 56, 1); */
 }
 div.info-pane.top {
   border-bottom:0px;
@@ -1190,6 +1191,6 @@ div.modal-footer{
 .hidden-important {
   display:none !important;
 }
-div.info-pane.smaller.right.scrollable#hospital-info {
+/* div.info-pane.smaller.right.scrollable#hospital-info {
   height: calc(100% - 92px);
-}
+} */
