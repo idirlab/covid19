@@ -995,6 +995,12 @@ var source_list = new Map([
         style: countyStyle,
         onEachFeature: onEachCountyFeature
       }).addTo(mymap);
+      // Keep polygon when click country/state
+      keepCountry = true
+      try {
+        areas.resetStyle(keepLayer);
+      } catch {}
+      keepLayer = e.target
     }
 
     // TODO:
@@ -1075,7 +1081,16 @@ var source_list = new Map([
 
     // 3.2.3 reset the hightlighted feature when the mouse is out of its region.
     function resetHighlight(e) {
-      areas.resetStyle(e.target);
+      if(typeof keepCountry == 'undefined') {
+        keepCountry = false
+      }
+      if(typeof keepLayer == 'undefined') {
+        keepLayer = null
+      }
+      if(!keepCountry && keepLayer!=e.target) {
+        areas.resetStyle(e.target);
+      }
+      keepCountry = false
     }
 
     function resetCountyHighlight(e) {
