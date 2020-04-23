@@ -181,7 +181,7 @@ $(document).ready(async function(){
     maxZoom: 10,
     minZoom: 0,
     worldCopyJump: true,
-  }).fitWorld().setView([37, -80], 3) // (x, y):x+[up] y+[right]
+  }).fitWorld().setView([37, -80], 3) // (x, y):x+[up] y+[right]; zoom+, closer
   $("body > main > div#map").toggleClass("closed");
   new L.Control.Zoom({
     position: 'bottomright'
@@ -1006,7 +1006,7 @@ var source_list = new Map([
     // TODO:
     function zoomToCountyFeature(e) {
       console.log("zooming to county");
-      mymap.fitBounds(e.target._bounds);
+      mymap.fitBounds(e.target._bounds, {maxZoom: 6});
       var state = usstates[e.target.feature.properties.STATE].toTitleCase(); // to be used for filter
       var county = `${e.target.feature.properties.NAME.toTitleCase()} ${municipalityPostfix(state)}`;
 
