@@ -190,6 +190,76 @@ $(document).ready(async function(){
   L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{ maxZoom: 20, subdomains:['mt0','mt1','mt2','mt3']
   }).addTo(mymap);
 
+  var circle_group;
+  var update_circle = (data) => {
+    data_str = JSON.stringify(data)
+    console.log('Circle_data!!!: ' + data_str)
+    country_state_circle = L.Circle.extend({
+    options: { 
+          name: ''
+      }
+    });
+    circle_list = [];
+
+    for (let index = 0; index < data.countries.length; index++) {
+      const element = data.countries[index];
+      radius = parseInt(element.default_stats[0]);
+      if (!radius) {
+        radius = 0
+      }
+      if (element.name == 'United States') {
+        continue;
+      }
+
+      var lower_name = element.name.toLowerCase().trim()
+      var circle = new country_state_circle([element.lat, element.long], radius, {
+        weight: 1,
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5,
+        name: lower_name
+      });
+      circle_list.push(circle)
+    }
+
+    for (let index = 0; index < data.states.length; index++) {
+      const element = data.states[index];
+      radius = parseInt(element.default_stats[0]);
+      if (!radius) {
+        radius = 0
+      }
+
+      var lower_name = element.name.toLowerCase().trim()
+      var circle = new country_state_circle([element.lat, element.long], radius, {
+        weight: 1,
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5,
+        name: lower_name
+      });
+      circle_list.push(circle)
+    }
+    circle_group = L.layerGroup(circle_list).addTo(mymap)
+  }
+
+  function format_date(num, str) {
+    var today = new Date();
+    var nowTime = today.getTime()
+    var ms = 24*3600*1000*num
+    today.setTime(parseInt(nowTime + ms))
+    var oYear = today.getFullYear()
+    var oMoth = (today.getMonth() + 1).toString()
+    if (oMoth.length <= 1) oMoth = '0' + oMoth
+    var oDay = today.getDate().toString()
+    if (oDay.length <= 1) oDay = '0' + oDay
+    return oYear + str + oMoth + str + oDay
+  }
+  var format_today = format_date(0, '-')
+
+  queryURL = `http://0.0.0.0:2222/api/v1/mapquery_country_state?date=2020-04-15&dsrc_country=JHU&dsrc_state=JHU`
+  corsHTTP(queryURL, update_circle);
+
+
   var added = false;
 
   var chart, rchart;
@@ -1210,14 +1280,28 @@ var source_list = new Map([
     corsHTTP(queryURL, updateChart);
 
 
-
+    var temp_layer;
     function displayPlace(name) {
 
       $(".placename.hidden").text(name);
       places[name] = calPlace(name);
       showPlace(name);
 
-      date_list = []
+      // Update Circle
+      console.log(temp_layer)
+      if (temp_layer) {
+        circle_group.addLayer(temp_layer);
+      }
+
+      circle_group.eachLayer(function (layer) {
+        if (layer.options.name == name) {
+          temp_layer = layer;
+          circle_group.removeLayer(layer);
+        }
+      });
+
+      // Update Chart
+      date_list = [];
       date_list.push('t');
       total_list = [];
       total_list.push('Total Cases');
@@ -1225,9 +1309,6 @@ var source_list = new Map([
       death_list.push('Fatal Cases');
       recover_list = [];
       recover_list.push('Recoveries');
-
-
-
 
       var update_state_Chart = (data) => {
 
@@ -1269,7 +1350,6 @@ var source_list = new Map([
         }
 
       }
-
       queryURL = api_url + `/api/v1/statquery_timeseries?node=${name}&dsrc=${selected_source()}&date_start=2020-01-23&date_end=${format_today}`
       corsHTTP(queryURL, update_state_Chart);
 
