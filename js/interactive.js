@@ -676,6 +676,9 @@ var source_list = new Map([
             try {
               if(layer.feature.properties.enname === curr_place.toLowerCase()) {
                 mymap.fitBounds(layer._bounds, {maxZoom: 6}); 
+                if(curr_place.toLowerCase() == 'alaska') {
+                  mymap.setView([67, -150], 4) // (x, y):x+[up] y+[right]
+                }
                 if(curr_place.toLowerCase() === 'us') {
                   mymap.setView([37, -90], 5) // (x, y):x+[up] y+[right]
                 }
@@ -972,7 +975,12 @@ var source_list = new Map([
     // 3.2.2 zoom to the highlighted feature when the mouse is clicking onto it.
     function zoomToFeature(e) {
       console.log('zoom to State/Country')
-      mymap.fitBounds(e.target.getBounds());
+      mymap.fitBounds(e.target.getBounds(), {maxZoom: 5, minZoom: 5});
+      if(e.target.feature.properties.enname == 'alaska') {
+        mymap.setView([67, -150], 4) // (x, y):x+[up] y+[right]
+      } else if (e.target.feature.properties.enname == 'us') {
+        mymap.setView([37, -90], 5) // (x, y):x+[up] y+[right]
+      }
       L.DomEvent.stopPropagation(e);
       $("#hint").text("Click here to the global trend.");
       displayPlace(e.target.feature.properties.enname)
