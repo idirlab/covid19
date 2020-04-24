@@ -1191,6 +1191,10 @@ div.modal-footer{
 .hidden-important {
   display:none !important;
 }
+/* div.info-pane.smaller.right.scrollable#hospital-info {
+  height: calc(100% - 92px);
+<<<<<<< HEAD
+}
 .contrib,
 .affiliation,
 .abt,
@@ -1211,3 +1215,6 @@ a {
 .modal-body > h3 {
   text-decoration:underline;
 }
+=======
+} */
+>>>>>>> af76d38a578e10aa5fe5c4b63cfe0e73c1d019d9
