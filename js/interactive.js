@@ -193,7 +193,7 @@ $(document).ready(async function(){
   var circle_group;
   var update_circle = (data) => {
     data_str = JSON.stringify(data)
-    console.log('Circle_data!!!: ' + data_str)
+    // console.log('Circle_data!!!: ' + data_str)
     country_state_circle = L.Circle.extend({
     options: { 
           name: ''
@@ -256,7 +256,7 @@ $(document).ready(async function(){
   }
   var format_today = format_date(0, '-')
 
-  queryURL = `http://0.0.0.0:2222/api/v1/mapquery_country_state?date=2020-04-15&dsrc_country=JHU&dsrc_state=JHU`
+  queryURL = api_url + `/api/v1/mapquery_country_state?date=${format_today}&dsrc_country=JHU&dsrc_state=JHU`
   corsHTTP(queryURL, update_circle);
 
 
@@ -1057,7 +1057,7 @@ var source_list = new Map([
         }
       }
       
-      console.log('counties_feat: '+ JSON.stringify(counties_feat))
+      // console.log('counties_feat: '+ JSON.stringify(counties_feat))
 
       var update_county_color = (data) => {
 
@@ -1086,7 +1086,7 @@ var source_list = new Map([
         
 
       }
-      queryURL = `http://0.0.0.0:2222/api/v1/mapquery_county?date=2020-04-15&node_state=${e.target.feature.properties.enname}&dsrc_county=JHU`
+      queryURL = api_url + `/api/v1/mapquery_county?date=${format_today}&node_state=${e.target.feature.properties.enname}&dsrc_county=JHU`
       corsHTTP(queryURL, update_county_color);
 
       
@@ -1123,6 +1123,9 @@ var source_list = new Map([
           const element = data[index];
           if (element['stats'].length == 0) {
             break
+          }
+          if (element['stats'][0] == 0) {
+            continue;
           }
           if (element['stats'][2] == -1) {
             element['stats'][2] = 0
@@ -1162,7 +1165,7 @@ var source_list = new Map([
       }
       var format_today = format_date(0, '-')
 
-      queryURL = api_url + `/api/v1/statquery_timeseries?node=${county}-${state}&dsrc=${selected_source()}&date_start=2020-01-23&date_end=${format_today}`
+      queryURL = api_url + `/api/v1/statquery_timeseries?node=${county}-${state}&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
       corsHTTP(queryURL, update_county_Chart);
 
       console.log('query_county_url: ' + queryURL)
@@ -1267,7 +1270,7 @@ var source_list = new Map([
       }
       var format_today = format_date(0, '-')
 
-      queryURL = api_url + `/api/v1/statquery_timeseries?node=Global&dsrc=${selected_source()}&date_start=2020-01-23&date_end=${format_today}`
+      queryURL = api_url + `/api/v1/statquery_timeseries?node=Global&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
       corsHTTP(queryURL, updateChart);
 
     });
@@ -1342,7 +1345,7 @@ var source_list = new Map([
     }
     var format_today = format_date(0, '-')
 
-    queryURL = api_url + `/api/v1/statquery_timeseries?node=Global&dsrc=${selected_source()}&date_start=2020-01-23&date_end=${format_today}`
+    queryURL = api_url + `/api/v1/statquery_timeseries?node=Global&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
     corsHTTP(queryURL, updateChart);
 
 
@@ -1354,7 +1357,7 @@ var source_list = new Map([
       showPlace(name);
 
       // Update Circle
-      console.log(temp_layer)
+      // console.log(temp_layer)
       if (temp_layer) {
         circle_group.addLayer(temp_layer);
       }
@@ -1386,6 +1389,9 @@ var source_list = new Map([
           if (element['stats'].length == 0) {
             break
           }
+          if (element['stats'][0] == 0) {
+            continue;
+          }
           if (element['stats'][2] == -1) {
             element['stats'][2] = 0
           }
@@ -1416,7 +1422,9 @@ var source_list = new Map([
         }
 
       }
-      queryURL = api_url + `/api/v1/statquery_timeseries?node=${name}&dsrc=${selected_source()}&date_start=2020-01-23&date_end=${format_today}`
+      
+      queryURL = api_url + `/api/v1/statquery_timeseries?node=${name}&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
+      // console.log('queryURL chart:' + queryURL)
       corsHTTP(queryURL, update_state_Chart);
 
     }
