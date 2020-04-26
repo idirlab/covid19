@@ -949,17 +949,59 @@ var source_list = new Map([
       }
     }
 
-    function countyStyle(feature) {
-      return {
-        fill: setFill(feature.properties.enname),
-        // fillColor: setColor(feature.properties.enname),
-        fillOpacity: 0.1,
-        weight: 0.5,
-        opacity: 1,
-        color: '#DC143C',
-        // dashArray: '2'
-      };
+    function setColor(enname, data) {
+      var id = 0;
+      var pop = 0;
+
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        if (element.name == enname) {
+          pop = element.default_stats[0]
+          break;
+        }
+        
+      }
+      // var pop = datasets[0][datasets[0].length - 1][enname];
+
+      // if (pop != undefined) {
+      //   pop = +pop.toString().split("-")[0] - +pop.toString().split("-")[2] - +pop.toString().split("-")[3]; // remaining confirmed
+      // } else {
+      //   pop = 0;
+      //   // return "#00000000";
+      // }
+      
+      if (pop >= 1000) {
+        id = 5;
+      } else if (pop > 500 && pop <= 1000) {
+        id = 4;
+      } else if (pop > 100 && pop <= 500) {
+        id = 3;
+      } else if (pop > 50 && pop <= 100) {
+        id = 2;
+      } else if (pop > 10 && pop <= 50) {
+        id = 1;
+      } else if (pop > 0 && pop <= 10) {
+        id = 0;
+      } else {
+        id = -1;
+        return "#00000000";
+      }
+      return colors[id];
     }
+
+
+    // function countyStyle(feature) {
+    //   console.log(feature.properties.NAME)
+    //   return {
+    //     fill: setFill(feature.properties.NAME),
+    //     fillColor: setColor(feature.properties.NAME),
+    //     fillOpacity: 0.1,
+    //     weight: 0.5,
+    //     opacity: 1,
+    //     color: '#DC143C',
+    //     // dashArray: '2'
+    //   };
+    // }
 
 
 
@@ -1014,16 +1056,40 @@ var source_list = new Map([
           counties_feat.push(feat)
         }
       }
-      try{
-        mymap.removeLayer(counties)
-      } catch(err) {
-        console.log(err)
+      
+      console.log('counties_feat: '+ JSON.stringify(counties_feat))
+
+      var update_county_color = (data) => {
+
+        // console.log('mapquery_county: ', data)
+        try{
+          mymap.removeLayer(counties)
+        } catch(err) {
+          console.log(err)
+        }
+
+        counties = new L.geoJSON(counties_feat, {
+          // TODO: add
+          style: function(feature){
+            return {
+              // fill: setFill(feature.properties.NAME),
+              fillColor: setColor(feature.properties.NAME, data),
+              fillOpacity: 0.3,
+              weight: 0.5,
+              opacity: 1,
+              color: '#DC143C',
+              // dashArray: '2'
+            };
+          },
+          onEachFeature: onEachCountyFeature
+        }).addTo(mymap);
+        
+
       }
-      counties = new L.geoJSON(counties_feat, {
-        // TODO: add
-        style: countyStyle,
-        onEachFeature: onEachCountyFeature
-      }).addTo(mymap);
+      queryURL = `http://0.0.0.0:2222/api/v1/mapquery_county?date=2020-04-15&node_state=${e.target.feature.properties.enname}&dsrc_county=JHU`
+      corsHTTP(queryURL, update_county_color);
+
+      
     }
 
     // TODO:
