@@ -50,39 +50,12 @@
   <main style="height: 100%;">
     <div id="banner">
       <div id="title" style="font-size:30px;text-align: center;background-color: rgb(79, 105, 120);color: rgb(232, 235, 238)">
-        <i style="cursor:pointer;float:left;margin-left:12px;transform:translate(0px, 6px);"
+        <i style="cursor:pointer;float:left;margin-left:24px;transform:translate(0px, 6px);"
            class="fas fa-cog"
            onclick="javascript:select_default_source();"></i>
-        <div class="modal fade" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="settings-modal" aria-hidden="true" style="left:10%;">
-          <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content" style="color:rgb(40, 50, 55);background-color:rgba(207, 216, 220, 1);">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Select the default sources</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <div class="source-description">
-                   On the left-hand side there are 3 figures shown in the header for each location,
-                   the settings in this section change what data source is used to populate those
-                   values.
-                </div>
-                <div class="source-title">Global source</div>
-                <div class="source-selector-global"></div>
-                <div class="source-title">Country source</div>
-                <div class="source-selector-country"></div>
-                <div class="source-title">State source</div>
-                <div class="source-selector-state"></div>
-                <div class="source-title">County source</div>
-                <div class="source-selector-county"></div>
-              </div>
-              <div class="modal-footer">
-                <div class="src-selector-apply-btn apply-btn-style">Apply changes</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <i style="cursor:pointer;float:left;margin-left:24px;transform:translate(0px, 6px);"
+           class="fas fa-question"
+           onclick="javascript:displayInformationPane();"></i>
         COVID19 Pandemic - Public Information
       </div>
     </div>
@@ -104,9 +77,6 @@
           <input type="radio" name="options" id="option2" value="log"> Logarithmic scale
         </label>
       </div>
-
-      
-
     </div>
     
 
@@ -227,6 +197,66 @@
   </script>
   <script async src='https://www.google-analytics.com/analytics.js'></script> -->
   <!-- Google Analytics End-->
+  <div class="modal fade" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="settings-modal" aria-hidden="true" style="left:10%;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content" style="color:rgb(40, 50, 55);background-color:rgba(207, 216, 220, 1);">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Select the default sources</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="source-description">
+             On the left-hand side there are 3 figures shown in the header for each location,
+             the settings in this section change what data source is used to populate those
+             values.
+          </div>
+          <div class="source-title">Global source</div>
+          <div class="source-selector-global"></div>
+          <div class="source-title">Country source</div>
+          <div class="source-selector-country"></div>
+          <div class="source-title">State source</div>
+          <div class="source-selector-state"></div>
+          <div class="source-title">County source</div>
+          <div class="source-selector-county"></div>
+        </div>
+        <div class="modal-footer">
+          <div class="src-selector-apply-btn apply-btn-style">Apply changes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="information-modal" tabindex="-1" role="dialog" aria-labelledby="information-modal" aria-hidden="true" style="left:10%;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content" style="color:rgb(40, 50, 55);background-color:rgba(207, 216, 220, 1);">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Project Information</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h3>About</h3>
+          <p class="abt">This project aims to build a dashboard that aggregates various metrics from various sources related to COVID19 and to present geographically-relevant social media posts and hospital information.</p>
+          <p class="abt">We hope by empowering the public to easily cross-reference different data-sources they will be better informed about the scope of the pandemic.</p>
+          <h3>Data Sources</h3>
+            <p class="full-name">JHU - <a href="https://coronavirus.jhu.edu/">John Hopkins University</a></p>
+            <p class="full-name">NY Times - <a href="https://www.nytimes.com/interactive/2020/us/coronavirus-us-cases.html?action=click&module=Top%20Stories&pgtype=Homepage&action=click&module=Spotlight&pgtype=Homepage">New York Times</a></p>
+            <p class="full-name">COVID Tracking Project - <a href="https://covidtracking.com/">The COVID Tracking Project</a></p>
+            <p class="full-name">CNN - <a href="https://www.cnn.com/world/live-news/coronavirus-pandemic-04-20-20-intl/index.html">Cable News Network</a></p>
+            <p class="full-name">CDC - <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html">Centers for Disease Control and Prevention</a></p>
+          <h3>Affiliation</h3>
+            <p class="affiliation">This work is made possible by the contributions of IDIR Lab members and by the support of The University of Texas at Arlington.</p>
+            <!-- Should anything else go here?-->
+          <h3>Contributors</h3>
+            <p class="contrib">Israa Jaradat, Fatma Arslan, Katherine Baumann, Farahnaz Akrami, Kevin Meng, Damian Jimenez, Zhengyuan Zhu, Haojin Liao, Samiul Saeef, Dr. Chengkai Li, Josue Caraballo</p>
+            <p class="contrib">For more information about the contributors, including their contact links and personal web-pages, please visit the IDIR Lab directory <a href="https://idir.uta.edu/src/team.html">here</a></p>
+            <!-- Should anything else go here?-->
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

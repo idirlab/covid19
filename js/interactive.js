@@ -1,8 +1,22 @@
 function select_default_source() {
-  $("div.modal.fade#settings-modal").modal(
-    {keyboard: false,
-     backdrop: false}
-  );
+  if ($("div.modal.fade#information-modal").hasClass('show'))
+    $("#information-modal").find(".modal-header > .close").click()
+  if ($("div.modal.fade#settings-modal").hasClass('show')) {
+    $("#settings-modal").find(".modal-header > .close").click()
+  } else {
+    $("div.modal.fade#settings-modal").modal({keyboard: false,
+                                              backdrop: false});
+  }
+}
+function displayInformationPane() {
+  if ($("div.modal.fade#settings-modal").hasClass('show'))
+    $("#settings-modal").find(".modal-header > .close").click()
+  if ($("div.modal.fade#information-modal").hasClass('show')) {
+    $("#information-modal").find(".modal-header > .close").click()
+  } else {
+    $("div.modal.fade#information-modal").modal({keyboard: false,
+                                                 backdrop: false});
+  }
 }
 (function(window){ // https://ourcodeworld.com/articles/read/188/encode-and-decode-html-entities-using-pure-javascript
 	window.htmlentities = {
