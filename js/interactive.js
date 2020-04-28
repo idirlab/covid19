@@ -774,6 +774,7 @@ var source_list = new Map([
                   fillOpacity: 0.1
                 });
                 layer.bringToFront();
+                keepLayer = layer
                 curr_polyid = layer._leaflet_id
               }
             }
