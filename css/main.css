@@ -1191,6 +1191,37 @@ div.modal-footer{
 .hidden-important {
   display:none !important;
 }
-/* div.info-pane.smaller.right.scrollable#hospital-info {
-  height: calc(100% - 92px);
-} */
+.contrib,
+.affiliation,
+.abt,
+p.full-name {
+  letter-spacing: initial;
+  font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif;
+  font-weight: bold;
+  line-height: 16px;
+  text-align: left;
+  font-size: 16px;
+}
+p.full-name {
+  text-align:center;
+}
+a {
+  color: inherit;
+}
+.modal-body > h3 {
+  text-decoration:underline;
+}
+div.show.modal#settings-modal > .modal-dialog > .modal-content > .modal-body > .source-title,
+div.show.modal#information-modal  > .modal-dialog > .modal-content > .modal-body > h3{
+  font-family:Impact,Haettenschweiler,Franklin Gothic Bold,Charcoal,Helvetica Inserat,Bitstream Vera Sans Bold,Arial Black,sans serif; 
+  font-size:37.5;
+}
+
+div.show.modal#settings-modal,
+div.show.modal#information-modal {
+  letter-spacing:4px;
+  z-index: 99999;
+  font-size:30px;
+  text-align: center;
+  color: rgb(232, 235, 238);
+}

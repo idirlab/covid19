@@ -1,8 +1,22 @@
 function select_default_source() {
-  $("div.modal.fade#settings-modal").modal(
-    {keyboard: false,
-     backdrop: false}
-  );
+  if ($("div.modal.fade#information-modal").hasClass('show'))
+    $("#information-modal").find(".modal-header > .close").click()
+  if ($("div.modal.fade#settings-modal").hasClass('show')) {
+    $("#settings-modal").find(".modal-header > .close").click()
+  } else {
+    $("div.modal.fade#settings-modal").modal({keyboard: false,
+                                              backdrop: false});
+  }
+}
+function displayInformationPane() {
+  if ($("div.modal.fade#settings-modal").hasClass('show'))
+    $("#settings-modal").find(".modal-header > .close").click()
+  if ($("div.modal.fade#information-modal").hasClass('show')) {
+    $("#information-modal").find(".modal-header > .close").click()
+  } else {
+    $("div.modal.fade#information-modal").modal({keyboard: false,
+                                                 backdrop: false});
+  }
 }
 (function(window){ // https://ourcodeworld.com/articles/read/188/encode-and-decode-html-entities-using-pure-javascript
 	window.htmlentities = {
@@ -189,6 +203,76 @@ $(document).ready(async function(){
 
   L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{ maxZoom: 20, subdomains:['mt0','mt1','mt2','mt3']
   }).addTo(mymap);
+
+  var circle_group;
+  var update_circle = (data) => {
+    data_str = JSON.stringify(data)
+    // console.log('Circle_data!!!: ' + data_str)
+    country_state_circle = L.Circle.extend({
+    options: { 
+          name: ''
+      }
+    });
+    circle_list = [];
+
+    for (let index = 0; index < data.countries.length; index++) {
+      const element = data.countries[index];
+      radius = parseInt(element.default_stats[0]);
+      if (!radius) {
+        radius = 0
+      }
+      if (element.name == 'United States') {
+        continue;
+      }
+
+      var lower_name = element.name.toLowerCase().trim()
+      var circle = new country_state_circle([element.lat, element.long], radius, {
+        weight: 1,
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5,
+        name: lower_name
+      });
+      circle_list.push(circle)
+    }
+
+    for (let index = 0; index < data.states.length; index++) {
+      const element = data.states[index];
+      radius = parseInt(element.default_stats[0]);
+      if (!radius) {
+        radius = 0
+      }
+
+      var lower_name = element.name.toLowerCase().trim()
+      var circle = new country_state_circle([element.lat, element.long], radius, {
+        weight: 1,
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5,
+        name: lower_name
+      });
+      circle_list.push(circle)
+    }
+    circle_group = L.layerGroup(circle_list).addTo(mymap)
+  }
+
+  function format_date(num, str) {
+    var today = new Date();
+    var nowTime = today.getTime()
+    var ms = 24*3600*1000*num
+    today.setTime(parseInt(nowTime + ms))
+    var oYear = today.getFullYear()
+    var oMoth = (today.getMonth() + 1).toString()
+    if (oMoth.length <= 1) oMoth = '0' + oMoth
+    var oDay = today.getDate().toString()
+    if (oDay.length <= 1) oDay = '0' + oDay
+    return oYear + str + oMoth + str + oDay
+  }
+  var format_today = format_date(0, '-')
+
+  queryURL = api_url + `/api/v1/mapquery_country_state?date=${format_today}&dsrc_country=JHU&dsrc_state=JHU`
+  corsHTTP(queryURL, update_circle);
+
 
   var added = false;
 
@@ -923,17 +1007,59 @@ var source_list = new Map([
       }
     }
 
-    function countyStyle(feature) {
-      return {
-        fill: setFill(feature.properties.enname),
-        // fillColor: setColor(feature.properties.enname),
-        fillOpacity: 0.1,
-        weight: 0.5,
-        opacity: 1,
-        color: '#DC143C',
-        // dashArray: '2'
-      };
+    function setColor(enname, data) {
+      var id = 0;
+      var pop = 0;
+
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        if (element.name == enname) {
+          pop = element.default_stats[0]
+          break;
+        }
+        
+      }
+      // var pop = datasets[0][datasets[0].length - 1][enname];
+
+      // if (pop != undefined) {
+      //   pop = +pop.toString().split("-")[0] - +pop.toString().split("-")[2] - +pop.toString().split("-")[3]; // remaining confirmed
+      // } else {
+      //   pop = 0;
+      //   // return "#00000000";
+      // }
+      
+      if (pop >= 1000) {
+        id = 5;
+      } else if (pop > 500 && pop <= 1000) {
+        id = 4;
+      } else if (pop > 100 && pop <= 500) {
+        id = 3;
+      } else if (pop > 50 && pop <= 100) {
+        id = 2;
+      } else if (pop > 10 && pop <= 50) {
+        id = 1;
+      } else if (pop > 0 && pop <= 10) {
+        id = 0;
+      } else {
+        id = -1;
+        return "#00000000";
+      }
+      return colors[id];
     }
+
+
+    // function countyStyle(feature) {
+    //   console.log(feature.properties.NAME)
+    //   return {
+    //     fill: setFill(feature.properties.NAME),
+    //     fillColor: setColor(feature.properties.NAME),
+    //     fillOpacity: 0.1,
+    //     weight: 0.5,
+    //     opacity: 1,
+    //     color: '#DC143C',
+    //     // dashArray: '2'
+    //   };
+    // }
 
 
 
@@ -993,22 +1119,44 @@ var source_list = new Map([
           counties_feat.push(feat)
         }
       }
-      try{
-        mymap.removeLayer(counties)
-      } catch(err) {
-        console.log(err)
+      
+      // console.log('counties_feat: '+ JSON.stringify(counties_feat))
+
+      var update_county_color = (data) => {
+
+        // console.log('mapquery_county: ', data)
+        try{
+          mymap.removeLayer(counties)
+        } catch(err) {
+          console.log(err)
+        }
+
+        counties = new L.geoJSON(counties_feat, {
+          // TODO: add
+          style: function(feature){
+            return {
+              // fill: setFill(feature.properties.NAME),
+              fillColor: setColor(feature.properties.NAME, data),
+              fillOpacity: 0.3,
+              weight: 0.5,
+              opacity: 1,
+              color: '#DC143C',
+              // dashArray: '2'
+            };
+          },
+          onEachFeature: onEachCountyFeature
+        }).addTo(mymap);
+        
+
       }
-      counties = new L.geoJSON(counties_feat, {
-        // TODO: add
-        style: countyStyle,
-        onEachFeature: onEachCountyFeature
-      }).addTo(mymap);
       // Keep polygon when click country/state
       keepCountry = true
       try {
         areas.resetStyle(keepLayer);
       } catch {}
       keepLayer = e.target
+      queryURL = api_url + `/api/v1/mapquery_county?date=${format_today}&node_state=${e.target.feature.properties.enname}&dsrc_county=JHU`
+      corsHTTP(queryURL, update_county_color);
     }
 
     // TODO:
@@ -1049,6 +1197,9 @@ var source_list = new Map([
           if (element['stats'].length == 0) {
             break
           }
+          if (element['stats'][0] == 0) {
+            continue;
+          }
           if (element['stats'][2] == -1) {
             element['stats'][2] = 0
           }
@@ -1087,7 +1238,7 @@ var source_list = new Map([
       }
       var format_today = format_date(0, '-')
 
-      queryURL = api_url + `/api/v1/statquery_timeseries?node=${county}-${state}&dsrc=${selected_source()}&date_start=2020-01-23&date_end=${format_today}`
+      queryURL = api_url + `/api/v1/statquery_timeseries?node=${county}-${state}&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
       corsHTTP(queryURL, update_county_Chart);
 
       console.log('query_county_url: ' + queryURL)
@@ -1210,7 +1361,7 @@ var source_list = new Map([
       }
       var format_today = format_date(0, '-')
 
-      queryURL = api_url + `/api/v1/statquery_timeseries?node=Global&dsrc=${selected_source()}&date_start=2020-01-23&date_end=${format_today}`
+      queryURL = api_url + `/api/v1/statquery_timeseries?node=Global&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
       corsHTTP(queryURL, updateChart);
 
     });
@@ -1285,18 +1436,32 @@ var source_list = new Map([
     }
     var format_today = format_date(0, '-')
 
-    queryURL = api_url + `/api/v1/statquery_timeseries?node=Global&dsrc=${selected_source()}&date_start=2020-01-23&date_end=${format_today}`
+    queryURL = api_url + `/api/v1/statquery_timeseries?node=Global&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
     corsHTTP(queryURL, updateChart);
 
 
-
+    var temp_layer;
     function displayPlace(name) {
 
       $(".placename.hidden").text(name);
       places[name] = calPlace(name);
       showPlace(name);
 
-      date_list = []
+      // Update Circle
+      // console.log(temp_layer)
+      if (temp_layer) {
+        circle_group.addLayer(temp_layer);
+      }
+
+      circle_group.eachLayer(function (layer) {
+        if (layer.options.name == name) {
+          temp_layer = layer;
+          circle_group.removeLayer(layer);
+        }
+      });
+
+      // Update Chart
+      date_list = [];
       date_list.push('t');
       total_list = [];
       total_list.push('Total Cases');
@@ -1304,9 +1469,6 @@ var source_list = new Map([
       death_list.push('Fatal Cases');
       recover_list = [];
       recover_list.push('Recoveries');
-
-
-
 
       var update_state_Chart = (data) => {
 
@@ -1317,6 +1479,9 @@ var source_list = new Map([
           const element = data[index];
           if (element['stats'].length == 0) {
             break
+          }
+          if (element['stats'][0] == 0) {
+            continue;
           }
           if (element['stats'][2] == -1) {
             element['stats'][2] = 0
@@ -1348,8 +1513,9 @@ var source_list = new Map([
         }
 
       }
-
-      queryURL = api_url + `/api/v1/statquery_timeseries?node=${name}&dsrc=${selected_source()}&date_start=2020-01-23&date_end=${format_today}`
+      
+      queryURL = api_url + `/api/v1/statquery_timeseries?node=${name}&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
+      // console.log('queryURL chart:' + queryURL)
       corsHTTP(queryURL, update_state_Chart);
 
     }
