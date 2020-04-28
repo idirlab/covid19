@@ -915,13 +915,13 @@ div#aggregate-date-window > div.info-header > div.info-header-element {
 }
 div.variable-toggle {
   z-index:9998;
-  height: 44px;
-  font-size:12px;
+  font-size:10px;
   line-height: 30px;
   background: rgba(176, 190, 197, 1);
   position:fixed;
   top:calc(44px + 48px);
-  width: 400px;
+  max-width: 270px;
+  left:112px;
   font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif; 
   font-weight:bold;
   color:rgba(38, 50, 56, 1);
@@ -932,8 +932,8 @@ div.variable-toggle > div.variable-button {
   border: 1px solid rgba(207, 216, 220, 1);
   color:rgba(207, 216, 220, 1);
   border-radius: 26px;
-  margin:0 6px 0 6px;
-  width: 110px;
+  margin:0 2px 0 2px;
+  padding:0 2px 0 2px;
   height: 30px;
   transform: translate(0px,7px);
 }
