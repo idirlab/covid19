@@ -629,8 +629,8 @@ var source_list = new Map([
                 <div class="figure">
                   <span class="death-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[1]}</span>
                 </div>
-                ${!(info.breadcrumb.length == 3) ? '<div class="figure">' : '<div class="figure invisible">'}
-                ${!(info.breadcrumb.length == 3) ? '<span class="recovered-count" style="color: rgb(40, 50, 55)">' + child_obj.default_stats[2] + '</span>': '<span class="recovered-count" style="color:#263238;">empty</span>'}
+                ${!(info.breadcrumb.length == 3 | info.breadcrumb.slice(-1)[0].name == 'United States') ? '<div class="figure">' : '<div class="figure invisible">'}
+                ${!(info.breadcrumb.length == 3 | info.breadcrumb.slice(-1)[0].name == 'United States') ? '<span class="recovered-count" style="color: rgb(40, 50, 55)">' + child_obj.default_stats[2] + '</span>': '<span class="recovered-count" style="color:#263238;">empty</span>'}
                 </div>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" ><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
