@@ -659,9 +659,6 @@ var source_list = new Map([
         $("div.location-information-container > span.placename").click(function(evt){
           evt.stopPropagation();
           $(this).parent().click();
-          if(typeof counties !== 'undefined') {
-            mymap.removeLayer(counties)
-          }
         });
         $("div.location-information-container > .remove-filter").click(function(evt){
           var parent = $(this).parent();
@@ -763,9 +760,68 @@ var source_list = new Map([
                 if(curr_place.toLowerCase() == 'alaska') {
                   mymap.setView([67, -150], 4) // (x, y):x+[up] y+[right]
                 }
-                if(curr_place.toLowerCase() === 'us') {
+                if(curr_place.toLowerCase() == 'us') {
                   mymap.setView([37, -90], 5) // (x, y):x+[up] y+[right]
                 }
+                layer.setStyle({
+                  weight: 2,
+                  opacity: 0.8,
+                  color: '#DC143C',
+                  fillColor: '#FFFFFF',
+                  fillOpacity: 0.1
+                });
+                layer.bringToFront();
+                keepLayer = layer
+                curr_polyid = layer._leaflet_id
+
+                counties_feat = []
+                for (let i = 0; i < uscounties.features.length; i++) {
+                  const feat = uscounties.features[i];
+                  if(usstates[feat.properties.STATE]==layer.feature.properties.enname ||
+                    usstates[feat.properties.STATE]==layer.feature.properties.enname.split(/\s+/)[0]){
+                    counties_feat.push(feat)
+                  }
+                }
+                var update_county_color = (data) => {
+                  console.log('mapquery_county: ', data)
+                  try{
+                    mymap.removeLayer(counties)
+                  } catch(err) {
+                    console.log(err)
+                  }
+
+                  counties = new L.geoJSON(counties_feat, {
+                    // TODO: add
+                    style: function(feature){
+                      return {
+                        // fill: setFill(feature.properties.NAME),
+                        fillColor: setColor(feature.properties.NAME, data),
+                        fillOpacity: 0.3,
+                        weight: 0.5,
+                        opacity: 1,
+                        color: '#DC143C',
+                        // dashArray: '2'
+                      };
+                    },
+                    onEachFeature: onEachCountyFeature
+                  }).addTo(mymap);
+                }
+                // Keep polygon when click country/state
+                keepCountry = true
+                queryURL = api_url + `/api/v1/mapquery_county?date=${format_today}&node_state=${layer.feature.properties.enname}&dsrc_county=JHU`
+                corsHTTP(queryURL, update_county_color);
+              }
+            }
+            catch(err) {}
+          })
+          counties.eachLayer(function(layer) {
+            try {
+              var lastIndex = curr_place.lastIndexOf(" ");
+              curr_county = curr_place.substring(0, lastIndex);
+              console.log('zz', layer.feature.properties.NAME.toLowerCase(), curr_county.toLowerCase())
+              if(layer.feature.properties.NAME.toLowerCase() == curr_county.toLowerCase()) {
+                console.log("click find", curr_place)
+                mymap.fitBounds(layer._bounds, {maxZoom: 6}); 
                 layer.setStyle({
                   weight: 2,
                   opacity: 0.8,
@@ -870,7 +926,7 @@ var source_list = new Map([
           for (var i=0; i<info.length; i++) {
             maxCapacity = Math.max(maxCapacity, info[i].attributes.NUM_LICENSED_BEDS);
           }
-          console.log(maxCapacity);
+          // console.log(maxCapacity);
 
           for (var i=0; i<info.length; i++) {
             var cur = info[i].attributes;
@@ -1147,8 +1203,8 @@ var source_list = new Map([
           },
           onEachFeature: onEachCountyFeature
         }).addTo(mymap);
-        
 
+        
       }
       // Keep polygon when click country/state
       keepCountry = true
