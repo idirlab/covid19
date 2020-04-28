@@ -988,7 +988,7 @@ div.variable-display > div.variable > div.source{
   white-space: nowrap;
 }
 div.variable-display > div.variable > div.figures{
-  margin-right:12px;
+  margin-right:24px;
   line-height:24px;
   transform:translate(0px, 1px);
   max-width:270px;

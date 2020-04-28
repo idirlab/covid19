@@ -1,13 +1,3 @@
-function select_default_source() {
-  if ($("div.modal.fade#information-modal").hasClass('show'))
-    $("#information-modal").find(".modal-header > .close").click()
-  if ($("div.modal.fade#settings-modal").hasClass('show')) {
-    $("#settings-modal").find(".modal-header > .close").click()
-  } else {
-    $("div.modal.fade#settings-modal").modal({keyboard: false,
-                                              backdrop: false});
-  }
-}
 function displayInformationPane() {
   if ($("div.modal.fade#settings-modal").hasClass('show'))
     $("#settings-modal").find(".modal-header > .close").click()
@@ -209,7 +199,7 @@ $(document).ready(async function(){
     data_str = JSON.stringify(data)
     // console.log('Circle_data!!!: ' + data_str)
     country_state_circle = L.Circle.extend({
-    options: { 
+    options: {
           name: ''
       }
     });
@@ -570,8 +560,8 @@ var source_list = new Map([
                  <div class="figure">
                    <span class="death-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][1]}</span>
                  </div>
-                 <div class="figure">
-                   <span class="recovered-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][2]}</span>
+                 ${!is_county ? '<div class="figure">' : '<div class="figure invisible">'}
+                 ${!is_county ? '<span class="recovered-count" style="color: rgb(40, 50, 55)">' +  src_to_stats[1][2] + '</span>': '<span class="recovered-count" style="color:#263238;">empty</span>'}
                  </div>
                </div>
              </div>
@@ -598,8 +588,8 @@ var source_list = new Map([
                 <div class="figure">
                   <span class="death-count" style="color: rgb(40, 50, 55)">${deaths}</span>
                 </div>
-                <div class="figure">
-                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${recovered}</span>
+                ${!is_county ? '<div class="figure">' : '<div class="figure invisible">'}
+                ${!is_county ? '<span class="recovered-count" style="color: rgb(40, 50, 55)">' +  recovered + '</span>': '<span class="recovered-count" style="color:#263238;">empty</span>'}
                 </div>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
@@ -973,7 +963,7 @@ var source_list = new Map([
           pop = element.default_stats[0]
           break;
         }
-        
+
       }
       // var pop = datasets[0][datasets[0].length - 1][enname];
 
@@ -983,7 +973,7 @@ var source_list = new Map([
       //   pop = 0;
       //   // return "#00000000";
       // }
-      
+
       if (pop >= 1000) {
         id = 5;
       } else if (pop > 500 && pop <= 1000) {
@@ -1070,7 +1060,7 @@ var source_list = new Map([
           counties_feat.push(feat)
         }
       }
-      
+
       // console.log('counties_feat: '+ JSON.stringify(counties_feat))
 
       var update_county_color = (data) => {
@@ -1097,13 +1087,13 @@ var source_list = new Map([
           },
           onEachFeature: onEachCountyFeature
         }).addTo(mymap);
-        
+
 
       }
       queryURL = api_url + `/api/v1/mapquery_county?date=${format_today}&node_state=${e.target.feature.properties.enname}&dsrc_county=JHU`
       corsHTTP(queryURL, update_county_color);
 
-      
+
     }
 
     // TODO:
@@ -1436,7 +1426,7 @@ var source_list = new Map([
         }
 
       }
-      
+
       queryURL = api_url + `/api/v1/statquery_timeseries?node=${name}&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
       // console.log('queryURL chart:' + queryURL)
       corsHTTP(queryURL, update_state_Chart);
