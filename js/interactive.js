@@ -560,8 +560,8 @@ var source_list = new Map([
                  <div class="figure">
                    <span class="death-count" style="color: rgb(40, 50, 55)">${src_to_stats[1][1]}</span>
                  </div>
-                 ${!is_county ? '<div class="figure">' : '<div class="figure invisible">'}
-                 ${!is_county ? '<span class="recovered-count" style="color: rgb(40, 50, 55)">' +  src_to_stats[1][2] + '</span>': '<span class="recovered-count" style="color:#263238;">empty</span>'}
+                 ${!(is_county|is_state) ? '<div class="figure">' : '<div class="figure invisible">'}
+                 ${!(is_county|is_state) ? '<span class="recovered-count" style="color: rgb(40, 50, 55)">' +  src_to_stats[1][2] + '</span>': '<span class="recovered-count" style="color:#263238;">empty</span>'}
                  </div>
                </div>
              </div>
@@ -588,8 +588,8 @@ var source_list = new Map([
                 <div class="figure">
                   <span class="death-count" style="color: rgb(40, 50, 55)">${deaths}</span>
                 </div>
-                ${!is_county ? '<div class="figure">' : '<div class="figure invisible">'}
-                ${!is_county ? '<span class="recovered-count" style="color: rgb(40, 50, 55)">' +  recovered + '</span>': '<span class="recovered-count" style="color:#263238;">empty</span>'}
+                ${!(is_county|is_state) ? '<div class="figure">' : '<div class="figure invisible">'}
+                ${!(is_county|is_state) ? '<span class="recovered-count" style="color: rgb(40, 50, 55)">' +  recovered + '</span>': '<span class="recovered-count" style="color:#263238;">empty</span>'}
                 </div>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" class="active"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
@@ -601,7 +601,7 @@ var source_list = new Map([
         var breadcrumb_DOM = info
           .breadcrumb
           .slice(0, info.breadcrumb.length - 1)
-          .map(d => `
+          .map((d, idx, _) => `
               <div class="location-information-container dashboard-breadcrumb" style="margin-top:12px;">
                 <span class="placename">${d.name}</span>
                 <div class="figures">
@@ -611,8 +611,8 @@ var source_list = new Map([
                   <div class="figure">
                     <span class="death-count" style="color: rgb(40, 50, 55)">${d.default_stats[1]}</span>
                   </div>
-                  <div class="figure">
-                    <span class="recovered-count" style="color: rgb(40, 50, 55)">${d.default_stats[2]}</span>
+                  ${!(idx == 2) ? '<div class="figure">' : '<div class="figure invisible">'}
+                  ${!(idx == 2) ? '<span class="recovered-count" style="color: rgb(40, 50, 55)">' + d.default_stats[2] + '</span>': '<span class="recovered-count" style="color:#263238;">empty</span>'}
                   </div>
                 </div>
                 ${d.name === "Global" ? '' : '<i class="fa fa-window-close remove-filter" aria-hidden="true"></i>'}
@@ -629,8 +629,8 @@ var source_list = new Map([
                 <div class="figure">
                   <span class="death-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[1]}</span>
                 </div>
-                <div class="figure">
-                  <span class="recovered-count" style="color: rgb(40, 50, 55)">${child_obj.default_stats[2]}</span>
+                ${!(info.breadcrumb.length == 3) ? '<div class="figure">' : '<div class="figure invisible">'}
+                ${!(info.breadcrumb.length == 3) ? '<span class="recovered-count" style="color: rgb(40, 50, 55)">' + child_obj.default_stats[2] + '</span>': '<span class="recovered-count" style="color:#263238;">empty</span>'}
                 </div>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="18px" height="18px" ><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path><path d="M0 0h24v24H0V0z" fill="none"></path></svg>
