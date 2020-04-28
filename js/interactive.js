@@ -1,3 +1,13 @@
+function select_default_source() {
+  if ($("div.modal.fade#information-modal").hasClass('show'))
+    $("#information-modal").find(".modal-header > .close").click()
+  if ($("div.modal.fade#settings-modal").hasClass('show')) {
+    $("#settings-modal").find(".modal-header > .close").click()
+  } else {
+    $("div.modal.fade#settings-modal").modal({keyboard: false,
+                                              backdrop: false});
+  }
+}
 function displayInformationPane() {
   if ($("div.modal.fade#settings-modal").hasClass('show'))
     $("#settings-modal").find(".modal-header > .close").click()
@@ -602,7 +612,7 @@ var source_list = new Map([
           .breadcrumb
           .slice(0, info.breadcrumb.length - 1)
           .map((d, idx, _) => `
-              <div class="location-information-container dashboard-breadcrumb" style="margin-top:12px;">
+              <div class="location-information-container dashboard-breadcrumb" style="margin-top:8px;">
                 <span class="placename">${d.name}</span>
                 <div class="figures">
                   <div class="figure">
@@ -620,7 +630,7 @@ var source_list = new Map([
             `)
           .join("\n");
         var first_order_children_DOM = info.children.map(child_obj => `
-          <div class="location-information-container" style="margin-top:12px;">
+          <div class="location-information-container" style="margin-top:8px;">
               <span class="placename">${placename(child_obj.name)}</span>
               <div class="figures">
                 <div class="figure">
@@ -1513,5 +1523,8 @@ var source_list = new Map([
       .css("background-color", "transparent")
       .html("");
 
+  });
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
   });
 });
