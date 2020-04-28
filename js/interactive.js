@@ -195,7 +195,7 @@ $(document).ready(async function(){
     maxZoom: 10,
     minZoom: 0,
     worldCopyJump: true,
-  }).fitWorld().setView([37, -107], 5)
+  }).fitWorld().setView([37, -80], 3) // (x, y):x+[up] y+[right]; zoom+, closer
   $("body > main > div#map").toggleClass("closed");
   new L.Control.Zoom({
     position: 'bottomright'
@@ -667,6 +667,21 @@ var source_list = new Map([
           var target = parent.prev();
           target.click();
           evt.stopPropagation();
+          curr_place = parent.find(".placename").text().trim().toLowerCase()
+          if(curr_place=='united states') {
+            curr_place = 'us'
+          }
+          mymap.eachLayer(function(layer) {
+            try {
+              if(layer.feature.properties.enname === curr_place.toLowerCase()) {
+                areas.resetStyle(layer)
+              }
+            }
+            catch(err) {}
+          })
+          if(typeof counties !== 'undefined') {
+            mymap.removeLayer(counties)
+          }
         });
         $("div.location-information-container > svg").click(function(evt){
           evt.stopPropagation();
@@ -726,15 +741,101 @@ var source_list = new Map([
           corsHTTP(queryUrl, queryCallback)
         });
         $("div.location-information-container").click(function(evt){
+          try{
+            areas.resetStyle(mymap._layers[curr_polyid])
+          } catch{}
           if(evt.target.tagName == "SPAN")
             return;
           if(evt.target.tagName == "SVG")
             return;
-          showPlace($(this).find(".placename").text().trim());
-          $.get(location.protocol + '//nominatim.openstreetmap.org/search?format=json&q='+$(this).find(".placename").text().trim(), function(data){
-            console.log('moving camera', $(this).find(".placename").text().trim())
-            mymap.panTo(new L.LatLng(data[0].lat, data[0].lon))
-          });
+          curr_place = $(this).find(".placename").text().trim()
+          showPlace(curr_place);
+          if(curr_place.toLowerCase()=='united states') {
+            curr_place = 'us'
+          }
+          mymap.eachLayer(function(layer) {
+            try {
+              if(layer.feature.properties.enname === curr_place.toLowerCase()) {
+                mymap.fitBounds(layer._bounds, {maxZoom: 6});
+                if(curr_place.toLowerCase() == 'alaska') {
+                  mymap.setView([67, -150], 4) // (x, y):x+[up] y+[right]
+                }
+                if(curr_place.toLowerCase() == 'us') {
+                  mymap.setView([37, -90], 5) // (x, y):x+[up] y+[right]
+                }
+                layer.setStyle({
+                  weight: 2,
+                  opacity: 0.8,
+                  color: '#DC143C',
+                  fillColor: '#FFFFFF',
+                  fillOpacity: 0.1
+                });
+                layer.bringToFront();
+                keepLayer = layer
+                curr_polyid = layer._leaflet_id
+
+                counties_feat = []
+                for (let i = 0; i < uscounties.features.length; i++) {
+                  const feat = uscounties.features[i];
+                  if(usstates[feat.properties.STATE]==layer.feature.properties.enname ||
+                    usstates[feat.properties.STATE]==layer.feature.properties.enname.split(/\s+/)[0]){
+                    counties_feat.push(feat)
+                  }
+                }
+                var update_county_color = (data) => {
+                  console.log('mapquery_county: ', data)
+                  try{
+                    mymap.removeLayer(counties)
+                  } catch(err) {
+                    console.log(err)
+                  }
+
+                  counties = new L.geoJSON(counties_feat, {
+                    // TODO: add
+                    style: function(feature){
+                      return {
+                        // fill: setFill(feature.properties.NAME),
+                        fillColor: setColor(feature.properties.NAME, data),
+                        fillOpacity: 0.3,
+                        weight: 0.5,
+                        opacity: 1,
+                        color: '#DC143C',
+                        // dashArray: '2'
+                      };
+                    },
+                    onEachFeature: onEachCountyFeature
+                  }).addTo(mymap);
+                }
+                // Keep polygon when click country/state
+                keepCountry = true
+                queryURL = api_url + `/api/v1/mapquery_county?date=${format_today}&node_state=${layer.feature.properties.enname}&dsrc_county=JHU`
+                corsHTTP(queryURL, update_county_color);
+              }
+            }
+            catch(err) {}
+          })
+          counties.eachLayer(function(layer) {
+            try {
+              var lastIndex = curr_place.lastIndexOf(" ");
+              curr_county = curr_place.substring(0, lastIndex);
+              console.log('zz', layer.feature.properties.NAME.toLowerCase(), curr_county.toLowerCase())
+              if(layer.feature.properties.NAME.toLowerCase() == curr_county.toLowerCase()) {
+                console.log("click find", curr_place)
+                mymap.fitBounds(layer._bounds, {maxZoom: 6});
+                layer.setStyle({
+                  weight: 2,
+                  opacity: 0.8,
+                  color: '#DC143C',
+                  fillColor: '#FFFFFF',
+                  fillOpacity: 0.1
+                });
+                layer.bringToFront();
+                keepLayer = layer
+                curr_polyid = layer._leaflet_id
+              }
+            }
+            catch(err) {}
+          })
         });
       }
 
@@ -825,7 +926,7 @@ var source_list = new Map([
           for (var i=0; i<info.length; i++) {
             maxCapacity = Math.max(maxCapacity, info[i].attributes.NUM_LICENSED_BEDS);
           }
-          console.log(maxCapacity);
+          // console.log(maxCapacity);
 
           for (var i=0; i<info.length; i++) {
             var cur = info[i].attributes;
@@ -1057,7 +1158,12 @@ var source_list = new Map([
     // 3.2.2 zoom to the highlighted feature when the mouse is clicking onto it.
     function zoomToFeature(e) {
       console.log('zoom to State/Country')
-      mymap.fitBounds(e.target.getBounds());
+      mymap.fitBounds(e.target.getBounds(), {maxZoom: 5, minZoom: 5});
+      if(e.target.feature.properties.enname == 'alaska') {
+        mymap.setView([67, -150], 4) // (x, y):x+[up] y+[right]
+      } else if (e.target.feature.properties.enname == 'us') {
+        mymap.setView([37, -90], 5) // (x, y):x+[up] y+[right]
+      }
       L.DomEvent.stopPropagation(e);
       $("#hint").text("Click here to the global trend.");
       displayPlace(e.target.feature.properties.enname)
@@ -1100,16 +1206,26 @@ var source_list = new Map([
 
 
       }
+      // Keep polygon when click country/state
+      keepCountry = true
+      try {
+        areas.resetStyle(keepLayer);
+      } catch {}
+      keepLayer = e.target
       queryURL = api_url + `/api/v1/mapquery_county?date=${format_today}&node_state=${e.target.feature.properties.enname}&dsrc_county=JHU`
       corsHTTP(queryURL, update_county_color);
-
-
     }
 
     // TODO:
     function zoomToCountyFeature(e) {
+      // Keep polygon when click country/state
+      keepCounty = true
+      try {
+        counties.resetStyle(keepCountyLayer);
+      } catch {}
+      keepCountyLayer = e.target
       console.log("zooming to county");
-      mymap.fitBounds(e.target._bounds);
+      mymap.fitBounds(e.target._bounds, {maxZoom: 6});
       var state = usstates[e.target.feature.properties.STATE].toTitleCase(); // to be used for filter
       var county = `${e.target.feature.properties.NAME.toTitleCase()} ${municipalityPostfix(state)}`;
 
@@ -1187,11 +1303,29 @@ var source_list = new Map([
 
     // 3.2.3 reset the hightlighted feature when the mouse is out of its region.
     function resetHighlight(e) {
-      areas.resetStyle(e.target);
+      if(typeof keepCountry == 'undefined') {
+        keepCountry = false
+      }
+      if(typeof keepLayer == 'undefined') {
+        keepLayer = null
+      }
+      if(!keepCountry && keepLayer!=e.target) {
+        areas.resetStyle(e.target);
+      }
+      keepCountry = false
     }
 
     function resetCountyHighlight(e) {
-      counties.resetStyle(e.target);
+      if(typeof keepCounty == 'undefined') {
+        keepCounty = false
+      }
+      if(typeof keepCountyLayer == 'undefined') {
+        keepCountyLayer = null
+      }
+      if(!keepCounty && keepCountyLayer!=e.target) {
+        counties.resetStyle(e.target);
+      }
+      keepCounty = false
     }
 
     // 3.3 add these event the layer obejct.
