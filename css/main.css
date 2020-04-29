@@ -1227,3 +1227,6 @@ div.show.modal#information-modal {
   text-align: center;
   color: rgb(232, 235, 238);
 }
+.decorate-me {
+  text-decoration:underline;
+}
