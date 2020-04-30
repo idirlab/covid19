@@ -224,6 +224,7 @@ $(document).ready(async function(){
       if (element.name == 'United States') {
         continue;
       }
+      radius = radius*1.3+20000
 
       var lower_name = element.name.toLowerCase().trim()
       var circle = new country_state_circle([element.lat, element.long], radius, {
@@ -242,6 +243,7 @@ $(document).ready(async function(){
       if (!radius) {
         radius = 0
       }
+      radius = radius*1.3+20000
 
       var lower_name = element.name.toLowerCase().trim()
       var circle = new country_state_circle([element.lat, element.long], radius, {
@@ -256,8 +258,8 @@ $(document).ready(async function(){
     circle_group = L.layerGroup(circle_list).addTo(mymap)
   }
 
-  function format_date(num, str) {
-    var today = new Date();
+  function format_date(num, str, init) {
+    var today = new Date(init);
     var nowTime = today.getTime()
     var ms = 24*3600*1000*num
     today.setTime(parseInt(nowTime + ms))
@@ -268,8 +270,7 @@ $(document).ready(async function(){
     if (oDay.length <= 1) oDay = '0' + oDay
     return oYear + str + oMoth + str + oDay
   }
-  var format_today = format_date(0, '-')
-
+  var format_today = format_date(0, '-', globalMaxDate);
   queryURL = api_url + `/api/v1/mapquery_country_state?date=${format_today}&dsrc_country=JHU&dsrc_state=JHU`
   corsHTTP(queryURL, update_circle);
 
@@ -1281,8 +1282,8 @@ var source_list = new Map([
 
       }
 
-      function format_date(num, str) {
-        var today = new Date();
+      function format_date(num, str, init) {
+        var today = new Date(init);
         var nowTime = today.getTime()
         var ms = 24*3600*1000*num
         today.setTime(parseInt(nowTime + ms))
@@ -1293,7 +1294,7 @@ var source_list = new Map([
         if (oDay.length <= 1) oDay = '0' + oDay
         return oYear + str + oMoth + str + oDay
       }
-      var format_today = format_date(0, '-')
+      var format_today = format_date(0, '-', globalMaxDate)
 
       queryURL = api_url + `/api/v1/statquery_timeseries?node=${county}-${state}&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
       corsHTTP(queryURL, update_county_Chart);
@@ -1404,8 +1405,8 @@ var source_list = new Map([
 
       }
 
-      function format_date(num, str) {
-        var today = new Date();
+      function format_date(num, str, init) {
+        var today = new Date(init);
         var nowTime = today.getTime()
         var ms = 24*3600*1000*num
         today.setTime(parseInt(nowTime + ms))
@@ -1416,7 +1417,7 @@ var source_list = new Map([
         if (oDay.length <= 1) oDay = '0' + oDay
         return oYear + str + oMoth + str + oDay
       }
-      var format_today = format_date(0, '-')
+      var format_today = format_date(0, '-', globalMaxDate)
 
       queryURL = api_url + `/api/v1/statquery_timeseries?node=Global&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
       corsHTTP(queryURL, updateChart);
@@ -1479,8 +1480,8 @@ var source_list = new Map([
 
     }
 
-    function format_date(num, str) {
-      var today = new Date();
+    function format_date(num, str, init) {
+      var today = new Date(init);
       var nowTime = today.getTime()
       var ms = 24*3600*1000*num
       today.setTime(parseInt(nowTime + ms))
@@ -1491,7 +1492,7 @@ var source_list = new Map([
       if (oDay.length <= 1) oDay = '0' + oDay
       return oYear + str + oMoth + str + oDay
     }
-    var format_today = format_date(0, '-')
+    var format_today = format_date(0, '-', globalMaxDate)
 
     queryURL = api_url + `/api/v1/statquery_timeseries?node=Global&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
     corsHTTP(queryURL, updateChart);
