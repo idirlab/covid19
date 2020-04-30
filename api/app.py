@@ -6,6 +6,8 @@ from datetime import datetime
 from absl import logging
 from datetime import date, timedelta, datetime
 import coord
+import requests
+from functools import reduce
 import sys
 import os
 import pandas
@@ -77,6 +79,8 @@ def preprocess_node(node):
 
     return node, entity_type
 
+port = 2222 if not len(sys.argv) > 1 else int(sys.argv[1])
+
 @app.route('/api/v1/ping')
 def ping():
     global refreshing, query_processes
@@ -97,7 +101,6 @@ def ping():
         except:
             pass
         return out
-
     read_status = []
     for key, value in source_list.items():
         if key != 'JHU':
@@ -105,12 +108,35 @@ def ping():
         else:
             for subkey, subvalue in source_list[key].items():
                 read_status.append((f"{key} - {subkey}", 200 if check_shape(prc(subvalue)) else 500))
+    data_sources = {"Data Sources":{"size":len(read_status),
+                                    **{t[0]:t[1] for t in read_status}}}
 
+    qkwargs = {"statquery":{"node":"Tarrant County-Texas",
+                            "date":"2020-04-30",
+                            **{f"dsrc_{area}":"JHU" for area in ["global",
+                                                                 "country",
+                                                                 "state",
+                                                                 "county"]}},
+               "statquery_timeseries":{"node":"Tarrant%20County-Texas",
+                                       "dsrc":"JHU",
+                                       "date_start":"2020-01-23",
+                                       "date_end":"2020-04-30"},
+               "mapquery_county":{"date":"2020-04-30",
+                                  "node_state":"texas",
+                                  "dsrc_county":"JHU"}}
+    prefix = f"http://localhost:{port}/api/v1"
+    def to_querystr(d):
+        return reduce(lambda acc, it: f"{acc}&{it[0]}={it[1]}", d.items(), "")[1:]
+    query_responses = {"Query Responses":{"size":len(qkwargs),
+                                          **{k: requests.get(f"{prefix}/{k}?{to_querystr(v)}").status_code \
+                                                  for k, v in qkwargs.items()}}}
+
+
+    groups = {**data_sources, **query_responses}
     ret = {"use_groups":True,
-           "size":1,
+           "size":len(groups),
            "interval":15,
-           "Data Sources":{"size":len(read_status),
-                           **{t[0]:t[1] for t in read_status}}}
+           **groups}
     ret = jsonify(ret)
 
     query_processes.remove(pid)
@@ -618,5 +644,4 @@ if __name__ == "__main__":
     logging.set_verbosity(logging.INFO)
     refresh_data()
     coord.load_coords()
-    port = 2222 if not len(sys.argv) > 1 else int(sys.argv[1])
     app.run(host="0.0.0.0", port=port, threaded=True, debug=False, use_reloader=False)
