@@ -984,8 +984,8 @@ div.variable-display > div.variable.active {
 div.variable-display > div.variable > div.source{
   margin-left:12px;
   float:left;
-  font-size:15px;
-  max-width: 64px;
+  font-size:10px;
+  max-width: 120px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -1174,6 +1174,7 @@ div.modal-footer{
   z-index:999;
 }
 .location-information-container.root {
+  margin-top:8px;
 }
 .location-information-container.root:not(.global) > .remove-filter {
   transform: translate(0px, 10px);
