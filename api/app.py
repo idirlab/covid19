@@ -6,6 +6,8 @@ from datetime import datetime
 from absl import logging
 from datetime import date, timedelta, datetime
 import coord
+import requests
+from functools import reduce
 import sys
 import os
 import pandas
@@ -77,6 +79,70 @@ def preprocess_node(node):
 
     return node, entity_type
 
+port = 2222 if not len(sys.argv) > 1 else int(sys.argv[1])
+
+@app.route('/api/v1/ping')
+def ping():
+    global refreshing, query_processes
+
+    while refreshing:
+        logging.info('query received, waiting for refresh to complete')
+        sleep(0.5)
+
+    pid = 0 if len(query_processes) == 0 else query_processes[-1] + 1
+    query_processes.append(pid)
+
+    logging.info('Processing request...')
+
+    def check_shape(df):
+        out = False
+        try:
+            out = df[0].shape[0] > 0
+        except:
+            pass
+        return out
+    read_status = []
+    for key, value in source_list.items():
+        if key != 'JHU':
+            read_status.append((key, 200 if check_shape(prc(value)) else 500))
+        else:
+            for subkey, subvalue in source_list[key].items():
+                read_status.append((f"{key} - {subkey}", 200 if check_shape(prc(subvalue)) else 500))
+    data_sources = {"Data Sources":{"size":len(read_status),
+                                    **{t[0]:t[1] for t in read_status}}}
+
+    qkwargs = {"statquery":{"node":"Tarrant County-Texas",
+                            "date":"2020-04-30",
+                            **{f"dsrc_{area}":"JHU" for area in ["global",
+                                                                 "country",
+                                                                 "state",
+                                                                 "county"]}},
+               "statquery_timeseries":{"node":"Tarrant%20County-Texas",
+                                       "dsrc":"JHU",
+                                       "date_start":"2020-01-23",
+                                       "date_end":"2020-04-30"},
+               "mapquery_county":{"date":"2020-04-30",
+                                  "node_state":"texas",
+                                  "dsrc_county":"JHU"}}
+    prefix = f"http://localhost:{port}/api/v1"
+    def to_querystr(d):
+        return reduce(lambda acc, it: f"{acc}&{it[0]}={it[1]}", d.items(), "")[1:]
+    query_responses = {"Query Responses":{"size":len(qkwargs),
+                                          **{k: requests.get(f"{prefix}/{k}?{to_querystr(v)}").status_code \
+                                                  for k, v in qkwargs.items()}}}
+
+
+    groups = {**data_sources, **query_responses}
+    ret = {"use_groups":True,
+           "size":len(groups),
+           "interval":15,
+           **groups}
+    ret = jsonify(ret)
+
+    query_processes.remove(pid)
+    logging.info(query_processes)
+
+    return ret
 
 @app.route('/api/v1/mapquery_country_state')
 def mapquery_country_state():
@@ -363,7 +429,7 @@ def process_names(x, entity_type):
 def parse_into_arrays(x):
     if not x:
         return []
-    return [z.replace(',', '') for z in x.split('-')]    
+    return [z.replace(',', '') for z in x.split('-')]
 
 
 def get_children(node, entity_type):
@@ -418,7 +484,7 @@ def get_data_from_source(node, date, source, entity_type):
         columns = df.columns.values.tolist()
         toks = node.split('-')
         county, state = toks[0], toks[1]
-        
+
         ans = []
         for i, el in enumerate(columns):
             if county_is_ok(el.find(county), el, county) and el.rfind(state) == len(el) - len(state):
@@ -452,7 +518,7 @@ def get_data_from_source(node, date, source, entity_type):
                                 del tlist[charidx + 1]
                             tlist = tlist[:charidx + 1] + ['0'] + tlist[charidx + 1:]
                         charidx += 1
-                    
+
                     temp[i] = ''.join(tlist)
                     for idx, el in enumerate(temp[i].split('-')):
                         if el.isdigit():
@@ -525,27 +591,27 @@ def get_all_data(node, date, entity_type):
     return ret
 
 
+def prc(v):
+    path = os.path.join(source_list_prefix, v)
+
+    delim = ','
+    with open(path, 'r') as f:
+        if '\t' in f.read():
+            delim = '\t'
+
+    logging.info('loading {}'.format(path))
+
+    df = pandas.read_csv(path, sep=delim)
+    df.columns = df.columns.str.lower()
+    dates = {}
+    for i, el in enumerate(df[df.columns[0]]):
+        dates[el] = i
+
+    logging.info(dates)
+
+    return (df, dates)
+
 def refresh_data_util():
-    def prc(v):
-        path = os.path.join(source_list_prefix, v)
-
-        delim = ','
-        with open(path, 'r') as f:
-            if '\t' in f.read():
-                delim = '\t'
-
-        logging.info('loading {}'.format(path))
-
-        df = pandas.read_csv(path, sep=delim)
-        df.columns = df.columns.str.lower()
-        dates = {}
-        for i, el in enumerate(df[df.columns[0]]):
-            dates[el] = i
-
-        logging.info(dates)
-
-        return (df, dates)
-
     for key, value in source_list.items():
         if key != 'JHU':
             file_list[key] = prc(value)
@@ -578,5 +644,4 @@ if __name__ == "__main__":
     logging.set_verbosity(logging.INFO)
     refresh_data()
     coord.load_coords()
-    port = 2222 if not len(sys.argv) > 1 else int(sys.argv[1])
     app.run(host="0.0.0.0", port=port, threaded=True, debug=False, use_reloader=False)
