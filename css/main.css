@@ -994,6 +994,7 @@ div.variable-display > div.variable > div.source{
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  cursor: default;
 }
 div.variable-display > div.variable > div.figures{
   line-height:24px;
@@ -1008,12 +1009,13 @@ div.variable-display > div.variable > div.figures{
   }
 }
 div.variable-display > div.variable > div.figures > div.figure > span{
-  font-size:10px;
-  font-family: 'Noto Sans', Helvetica, arial, sans-serif;
   text-align:center;
-  display: inline-block;
   height:26px;
   width:100%;
+
+  font-family: Consolas,monaco,monospace; 
+  font-size:11px;
+  cursor:pointer
 }
 div.location-information-container > svg {
   transform:translate(0px, 22px);
