@@ -989,12 +989,14 @@ div.variable-display > div.variable.active {
 div.variable-display > div.variable > div.source{
   margin-left:12px;
   float:left;
-  font-size:10px;
   max-width: 120px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
   cursor: default;
+  font-family: Consolas,monaco,monospace;
+  font-size: 11px;
+  color: rgb(197, 207, 212);
 }
 div.variable-display > div.variable > div.figures{
   line-height:24px;
