@@ -918,17 +918,11 @@ div.variable-toggle {
   line-height: 30px;
   background: rgba(176, 190, 197, 1);
   position:absolute;
-  right:30px;
   top:50px;
   max-width: 270px;
   font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif; 
   font-weight:bold;
   color:rgba(38, 50, 56, 1);
-}
-@media screen and (max-width: 1575) {
-  div.variable-toggle {
-    right:36px;
-  }
 }
 div.variable-toggle > div.variable-button {
   display:inline-block;
@@ -1004,11 +998,6 @@ div.variable-display > div.variable > div.figures{
   max-width:270px;
   float:right;
   margin-right:16px;
-}
-@media screen and (max-width: 1575) {
-  div.variable-display > div.variable > div.figures{
-    margin-right:24px;
-  }
 }
 div.variable-display > div.variable > div.figures > div.figure > span{
   text-align:center;
@@ -1244,4 +1233,19 @@ div.show.modal#information-modal {
 }
 .decorate-me {
   text-decoration:underline;
+}
+/*16/10 ratio*/
+div.variable-toggle {
+  right:48px;
+}
+div.variable-display > div.variable > div.figures{
+  margin-right:24px;
+}
+@media screen and (max-aspect-ratio: 16/9) {
+  div.variable-toggle {
+    right:32px;
+  }
+  div.variable-display > div.variable > div.figures{
+    margin-right:16px;
+  }
 }
