@@ -917,13 +917,18 @@ div.variable-toggle {
   font-size:10px;
   line-height: 30px;
   background: rgba(176, 190, 197, 1);
-  position:fixed;
-  top:calc(44px + 48px);
+  position:absolute;
+  right:30px;
+  top:50px;
   max-width: 270px;
-  left:174px;
   font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif; 
   font-weight:bold;
   color:rgba(38, 50, 56, 1);
+}
+@media screen and (max-width: 1575) {
+  div.variable-toggle {
+    right:36px;
+  }
 }
 div.variable-toggle > div.variable-button {
   display:inline-block;
@@ -991,11 +996,16 @@ div.variable-display > div.variable > div.source{
   white-space: nowrap;
 }
 div.variable-display > div.variable > div.figures{
-  margin-right:24px;
   line-height:24px;
   transform:translate(0px, 1px);
   max-width:270px;
   float:right;
+  margin-right:16px;
+}
+@media screen and (max-width: 1575) {
+  div.variable-display > div.variable > div.figures{
+    margin-right:24px;
+  }
 }
 div.variable-display > div.variable > div.figures > div.figure > span{
   font-size:10px;
