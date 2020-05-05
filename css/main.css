@@ -825,8 +825,8 @@ div.location-information-container > div.figures > div.figure {
   transform: translate(0,-8px);
 }
 div.location-information-container > div.figures > div.figure > span{
-  font-size:10px;
-  font-family: 'Noto Sans', Helvetica, arial, sans-serif;
+  font-family: Consolas,monaco,monospace; 
+  font-size:9px;
   text-align:center;
   min-width:35px;
   display: inline-block;
@@ -1005,7 +1005,7 @@ div.variable-display > div.variable > div.figures > div.figure > span{
   width:100%;
 
   font-family: Consolas,monaco,monospace; 
-  font-size:11px;
+  font-size:9px;
   cursor:pointer
 }
 div.location-information-container > svg {
@@ -1092,7 +1092,8 @@ body > main > div.closed#map {
 div.geolocation-container[children="COUNTRY"]{
   margin-top:calc(48px + calc(8px + 30px));
 }
-div.location-information-container > span.placename {
+div.location-information-container 
+.placename {
   max-width: 160px;
   text-overflow: ellipsis;
   overflow: hidden;
