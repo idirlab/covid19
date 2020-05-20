@@ -825,8 +825,8 @@ div.location-information-container > div.figures > div.figure {
   transform: translate(0,-8px);
 }
 div.location-information-container > div.figures > div.figure > span{
-  font-size:10px;
-  font-family: 'Noto Sans', Helvetica, arial, sans-serif;
+  font-family: Consolas,monaco,monospace; 
+  font-size:9px;
   text-align:center;
   min-width:35px;
   display: inline-block;
@@ -917,10 +917,9 @@ div.variable-toggle {
   font-size:10px;
   line-height: 30px;
   background: rgba(176, 190, 197, 1);
-  position:fixed;
-  top:calc(44px + 48px);
+  position:absolute;
+  top:50px;
   max-width: 270px;
-  left:174px;
   font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif; 
   font-weight:bold;
   color:rgba(38, 50, 56, 1);
@@ -984,26 +983,30 @@ div.variable-display > div.variable.active {
 div.variable-display > div.variable > div.source{
   margin-left:12px;
   float:left;
-  font-size:10px;
   max-width: 120px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  cursor: default;
+  font-family: Consolas,monaco,monospace;
+  font-size: 10px;
+  color: rgb(197, 207, 212);
 }
 div.variable-display > div.variable > div.figures{
-  margin-right:24px;
   line-height:24px;
   transform:translate(0px, 1px);
   max-width:270px;
   float:right;
+  margin-right:16px;
 }
 div.variable-display > div.variable > div.figures > div.figure > span{
-  font-size:10px;
-  font-family: 'Noto Sans', Helvetica, arial, sans-serif;
   text-align:center;
-  display: inline-block;
   height:26px;
   width:100%;
+  font-weight:initial;
+  font-family: Consolas,monaco,monospace; 
+  font-size:9px;
+  cursor:pointer
 }
 div.location-information-container > svg {
   transform:translate(0px, 22px);
@@ -1089,7 +1092,8 @@ body > main > div.closed#map {
 div.geolocation-container[children="COUNTRY"]{
   margin-top:calc(48px + calc(8px + 30px));
 }
-div.location-information-container > span.placename {
+div.location-information-container 
+.placename {
   max-width: 160px;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -1230,4 +1234,19 @@ div.show.modal#information-modal {
 }
 .decorate-me {
   text-decoration:underline;
+}
+/*16/10 ratio*/
+div.variable-toggle {
+  right:48px;
+}
+div.variable-display > div.variable > div.figures{
+  margin-right:24px;
+}
+@media screen and (max-aspect-ratio: 14/6) {
+  div.variable-toggle {
+    right:32px;
+  }
+  div.variable-display > div.variable > div.figures{
+    margin-right:16px;
+  }
 }
