@@ -1003,7 +1003,7 @@ div.variable-display > div.variable > div.figures > div.figure > span{
   text-align:center;
   height:26px;
   width:100%;
-
+  font-weight:initial;
   font-family: Consolas,monaco,monospace; 
   font-size:9px;
   cursor:pointer
@@ -1248,5 +1248,13 @@ div.variable-display > div.variable > div.figures{
   }
   div.variable-display > div.variable > div.figures{
     margin-right:16px;
+  }
+}
+@media screen and (max-aspect-ratio: 14/8) {
+  div.variable-toggle {
+    right:49px;
+  }
+  div.variable-display > div.variable > div.figures{
+    margin-right:23px;
   }
 }
