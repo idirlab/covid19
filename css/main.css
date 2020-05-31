@@ -773,7 +773,6 @@ div.location-information-container {
 
 
 div.location-information-container {
-  height: inherit;
   background-color: rgb(40, 50, 55);
   text-align: center;
   display:flex;
