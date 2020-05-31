@@ -523,14 +523,16 @@ var source_list = new Map([
       var selected_lvl = "global";
       if(is_county) {
         selected_lvl = "county";
-	parent = $("span.selected-state").text();
+        parent = $("span.selected-state").text();
       } else if (is_state){
         selected_lvl = "state";
-	$("span.selected-state").text(name);
+        $("span.selected-state").text(name);
       } else if (is_US) {
         selected_lvl = "country";
       }
       $("span.selected-level.hidden").text(selected_lvl);
+      $("div.response-area,div#hospital-info.hospital,div#twitter-info.twitter").attr("selected_lvl", selected_lvl);
+
       var get_child_level = new Map([["global", "country"],
                                      ["country", "state"],
                                      ["state", "county"],

@@ -202,7 +202,15 @@ div.info-pane.hospital {
 div.info-header.smaller.unset-height {
   height:unset;
 }
-
+div.bottom {
+  overflow-y: scroll;
+  top: calc(50% + 48px);
+  height: calc(50% - 90px);
+}
+div.bottom-header {
+  top: unset;
+  bottom: calc(50% - 2 * 44px);
+}
 button.close_hos_info {
   width:40px;
   height:40px;
@@ -226,4 +234,10 @@ span.titile_info {
 div#hospitalDOMs {
     line-height: normal;
     margin-top: 12px;
+}
+div#hospital-info.hospital[selected_lvl]{
+  display: none;
+}
+div#hospital-info.hospital[selected_lvl=county]{
+  display: initial;
 }

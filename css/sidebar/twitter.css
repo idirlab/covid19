@@ -8,17 +8,23 @@ div.tweet-frame {
 }
 
 div.info-header.twitter {
-    top: calc(50%);
+    top: calc(50% + 40px);
     z-index: 10000;
 }
 
 div.info-pane.twitter {
     overflow-y: scroll;
-    top: calc(50% + 48px);
-    height: calc(50% - 48px);
+    top: calc(50% + 88px);
 }
 
 div#tweets-all {
     line-height: normal;
     margin-top: 12px;
+}
+div#twitter-info.twitter[selected_lvl]{
+  display: none;
+}
+ div#twitter-info.twitter[selected_lvl=state],
+ div#twitter-info.twitter[selected_lvl=county]{
+  display: initial;
 }

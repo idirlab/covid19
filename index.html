@@ -59,7 +59,7 @@
         COVID19 Pandemic - Public Information
       </div>
     </div>
-    <button id="btn-close_bar" class="btn-hidden-sidebar" onclick="closeBar()"></button>
+    <button id="btn-close_bar" class="btn-hidden-sidebar" onclick="closeBar();close_hos_info();close_tw_info();"></button>
 
     <div class="chart_panel">
       <div class="idir-total-chart-bar">
@@ -83,34 +83,13 @@
     <div id="left-side-bar" class="side-panel">
     
     <div id="floating-side-panel-info-container" class="right bigger" style="display: none;">
-      <div id="hospital-info" class="info-pane right smaller hospital" style="margin-top:48px;">
-        <div class="info-header smaller right unset-height">
-          <i class="fas fa-hospital"></i>
-          <span class="titile_info">LOCAL HOSPITAL INFO</span>
-          <button class="close_hos_info" onclick="close_hos_info()">
-            <i class="fas fa-times-circle" style="font-size: 24px;"></i>
-          </button>
-        </div>
-        <script>
-          function close_hos_info() {
-            console.log("close");
-            $("div#floating-side-panel-info-container").css("display", "none")
-          }
-        </script>
-        <div class="hospital-display">
-          <div id="hospitalDOMs">
-            <script>
-              $("div.hospital > div.header > svg").click(function(evt){
-                $(this).closest("div.hospital").toggleClass("active");
-              });
-            </script>
-          </div>
-        </div>
-      </div>
       <div id="twitter-info" class="info-pane twitter right smaller">
-        <div class="info-header twitter">
+        <div class="info-header twitter twitter-bottom">
           <i class="fab fa-twitter" style="cursor:pointer;"></i>
           <span>LATEST STATE TWEETS</span>
+          <button class="close_hos_info" onclick="close_tw_info()">
+            <i class="fas fa-times-circle" style="font-size: 24px;"></i>
+          </button>
         </div>
         <div id="tweets-all"></div>
       </div>
@@ -160,6 +139,34 @@
       <span class="default-source-state hidden">JHU</span>
       <span class="default-source-county hidden">JHU</span>
       <div class="response-area">
+      </div>
+      <div id="hospital-info" class="info-pane smaller bottom hospital" style="margin-top:42px;">
+        <div class="info-header smaller bottom-header unset-height">
+          <i class="fas fa-hospital"></i>
+          <span class="titile_info">LOCAL HOSPITAL INFO</span>
+          <button class="close_hos_info" onclick="close_hos_info()">
+            <i class="fas fa-times-circle" style="font-size: 24px;"></i>
+          </button>
+        </div>
+        <script>
+          function close_hos_info() {
+            console.log("close");
+            $("div.response-area,div#hospital-info.hospital").attr("selected_lvl", "disable");
+          }
+          function close_tw_info() {
+            console.log("close");
+            $("div#twitter-info.twitter").attr("selected_lvl", "disable");
+          }
+        </script>
+        <div class="hospital-display">
+          <div id="hospitalDOMs">
+            <script>
+              $("div.hospital > div.header > svg").click(function(evt){
+                $(this).closest("div.hospital").toggleClass("active");
+              });
+            </script>
+          </div>
+        </div>
       </div>
     </div>
     </div>

@@ -1250,3 +1250,9 @@ div.variable-display > div.variable > div.figures{
     margin-right:16px;
   }
 }
+div.response-area[selected_lvl]{
+  height: auto;
+}
+div.response-area[selected_lvl=county]{
+  height: calc(50% - 90px);
+}
