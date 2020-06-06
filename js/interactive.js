@@ -508,7 +508,7 @@ var source_list = new Map([
     }
 
     function updateMisinformationPanel(name) {
-      $("span.misinfo-near").html("Facts discussed near {}".replace("{}", name.toTitleCase()));
+      $("span.misinfo-near").html("Local Information".toUpperCase());
       var response = [{"summary": " While the Wuhan government reported six new cases of COVID-19 as of May 10, the Chinese embassy in the Philippines confirmed through a text message to VERA Files that the city has not closed its borders again in May, a month after it re-opened on April 7.",
                        "source": "https://www.poynter.org/?ifcn_misinformation=wuhan-has-imposed-a-second-lockdown-after-a-resurgence-of-covid-19-cases",
                        "agree": 5000,
