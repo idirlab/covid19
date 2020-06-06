@@ -1291,7 +1291,8 @@ div.summary {
   font-weight:bold;
 }
 div.misinfo-block > div.metrics > button {
-  font-size:12px;
+  font-size:10px;
+  cursor: pointer;
 }
 div.misinfo-block > div.metrics {
   text-align:center;

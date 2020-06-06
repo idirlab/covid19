@@ -549,9 +549,9 @@ var source_list = new Map([
           <div class="metrics" id="idx-${idx}">
           </div>
           <div class="metrics">
-            <button prefix="Support: " showApprox="true" approx="${formatter(row["agree"])}" ratio="${percentFormatter(row["agree"]/row["total"])}" class="idx-${idx} btn btn-outline-success disabled default">Support: ${formatter(row["agree"])}</button>
-            <button prefix="Discuss: " showApprox="true" approx="${formatter(row["discuss"])}" ratio="${percentFormatter(row["discuss"]/row["total"])}" class="idx-${idx} btn btn-outline-secondary disabled default">Neutral: ${formatter(row["discuss"])}</button>
-            <button prefix="Disagree: " showApprox="true" approx="${formatter(row["disagree"])}" ratio="${percentFormatter(row["disagree"]/row["total"])}" class="idx-${idx} btn btn-outline-danger disabled default">Refute: ${formatter(row["disagree"])}</button>
+            <button prefix="Support: " showApprox="true" approx="${formatter(row["agree"])}" ratio="${percentFormatter(row["agree"]/row["total"])}" class="idx-${idx} btn btn-outline-success disabled">Support: ${formatter(row["agree"])}</button>
+            <button prefix="Discuss: " showApprox="true" approx="${formatter(row["discuss"])}" ratio="${percentFormatter(row["discuss"]/row["total"])}" class="idx-${idx} btn btn-outline-secondary disabled">Neutral: ${formatter(row["discuss"])}</button>
+            <button prefix="Disagree: " showApprox="true" approx="${formatter(row["disagree"])}" ratio="${percentFormatter(row["disagree"]/row["total"])}" class="idx-${idx} btn btn-outline-danger disabled">Refute: ${formatter(row["disagree"])}</button>
           </div>
           <script>
             var colors = ["#28a745", "#b0bec5", "#dc3545"];
