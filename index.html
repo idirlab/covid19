@@ -93,6 +93,17 @@
         </div>
         <div id="tweets-all"></div>
       </div>
+      <div id="misinformation-info" class="info-pane misinfo right smaller">
+        <div class="info-header misinfo misinfo-top">
+          <i class="fas fa-bullhorn" style="cursor:pointer;"></i>
+          <span class="misinfo-near"></span>
+          <button class="close_hos_info" onclick="close_misinfo_info()">
+            <i class="fas fa-times-circle" style="font-size: 24px;"></i>
+          </button>
+        </div>
+        <div class="info misinfo-response-area">
+        </div>
+      </div>
     </div>
     <div id="aggregate-date-window" class="info-pane top">
       <div class="info-header">
@@ -149,6 +160,10 @@
           </button>
         </div>
         <script>
+          function close_misinfo_info() {
+            console.log("close");
+            $("div.response-area,div#misinformation-info.misinfo").attr("selected_lvl", "disable");
+          }
           function close_hos_info() {
             console.log("close");
             $("div.response-area,div#hospital-info.hospital").attr("selected_lvl", "disable");
@@ -253,6 +268,8 @@
             <p class="full-name">COVID Tracking Project - <a href="https://covidtracking.com/">The COVID Tracking Project</a></p>
             <p class="full-name">CNN - <a href="https://www.cnn.com/world/live-news/coronavirus-pandemic-04-20-20-intl/index.html">Cable News Network</a></p>
             <p class="full-name">CDC - <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html">Centers for Disease Control and Prevention</a></p>
+          <h3>Agree/Disagree</h3>
+          <p class="abt">Agree/Disagree figures are derived from tweets relevant to the selected area related to the fact.</p>
           <h3>Affiliation</h3>
             <p class="affiliation">This work is made possible by the contributions of members from The Innovative Data Intelligence Research Laboratory, the support of The University of Texas at Arlington and grants IIS-1719052 and OIA-1937143 from the National Science Foundation.</p>
             <p class="affiliation">Any opinions, findings, and conclusions or recommendations expressed in this publication are those of the authors and do not necessarily reflect the views of the funding agencies.</p>

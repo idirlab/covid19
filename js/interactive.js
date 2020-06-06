@@ -507,6 +507,49 @@ var source_list = new Map([
       return place[name];
     }
 
+    function updateMisinformationPanel(name) {
+      $("span.misinfo-near").html("Discussions in {}".replace("{}", name.toTitleCase()));
+      var response = [{"summary": " While the Wuhan government reported six new cases of COVID-19 as of May 10, the Chinese embassy in the Philippines confirmed through a text message to VERA Files that the city has not closed its borders again in May, a month after it re-opened on April 7.",
+                       "source": "https://www.poynter.org/?ifcn_misinformation=wuhan-has-imposed-a-second-lockdown-after-a-resurgence-of-covid-19-cases",
+                       "agree": 5000,
+                       "disagree": 500,
+                       "taxonomy": "Govt. Ctrl > Admin > Lockdown"},
+                      {"summary": "No, COVID-19 cannot be transmitted by mosquitoes. Experts and WHO dismiss the viral claim.",
+                       "source": "https://www.vishvasnews.com/english/health/fact-check-experts-dismiss-the-claim-that-covid-19-can-be-transmitted-by-mosquitoes/",
+                       "agree": 3000,
+                       "disagree": 700,
+                       "taxonomy": "Basic Info > Spreading"},
+                      {"summary": "No, COVID-19 vaccine wouldn’t come with a ‘mark’.",
+                       "source": "https://www.politifact.com/factchecks/2020/may/22/facebook-posts/no-covid-19-vaccine-wouldnt-come-mark/",
+                       "agree": 250,
+                       "disagree": 5000,
+                       "taxonomy": "Prevention > Vaccines"}];
+      var doms = response.map( row =>
+        `
+        <div class="misinfo-block">
+          <button class="btn btn-dark taxonomy center-me default">
+            ${row["taxonomy"]}
+          </button>
+          <div class="summary">
+            ${row["summary"]}
+          </div>
+          <div class="metrics">
+            <button class="btn btn-outline-success disabled default">Agree: ${row["agree"]}</button>
+            <button class="btn btn-outline-danger disabled default">Disagree: ${row["disagree"]}</button>
+          </div>
+          <a target="_blank" class="btn btn-dark read-more center-me" href="${row["source"]}">
+            Read More...
+          </a>
+        </div>
+        `
+      );
+      function red(acc, ite) {
+        return `${acc}${ite}`;
+      };
+      $("div.misinfo-response-area").html(doms.reduce(red));
+      return;
+    }
+
     function showPlace(name, parent=null) {
       // console.log(name)
       name = name.toLowerCase().toTitleCase();
@@ -531,7 +574,8 @@ var source_list = new Map([
         selected_lvl = "country";
       }
       $("span.selected-level.hidden").text(selected_lvl);
-      $("div.response-area,div#hospital-info.hospital,div#twitter-info.twitter").attr("selected_lvl", selected_lvl);
+      $("div.response-area,div#hospital-info.hospital,div#twitter-info.twitter,div#misinformation-info.misinfo").attr("selected_lvl", selected_lvl);
+      updateMisinformationPanel(name);
 
       var get_child_level = new Map([["global", "country"],
                                      ["country", "state"],

@@ -24,7 +24,9 @@ div#tweets-all {
 div#twitter-info.twitter[selected_lvl]{
   display: none;
 }
- div#twitter-info.twitter[selected_lvl=state],
+ div#misinformation-info.misinfo[selected_lvl=state],
+ div#misinformation-info.misinfo[selected_lvl=county],
+ div#twitter-info.twitter[selected_lvl=state] ,
  div#twitter-info.twitter[selected_lvl=county]{
   display: initial;
 }
