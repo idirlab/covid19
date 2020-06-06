@@ -513,18 +513,31 @@ var source_list = new Map([
                        "source": "https://www.poynter.org/?ifcn_misinformation=wuhan-has-imposed-a-second-lockdown-after-a-resurgence-of-covid-19-cases",
                        "agree": 5000,
                        "disagree": 500,
+                       "discuss": 250,
                        "taxonomy": "Govt. Ctrl > Admin > Lockdown"},
                       {"summary": "No, COVID-19 cannot be transmitted by mosquitoes. Experts and WHO dismiss the viral claim.",
                        "source": "https://www.vishvasnews.com/english/health/fact-check-experts-dismiss-the-claim-that-covid-19-can-be-transmitted-by-mosquitoes/",
-                       "agree": 3000,
+                       "agree": 2000,
                        "disagree": 700,
+                       "discuss": 3000,
                        "taxonomy": "Basic Info > Spreading"},
                       {"summary": "No, COVID-19 vaccine wouldn’t come with a ‘mark’.",
                        "source": "https://www.politifact.com/factchecks/2020/may/22/facebook-posts/no-covid-19-vaccine-wouldnt-come-mark/",
                        "agree": 250,
                        "disagree": 5000,
+                       "discuss": 100,
                        "taxonomy": "Prevention > Vaccines"}];
-      var doms = response.map( row =>
+      function merge(d1, d2){
+        return Object.assign({}, d1, d2);
+      }
+      response = response.map(d => merge(d,
+                                         {"total": ["agree", "disagree", "discuss"]
+                                           .map(s => d[s])
+                                           .reduce((a, b) => a + b)}));
+      response = Array.from(response);
+      var formatter = d3.format(".2s");
+      var percentFormatter = d3.format(".1%");
+      var doms = response.map( (row, idx) =>
         `
         <div class="misinfo-block">
           <button class="btn btn-dark taxonomy center-me default">
@@ -533,10 +546,62 @@ var source_list = new Map([
           <div class="summary">
             ${row["summary"]}
           </div>
-          <div class="metrics">
-            <button class="btn btn-outline-success disabled default">Agree: ${row["agree"]}</button>
-            <button class="btn btn-outline-danger disabled default">Disagree: ${row["disagree"]}</button>
+          <div class="metrics" id="idx-${idx}">
           </div>
+          <div class="metrics">
+            <button prefix="Support: " showApprox="true" approx="${formatter(row["agree"])}" ratio="${percentFormatter(row["agree"]/row["total"])}" class="idx-${idx} btn btn-outline-success disabled default">Support: ${formatter(row["agree"])}</button>
+            <button prefix="Discuss: " showApprox="true" approx="${formatter(row["discuss"])}" ratio="${percentFormatter(row["discuss"]/row["total"])}" class="idx-${idx} btn btn-outline-secondary disabled default">Neutral: ${formatter(row["discuss"])}</button>
+            <button prefix="Disagree: " showApprox="true" approx="${formatter(row["disagree"])}" ratio="${percentFormatter(row["disagree"]/row["total"])}" class="idx-${idx} btn btn-outline-danger disabled default">Refute: ${formatter(row["disagree"])}</button>
+          </div>
+          <script>
+            var colors = ["#28a745", "#b0bec5", "#dc3545"];
+            var width  = 256;
+            var height = 40;
+            var svg = d3.select("div.metrics#idx-${idx}").append("svg")
+              .attr("width", width)
+              .attr("height", height)
+              .attr("style", "border-radius:6px; overflow:hidden;")
+              .append("g");
+            var labels = {"agree":0,
+                          "discuss":1,
+                          "disagree":2};
+            var data = ${JSON.stringify(row).replace("/\"/g", "\\\"")};
+            var x = d3.scaleLinear()
+                      .domain([0, ${row["total"]}])
+                      .range([0, width - 40]);
+            ["agree",
+             "discuss",
+             "disagree"].forEach((item, idx, arr) =>
+                                   svg.append("rect")
+                                      .attr("x", arr
+                                                   .slice(0, idx)
+                                                   .reduce((acc, item) => acc + x(data[item]),
+                                                           0))
+                                      .attr("width", x(data[item]))
+                                      .attr("style", "fill:" + colors[labels[item]])
+                                      .attr("height", height)
+                                      .attr("class", item + "-bar"));
+            var text_offset = ["agree", "discuss", "disagree"].reduce((acc, item) => acc + x(data[item]),0) + 8;
+            svg.append("text")
+               .attr("x", text_offset)
+               .attr("y", 35)
+               .attr("class", "total")
+               .text("${formatter(row["total"])}");
+            svg.append("text")
+               .attr("x", text_offset)
+               .attr("y", 15)
+               .attr("class", "total-title")
+               .text("Total:");
+            $("button.idx-${idx}").click(function(){
+              var showApprox = Boolean($(this).attr("showApprox").trim() == "true");
+              showApprox = !showApprox;
+              var prefix = $(this).attr("prefix");
+              var textToPut  = {true : prefix + $(this).attr("approx"),
+                                false: prefix + $(this).attr("ratio")};
+              $(this).text(textToPut[showApprox]);
+              $(this).attr("showApprox", String(showApprox));
+            });
+          </script>
           <a target="_blank" class="btn btn-dark read-more center-me" href="${row["source"]}">
             Read More...
           </a>
@@ -545,7 +610,7 @@ var source_list = new Map([
       );
       function red(acc, ite) {
         return `${acc}${ite}`;
-      };
+      }
       $("div.misinfo-response-area").html(doms.reduce(red));
       return;
     }

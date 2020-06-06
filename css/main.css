@@ -1290,6 +1290,9 @@ div.summary {
   margin: 12px 12px 0px 12px;
   font-weight:bold;
 }
+div.misinfo-block > div.metrics > button {
+  font-size:12px;
+}
 div.misinfo-block > div.metrics {
   text-align:center;
   margin-top:8px;
@@ -1297,4 +1300,9 @@ div.misinfo-block > div.metrics {
 }
 .default {
   cursor:default !important;
+}
+text.total-title,
+text.total {
+  fill: black;
+  font-size: 14px;
 }
