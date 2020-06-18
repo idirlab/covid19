@@ -507,26 +507,8 @@ var source_list = new Map([
       return place[name];
     }
 
-    function updateMisinformationPanel(name) {
+    function updateMisinformationPanel(response) {
       $("span.misinfo-near").html("Get Your Facts Straight");
-      var response = [{"summary": " While the Wuhan government reported six new cases of COVID-19 as of May 10, the Chinese embassy in the Philippines confirmed through a text message to VERA Files that the city has not closed its borders again in May, a month after it re-opened on April 7.",
-                       "source": "https://www.poynter.org/?ifcn_misinformation=wuhan-has-imposed-a-second-lockdown-after-a-resurgence-of-covid-19-cases",
-                       "agree": 5000,
-                       "disagree": 500,
-                       "discuss": 250,
-                       "taxonomy": "Govt. Ctrl > Admin > Lockdown"},
-                      {"summary": "No, COVID-19 cannot be transmitted by mosquitoes. Experts and WHO dismiss the viral claim.",
-                       "source": "https://www.vishvasnews.com/english/health/fact-check-experts-dismiss-the-claim-that-covid-19-can-be-transmitted-by-mosquitoes/",
-                       "agree": 2000,
-                       "disagree": 700,
-                       "discuss": 3000,
-                       "taxonomy": "Basic Info > Spreading"},
-                      {"summary": "No, COVID-19 vaccine wouldn’t come with a ‘mark’.",
-                       "source": "https://www.politifact.com/factchecks/2020/may/22/facebook-posts/no-covid-19-vaccine-wouldnt-come-mark/",
-                       "agree": 250,
-                       "disagree": 5000,
-                       "discuss": 100,
-                       "taxonomy": "Prevention > Vaccines"}];
       function merge(d1, d2){
         return Object.assign({}, d1, d2);
       }
@@ -640,7 +622,10 @@ var source_list = new Map([
       }
       $("span.selected-level.hidden").text(selected_lvl);
       $("div.response-area,div#hospital-info.hospital,div#twitter-info.twitter,div#misinformation-info.misinfo").attr("selected_lvl", selected_lvl);
-      updateMisinformationPanel(name);
+
+      var datestr = "2020-01-28";
+      var mquery_endpoint_n_params = `api/v1/mquery?node=${name}&date=${datestr}`
+      corsHTTP(`${api_url}/${mquery_endpoint_n_params}`, updateMisinformationPanel);
 
       var get_child_level = new Map([["global", "country"],
                                      ["country", "state"],

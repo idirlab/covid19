@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, render_template, Blueprint, abort
 from flask_cors import CORS
+import glob
+import pandas as pd
 from threading import Timer
 from time import sleep
 from datetime import datetime
@@ -39,7 +41,6 @@ source_list_per_level = {
     'county': ['JHU']
 }
 misinformation_panel_source = "../../twitter_data/processed"
-processed_file_substring = re.compile("coronavirus-tweet-id-(\d{4})-(\d{2})-(\d{2})_stnc_dtctn_cnt.csv") # use files whose filenames fit this regex
 
 refresh_interval_hrs = 1
 refreshing = False
@@ -349,25 +350,36 @@ def stat_query_details():
         return ret
 
 def mquery_aux(node, date, entity_type):
-    ob1 = {"summary": " While the Wuhan government reported six new cases of COVID-19 as of May 10, the Chinese embassy in the Philippines confirmed through a text message to VERA Files that the city has not closed its borders again in May, a month after it re-opened on April 7.",
+    obj1 = {"summary": " While the Wuhan government reported six new cases of COVID-19 as of May 10, the Chinese embassy in the Philippines confirmed through a text message to VERA Files that the city has not closed its borders again in May, a month after it re-opened on April 7.",
                        "source": "https://www.poynter.org/?ifcn_misinformation=wuhan-has-imposed-a-second-lockdown-after-a-resurgence-of-covid-19-cases",
                        "agree": 5000,
                        "disagree": 500,
                        "discuss": 250,
                        "taxonomy": "Govt. Ctrl > Admin > Lockdown"}
-    ob2 = {"summary": "No, COVID-19 cannot be transmitted by mosquitoes. Experts and WHO dismiss the viral claim.",
+    obj2 = {"summary": "No, COVID-19 cannot be transmitted by mosquitoes. Experts and WHO dismiss the viral claim.",
                        "source": "https://www.vishvasnews.com/english/health/fact-check-experts-dismiss-the-claim-that-covid-19-can-be-transmitted-by-mosquitoes/",
                        "agree": 2000,
                        "disagree": 700,
                        "discuss": 3000,
                        "taxonomy": "Basic Info > Spreading"}
-    ob3 = {"summary": "No, COVID-19 vaccine wouldn’t come with a ‘mark’.",
+    obj3 = {"summary": "No, COVID-19 vaccine wouldn’t come with a ‘mark’.",
                        "source": "https://www.politifact.com/factchecks/2020/may/22/facebook-posts/no-covid-19-vaccine-wouldnt-come-mark/",
                        "agree": 250,
                        "disagree": 5000,
                        "discuss": 100,
                        "taxonomy": "Prevention > Vaccines"}
-    pdb.set_trace()
+    files = glob.glob(f"{misinformation_panel_source}/*dtctn_cnt.csv")
+    files = [s.replace("\\","/") for s in files] # windows os
+    dfs = list(map(pd.read_csv, files))
+    df = reduce(lambda acc, it: pd.concat([acc, it], sort=False), dfs).reset_index(drop=True)
+    querycol = f"User{entity_type[0].upper()}{entity_type[1:]}"
+
+    def scanner(s, substr=node): return substr.lower() in s.lower()
+
+    mask1 = df[querycol].map(scanner, na_action='ignore')
+    relevant_rows = df[mask1.map(lambda b: b if type(b) == bool else False)]
+
+    #pdb.set_trace()
     print("noop")
     return [obj1, obj2, obj3]
 
