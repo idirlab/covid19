@@ -379,9 +379,22 @@ def mquery_aux(node, date, entity_type):
     mask1 = df[querycol].map(scanner, na_action='ignore')
     relevant_rows = df[mask1.map(lambda b: b if type(b) == bool else False)]
 
-    #pdb.set_trace()
+    def derive_object(df):
+        labels = ["agree", "discuss", "disagree"]
+        label2int = dict(zip(labels, map(float, range(len(labels)))))
+        int2label = dict((v, k) for k, v in label2int.items())
+        figures = dict(zip(labels, [0]*len(labels)))
+        for i in df["stance"].unique():
+            figures[int2label[i]] = df[df["stance"] == i]["stance.1"]
+        text_data = {"summary":df.iloc[0]["Fact"],
+                     "source":df.iloc[0]["SourceUrl"],
+                     "taxonomy":df.iloc[0]["Taxonomy"]}
+        out = {**figures, **text_data}
+        return out
+    pdb.set_trace()
     print("noop")
-    return [obj1, obj2, obj3]
+    return relevant_rows.groupby(["Fact","Taxonomy", "SourceUrl"], as_index=False).apply(derive_object)
+    #return [obj1, obj2, obj3]
 
 @app.route('/api/v1/mquery')
 def mquery():
