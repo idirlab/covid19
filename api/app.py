@@ -5,7 +5,6 @@ import pandas as pd
 from threading import Timer
 from time import sleep
 from datetime import datetime
-import pdb
 from absl import logging
 from datetime import date, timedelta, datetime
 import coord
@@ -377,7 +376,7 @@ def mquery_aux(node, date, entity_type):
         out       = {**figures, **text_data}
         return out
     gg = relevant_rows.groupby(["Fact","Taxonomy", "SourceUrl"], as_index=False)
-    out = gg.apply(derive_object)[-1]
+    out = gg.apply(derive_object).values.tolist()
     return out
 
 @app.route('/api/v1/mquery')
