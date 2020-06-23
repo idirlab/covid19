@@ -241,3 +241,6 @@ div#hospital-info.hospital[selected_lvl]{
 div#hospital-info.hospital[selected_lvl=county]{
   display: initial;
 }
+div#hospital-info.hospital[sidebarstatus=hidden]{
+  display: none;
+}

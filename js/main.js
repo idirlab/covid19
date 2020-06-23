@@ -93,6 +93,9 @@ var flag = true
 
 function closeBar() {
 
+  var flagmap = {false:  "hidden",
+                 true:   "visible"};
+  $("div#hospital-info.hospital").attr("sidebarstatus",flagmap[!flag]);
   if (flag) {
     flag = false;
     // document.getElementById("aggregate-date-window").style.width = "0px";
@@ -100,9 +103,6 @@ function closeBar() {
     // document.getElementById("hospital-info").style.width = "0px"
     document.getElementById("left-side-bar").style.width = "0px"
     var button = document.getElementById("btn-close_bar")
-    button.style.left = "20px";
-    button.style.transform = 'rotate('+180+'deg)'
-
   } else {
     flag = true;
     // document.getElementById("aggregate-date-window").style.width = "400px";
