@@ -114,6 +114,7 @@ function closeBar() {
   var flagmap = {false:  "hidden",
                  true:   "visible"};
   $("div#hospital-info.hospital").attr("sidebarstatus",flagmap[!flag]);
+  $("div#twitter-info.twitter").attr("sidebarstatus",flagmap[!flag]);
   var button = document.getElementById("btn-close_bar")
   if (flag) {
     flag = false;

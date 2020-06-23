@@ -621,8 +621,7 @@ var source_list = new Map([
         selected_lvl = "country";
       }
       $("span.selected-level.hidden").text(selected_lvl);
-      if($("div.twitter#twitter-info").attr("selected_lvl") != "disable")
-        $("div#twitter-info.twitter").attr("selected_lvl", selected_lvl);
+      $("div#twitter-info.twitter").attr("selected_lvl", selected_lvl)
       $("div.response-area,div#hospital-info.hospital,div#misinformation-info.misinfo").attr("selected_lvl", selected_lvl);
 
       var datestr = "2020-01-28";

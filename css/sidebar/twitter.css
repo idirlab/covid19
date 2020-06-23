@@ -30,3 +30,6 @@ div#twitter-info.twitter[selected_lvl]{
  div#twitter-info.twitter[selected_lvl=county]{
   display: initial;
 }
+div#twitter-info.twitter[sidebarstatus=hidden]{
+  display: none;
+}
