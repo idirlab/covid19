@@ -773,7 +773,6 @@ div.location-information-container {
 
 
 div.location-information-container {
-  height: inherit;
   background-color: rgb(40, 50, 55);
   text-align: center;
   display:flex;
@@ -1249,4 +1248,62 @@ div.variable-display > div.variable > div.figures{
   div.variable-display > div.variable > div.figures{
     margin-right:16px;
   }
+}
+div.response-area[selected_lvl]{
+  height: auto;
+}
+div.response-area[selected_lvl=county]{
+  height: calc(50% - 90px);
+}
+div.info-pane.misinfo.right{
+  overflow-y:scroll;
+}
+div.info-pane.misinfo.right[selected_lvl]{
+  display:none;
+}
+div.info-pane.misinfo.right[selected_lvl=state],
+div.info-pane.misinfo.right[selected_lvl=county]{
+  top: 88px;
+  height: calc(50% - 44px);
+}
+div.misinfo-block {
+  width:80%;
+  margin: 12px auto 12px auto;
+  border-radius:8px;
+  line-height:24px;
+  background:white;
+  text-align:left;
+}
+.center-me {
+  text-align:center;
+}
+button.taxonomy {
+  margin: 0 auto;
+  display:block;
+}
+a.read-more {
+  margin: 12px auto;
+  display:block;
+  width:128px;
+}
+div.summary {
+  margin: 12px 12px 0px 12px;
+  font-weight:bold;
+}
+div.misinfo-block > div.metrics > button {
+  font-size:10px;
+  cursor: pointer;
+}
+div.misinfo-block > div.metrics {
+  text-align:center;
+  margin-top:8px;
+  font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif; 
+}
+.default {
+  cursor:default !important;
+}
+text.total-title,
+text.total {
+  fill: black;
+  font-size: 14px;
 }

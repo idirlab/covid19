@@ -28,6 +28,7 @@
   <script src="js/to-title-case.js"></script>
   <script src="js/voca.min.js"></script>
   <script src="js/d3.js"></script>
+  <script src="https://d3js.org/d3-format.v1.min.js"></script>
   <script src="js/c3.min.js"></script>
   <script src="js/leaflet.js"></script>
   <script src="js/leaflet.markercluster.js"></script>
@@ -59,7 +60,7 @@
         COVID19 Pandemic - Public Information
       </div>
     </div>
-    <button id="btn-close_bar" class="btn-hidden-sidebar" onclick="closeBar()"></button>
+    <button id="btn-close_bar" class="btn-hidden-sidebar" onclick="closeBar();close_hos_info();"></button>
 
     <div class="chart_panel">
       <div class="idir-total-chart-bar">
@@ -83,36 +84,26 @@
     <div id="left-side-bar" class="side-panel">
     
     <div id="floating-side-panel-info-container" class="right bigger" style="display: none;">
-      <div id="hospital-info" class="info-pane right smaller hospital" style="margin-top:48px;">
-        <div class="info-header smaller right unset-height">
-          <i class="fas fa-hospital"></i>
-          <span class="titile_info">LOCAL HOSPITAL INFO</span>
-          <button class="close_hos_info" onclick="close_hos_info()">
+      <div id="twitter-info" class="info-pane twitter right smaller">
+        <div class="info-header twitter twitter-bottom">
+          <i class="fab fa-twitter" style="cursor:pointer;"></i>
+          <span>LATEST STATE TWEETS</span>
+          <button class="close_hos_info" onclick="close_tw_info()">
             <i class="fas fa-times-circle" style="font-size: 24px;"></i>
           </button>
         </div>
-        <script>
-          function close_hos_info() {
-            console.log("close");
-            $("div#floating-side-panel-info-container").css("display", "none")
-          }
-        </script>
-        <div class="hospital-display">
-          <div id="hospitalDOMs">
-            <script>
-              $("div.hospital > div.header > svg").click(function(evt){
-                $(this).closest("div.hospital").toggleClass("active");
-              });
-            </script>
-          </div>
-        </div>
-      </div>
-      <div id="twitter-info" class="info-pane twitter right smaller">
-        <div class="info-header twitter">
-          <i class="fab fa-twitter" style="cursor:pointer;"></i>
-          <span>LATEST STATE TWEETS</span>
-        </div>
         <div id="tweets-all"></div>
+      </div>
+      <div id="misinformation-info" class="info-pane misinfo right smaller">
+        <div class="info-header misinfo misinfo-top">
+          <i class="fas fa-bullhorn" style="cursor:pointer;"></i>
+          <span class="misinfo-near"></span>
+          <button class="close_hos_info" onclick="close_misinfo_info()">
+            <i class="fas fa-times-circle" style="font-size: 24px;"></i>
+          </button>
+        </div>
+        <div class="info misinfo-response-area">
+        </div>
       </div>
     </div>
     <div id="aggregate-date-window" class="info-pane top">
@@ -160,6 +151,24 @@
       <span class="default-source-state hidden">JHU</span>
       <span class="default-source-county hidden">JHU</span>
       <div class="response-area">
+      </div>
+      <div id="hospital-info" class="info-pane smaller bottom hospital" style="margin-top:42px;">
+        <div class="info-header smaller bottom-header unset-height">
+          <i class="fas fa-hospital"></i>
+          <span class="titile_info">LOCAL HOSPITAL INFO</span>
+          <button class="close_hos_info" onclick="close_hos_info()">
+            <i class="fas fa-times-circle" style="font-size: 24px;"></i>
+          </button>
+        </div>
+        <div class="hospital-display">
+          <div id="hospitalDOMs">
+            <script>
+              $("div.hospital > div.header > svg").click(function(evt){
+                $(this).closest("div.hospital").toggleClass("active");
+              });
+            </script>
+          </div>
+        </div>
       </div>
     </div>
     </div>
@@ -246,6 +255,8 @@
             <p class="full-name">COVID Tracking Project - <a href="https://covidtracking.com/">The COVID Tracking Project</a></p>
             <p class="full-name">CNN - <a href="https://www.cnn.com/world/live-news/coronavirus-pandemic-04-20-20-intl/index.html">Cable News Network</a></p>
             <p class="full-name">CDC - <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html">Centers for Disease Control and Prevention</a></p>
+          <h3>Agree/Disagree</h3>
+          <p class="abt">Agree/Disagree figures are derived from tweets relevant to the selected area related to the fact.</p>
           <h3>Affiliation</h3>
             <p class="affiliation">This work is made possible by the contributions of members from The Innovative Data Intelligence Research Laboratory, the support of The University of Texas at Arlington and grants IIS-1719052 and OIA-1937143 from the National Science Foundation.</p>
             <p class="affiliation">Any opinions, findings, and conclusions or recommendations expressed in this publication are those of the authors and do not necessarily reflect the views of the funding agencies.</p>

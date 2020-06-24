@@ -91,27 +91,47 @@ function td(country) {
 
 var flag = true
 
+function close_misinfo_info() {
+  console.log("close");
+  $("div.response-area,div#misinformation-info.misinfo").attr("selected_lvl", "disable");
+}
+function close_hos_info() {
+  console.log("close");
+  $("div.response-area,div#hospital-info.hospital").attr("selected_lvl", "disable");
+}
+function close_tw_info() {
+  console.log("close");
+  if($("div#twitter-info.twitter").attr("selected_lvl") == "disable") {
+    $("div#twitter-info.twitter").attr("selected_lvl",
+                                       $("span.selected-level.hidden").text());
+  } else {
+    $("div#twitter-info.twitter").attr("selected_lvl", "disable");
+  }
+}
+
 function closeBar() {
 
+  var flagmap = {false:  "hidden",
+                 true:   "visible"};
+  $("div#hospital-info.hospital").attr("sidebarstatus",flagmap[!flag]);
+  $("div#twitter-info.twitter").attr("sidebarstatus",flagmap[!flag]);
+  var button = document.getElementById("btn-close_bar")
   if (flag) {
     flag = false;
     // document.getElementById("aggregate-date-window").style.width = "0px";
     // document.getElementById("location-information-container").style.width = "0px"
     // document.getElementById("hospital-info").style.width = "0px"
     document.getElementById("left-side-bar").style.width = "0px"
-    var button = document.getElementById("btn-close_bar")
-    button.style.left = "20px";
+    button.style.left = "0px";
     button.style.transform = 'rotate('+180+'deg)'
-
   } else {
     flag = true;
     // document.getElementById("aggregate-date-window").style.width = "400px";
     // document.getElementById("location-information-container").style.width = "400px"
     // document.getElementById("hospital-info").style.width = "400px"
     document.getElementById("left-side-bar").style.width = "400px"
-    var button = document.getElementById("btn-close_bar")
     button.style.left = "420px";
-    button.style.transform = 'rotate('+360+'deg)'
+    button.style.transform = 'rotate('+0+'deg)'
   }
   // flag -> true for open
   // flag -> false for closed
@@ -235,5 +255,5 @@ $("div#pos-2")
 
 
 function close_chart() {
-  $("div.chart_panel").css("display","none")
+  $("div.chart_panel").css("display","none");
 }

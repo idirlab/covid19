@@ -507,6 +507,96 @@ var source_list = new Map([
       return place[name];
     }
 
+    function updateMisinformationPanel(response) {
+      $("span.misinfo-near").html("Get Your Facts Straight");
+      function merge(d1, d2){
+        return Object.assign({}, d1, d2);
+      }
+      response = response.map(d => merge(d,
+                                         {"total": ["agree", "disagree", "discuss"]
+                                           .map(s => d[s])
+                                           .reduce((a, b) => a + b)}));
+      response = Array.from(response);
+      var formatter = d3.format(".2s");
+      var percentFormatter = d3.format(".1%");
+      var doms = response.map( (row, idx) =>
+        `
+        <div class="misinfo-block">
+          <button class="btn btn-dark taxonomy center-me default">
+            ${row["taxonomy"]}
+          </button>
+          <div class="summary">
+            ${row["summary"]}
+          </div>
+          <div class="metrics" id="idx-${idx}">
+          </div>
+          <div class="metrics">
+            <button prefix="Support: " showApprox="true" approx="${formatter(row["agree"])}" ratio="${percentFormatter(row["agree"]/row["total"])}" class="idx-${idx} btn btn-outline-success disabled">Support: ${formatter(row["agree"])}</button>
+            <button prefix="Discuss: " showApprox="true" approx="${formatter(row["discuss"])}" ratio="${percentFormatter(row["discuss"]/row["total"])}" class="idx-${idx} btn btn-outline-secondary disabled">Neutral: ${formatter(row["discuss"])}</button>
+            <button prefix="Disagree: " showApprox="true" approx="${formatter(row["disagree"])}" ratio="${percentFormatter(row["disagree"]/row["total"])}" class="idx-${idx} btn btn-outline-danger disabled">Refute: ${formatter(row["disagree"])}</button>
+          </div>
+          <script>
+            var colors = ["#28a745", "#b0bec5", "#dc3545"];
+            var width  = 256;
+            var height = 40;
+            var svg = d3.select("div.metrics#idx-${idx}").append("svg")
+              .attr("width", width)
+              .attr("height", height)
+              .attr("style", "border-radius:6px; overflow:hidden;")
+              .append("g");
+            var labels = {"agree":0,
+                          "discuss":1,
+                          "disagree":2};
+            var data = ${JSON.stringify(row).replace("/\"/g", "\\\"")};
+            var x = d3.scaleLinear()
+                      .domain([0, ${row["total"]}])
+                      .range([0, width - 40]);
+            ["agree",
+             "discuss",
+             "disagree"].forEach((item, idx, arr) =>
+                                   svg.append("rect")
+                                      .attr("x", arr
+                                                   .slice(0, idx)
+                                                   .reduce((acc, item) => acc + x(data[item]),
+                                                           0))
+                                      .attr("width", x(data[item]))
+                                      .attr("style", "fill:" + colors[labels[item]])
+                                      .attr("height", height)
+                                      .attr("class", item + "-bar"));
+            var text_offset = ["agree", "discuss", "disagree"].reduce((acc, item) => acc + x(data[item]),0) + 8;
+            svg.append("text")
+               .attr("x", text_offset)
+               .attr("y", 35)
+               .attr("class", "total")
+               .text("${formatter(row["total"])}");
+            svg.append("text")
+               .attr("x", text_offset)
+               .attr("y", 15)
+               .attr("class", "total-title")
+               .text("Total:");
+            $("button.idx-${idx}").click(function(){
+              var showApprox = Boolean($(this).attr("showApprox").trim() == "true");
+              showApprox = !showApprox;
+              var prefix = $(this).attr("prefix");
+              var textToPut  = {true : prefix + $(this).attr("approx"),
+                                false: prefix + $(this).attr("ratio")};
+              $(this).text(textToPut[showApprox]);
+              $(this).attr("showApprox", String(showApprox));
+            });
+          </script>
+          <a target="_blank" class="btn btn-dark read-more center-me" href="${row["source"]}">
+            Read More...
+          </a>
+        </div>
+        `
+      );
+      function red(acc, ite) {
+        return `${acc}${ite}`;
+      }
+      $("div.misinfo-response-area").html(doms.reduce(red));
+      return;
+    }
+
     function showPlace(name, parent=null) {
       // console.log(name)
       name = name.toLowerCase().toTitleCase();
@@ -523,14 +613,21 @@ var source_list = new Map([
       var selected_lvl = "global";
       if(is_county) {
         selected_lvl = "county";
-	parent = $("span.selected-state").text();
+        parent = $("span.selected-state").text();
       } else if (is_state){
         selected_lvl = "state";
-	$("span.selected-state").text(name);
+        $("span.selected-state").text(name);
       } else if (is_US) {
         selected_lvl = "country";
       }
       $("span.selected-level.hidden").text(selected_lvl);
+      $("div#twitter-info.twitter").attr("selected_lvl", selected_lvl)
+      $("div.response-area,div#hospital-info.hospital,div#misinformation-info.misinfo").attr("selected_lvl", selected_lvl);
+
+      var datestr = "2020-01-28";
+      var mquery_endpoint_n_params = `api/v1/mquery?node=${name}&date=${datestr}`
+      corsHTTP(`${api_url}/${mquery_endpoint_n_params}`, updateMisinformationPanel);
+
       var get_child_level = new Map([["global", "country"],
                                      ["country", "state"],
                                      ["state", "county"],

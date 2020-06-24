@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, render_template, Blueprint, abort
 from flask_cors import CORS
+import glob
+import pandas as pd
 from threading import Timer
 from time import sleep
 from datetime import datetime
@@ -11,6 +13,8 @@ from functools import reduce
 import sys
 import os
 import pandas
+import glob
+import re
 import string
 
 app = Flask(__name__)
@@ -35,6 +39,7 @@ source_list_per_level = {
     'state': ['CDC', 'CNN', 'COVID Tracking Project', 'NY Times', 'JHU'],
     'county': ['JHU']
 }
+misinformation_panel_source = "../../twitter_data/processed"
 
 refresh_interval_hrs = 1
 refreshing = False
@@ -343,6 +348,61 @@ def stat_query_details():
     else:
         return ret
 
+def mquery_aux(node, date, entity_type):
+    files = [s.replace("\\","/") for s in glob.glob(f"{misinformation_panel_source}/*dtctn_cnt.csv")]
+    df = reduce(lambda acc, it: pd.concat([acc, it], sort=False),
+                map(pd.read_csv, files)).reset_index(drop=True)
+    querycol = f"User{entity_type[0].upper()}{entity_type[1:]}"
+
+    def scanner(s, substr=node): return substr.lower() in s.lower()
+
+    mask1 = df[querycol].map(scanner, na_action='ignore')
+    relevant_rows = df[mask1.map(lambda b: b if type(b) == bool else False)]
+
+    def derive_object(df):
+        labels    = ["agree", "discuss", "disagree"]
+        label2int = dict(zip(labels,
+                             map(float, range(len(labels)))))
+        int2label = dict((v, k) for k, v in label2int.items())
+        figures   = dict(zip(labels,
+                             [0]*len(labels)))
+
+        for i in df["stance"].unique():
+            figures[int2label[i]] = int(df[df["stance"] == i]["stance.1"].values[0])
+
+        text_data = {"summary":df.iloc[0]["Fact"],
+                     "source":df.iloc[0]["SourceUrl"],
+                     "taxonomy":df.iloc[0]["Taxonomy"]}
+        out       = {**figures, **text_data}
+        return out
+    gg = relevant_rows.groupby(["Fact","Taxonomy", "SourceUrl"], as_index=False)
+    out = gg.apply(derive_object).values.tolist()
+    return out
+
+@app.route('/api/v1/mquery')
+def mquery():
+    if (all([x in request.args for x in ['node', 'date']])):
+        node = request.args['node'].lower()
+        date = request.args['date']
+    else:
+        abort(400)
+
+    logging.info('Processing request...')
+
+    fail = False
+    ret = {}
+    try:
+        node, entity_type = preprocess_node(node)
+        ret = jsonify(mquery_aux(node, date, entity_type))
+    except Exception as e:
+        logging.info('Error: {}'.format(e))
+        logging.info('Terminating process with code 500')
+        fail = True
+
+    if fail:
+        abort(500)
+    else:
+        return ret
 
 @app.route('/api/v1/statquery')
 def stat_query():
