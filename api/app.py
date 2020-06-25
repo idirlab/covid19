@@ -21,22 +21,21 @@ app = Flask(__name__)
 CORS(app)
 
 file_list = {}
-source_list_prefix = '../../covid19data/COVID_data_collection/data/'
+source_list_input_prefix = '../../covid19data/data_collection/data/input/'
+source_list_output_prefix = '../../covid19data/data_collection/data/out/'
 source_list = {
-    'CDC': 'cdc_time_series.csv',  # state
-    'CNN': 'cnn_time_series.csv',  # state
-    'COVID Tracking Project': 'COVIDTrackingProject_time_series.csv',  # state
-    'NY Times': 'NYtimes_time_series.csv',  # state
+    'COVID Tracking Project': 'ctp_s.csv',  # state
+    'NY Times': 'nyt_s.csv',  # state
     'JHU': {
-        'country': 'JHU_global_time_series.csv',  # country and province
-        'state': 'johns_hopkins_states_time_series.csv',  # state
-        'county': 'johns_hopkins_counties_time_series.csv',  # county
+        'country': 'jhu_g.csv',  # country and province
+        'state': 'jhu_s.csv',  # state
+        'county': 'jhu_c.csv',  # county
     }
 }
 source_list_per_level = {
     'global': ['JHU'],
     'country': ['JHU'],
-    'state': ['CDC', 'CNN', 'COVID Tracking Project', 'NY Times', 'JHU'],
+    'state': ['COVID Tracking Project', 'NY Times', 'JHU'],
     'county': ['JHU']
 }
 misinformation_panel_source = "../../twitter_data/processed"
@@ -494,15 +493,15 @@ def parse_into_arrays(x):
 
 def get_children(node, entity_type):
     if entity_type == 'global':
-        return [x.lower().strip(' \r\t\n') for x in open(os.path.join(source_list_prefix, 'countries.txt'), 'r')]
+        return [x.lower().strip(' \r\t\n') for x in open(os.path.join(source_list_input_prefix, 'countries.txt'), 'r')]
     elif entity_type == 'country':
         if node == "us":
-            return [x.lower().strip(' \t\r\n') for x in open(os.path.join(source_list_prefix, 'states.txt'), 'r')]
+            return [x.lower().strip(' \t\r\n') for x in open(os.path.join(source_list_input_prefix, 'states.txt'), 'r')]
         else:
             return []
     elif entity_type == 'state':
         ret = []
-        with open(os.path.join(source_list_prefix, 'counties.txt'), 'r') as f:
+        with open(os.path.join(source_list_input_prefix, 'counties.txt'), 'r') as f:
             for line in f:
                 line = line.lower().strip(' \r\t\n')
                 if ',{}'.format(node) in line and not line[line.rindex(node) - 2].isdigit():
@@ -522,7 +521,7 @@ def get_parent_type(entity_type):
 
 def get_parent(node, entity_type):
     if entity_type == 'county':
-        with open(os.path.join(source_list_prefix, 'counties.txt'), 'r') as f:
+        with open(os.path.join(source_list_input_prefix, 'counties.txt'), 'r') as f:
             for line in f:
                 line = line.lower().strip(' \r\t\n')
                 if ',{},{}'.format('-'.join(node.split('-')[:-1]), node.split('-')[-1]) in line:
@@ -624,7 +623,7 @@ def get_data_from_source(node, date, source, entity_type):
 # country: all other?
 def select_entity_type(name):
     def is_state():
-        with open(os.path.join(source_list_prefix, 'states.txt'), 'r') as f:
+        with open(os.path.join(source_list_input_prefix, 'states.txt'), 'r') as f:
             for line in f:
                 if line.lower().strip(' \n\r\t') == name:
                     return True
@@ -652,7 +651,7 @@ def get_all_data(node, date, entity_type):
 
 
 def prc(v):
-    path = os.path.join(source_list_prefix, v)
+    path = os.path.join(source_list_output_prefix, v)
 
     delim = ','
     with open(path, 'r') as f:
