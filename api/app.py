@@ -25,7 +25,10 @@ source_list_input_prefix = '../../covid19data/data_collection/data/input/'
 source_list_output_prefix = '../../covid19data/data_collection/data/out/'
 source_list = {
     'COVID Tracking Project': 'ctp_s.csv',  # state
-    'NY Times': 'nyt_s.csv',  # state
+    'NY Times': {
+        'state': 'nyt_s.csv',  # state
+        'county': 'nyt_c.csv',  # county
+    },   
     'JHU': {
         'country': 'jhu_g.csv',  # country and province
         'state': 'jhu_s.csv',  # state
@@ -36,7 +39,7 @@ source_list_per_level = {
     'global': ['JHU'],
     'country': ['JHU'],
     'state': ['COVID Tracking Project', 'NY Times', 'JHU'],
-    'county': ['JHU']
+    'county': ['JHU', 'NY Times']
 }
 misinformation_panel_source = "../../twitter_data/processed"
 
@@ -107,7 +110,7 @@ def ping():
         return out
     read_status = []
     for key, value in source_list.items():
-        if key != 'JHU':
+        if key != 'JHU' and key != 'NY Times':
             read_status.append((key, 200 if check_shape(prc(value)) else 500))
         else:
             for subkey, subvalue in source_list[key].items():
@@ -590,7 +593,7 @@ def get_data_from_source(node, date, source, entity_type):
                 return []
         else:
             return []
-    elif source != "JHU":
+    elif source != "JHU" and source != "NY Times":
         if date in file_list[source][1]:
             try:
                 info = file_list[source][0].iloc[file_list[source][1][date], file_list[source][0].columns.get_loc(node)]
@@ -672,7 +675,7 @@ def prc(v):
 
 def refresh_data_util():
     for key, value in source_list.items():
-        if key != 'JHU':
+        if key != 'JHU' and key != 'NY Times':
             file_list[key] = prc(value)
         else:
             file_list[key] = {}
