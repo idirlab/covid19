@@ -517,7 +517,10 @@ var source_list = new Map([
                                            .map(s => d[s])
                                            .reduce((a, b) => a + b)}));
       response = Array.from(response);
-      var formatter = d3.format(".2s");
+      function formatter (string) {
+        var formatteraux = d3.format(".2s");
+        return formatteraux.replace(".0", "");
+      }
       var percentFormatter = d3.format(".1%");
       var doms = response.map( (row, idx) =>
         `
@@ -531,9 +534,9 @@ var source_list = new Map([
           <div class="metrics" id="idx-${idx}">
           </div>
           <div class="metrics">
-            <button prefix="Support: " showApprox="true" approx="${formatter(row["agree"])}" ratio="${percentFormatter(row["agree"]/row["total"])}" class="idx-${idx} btn btn-outline-success disabled">Support: ${formatter(row["agree"])}</button>
-            <button prefix="Discuss: " showApprox="true" approx="${formatter(row["discuss"])}" ratio="${percentFormatter(row["discuss"]/row["total"])}" class="idx-${idx} btn btn-outline-secondary disabled">Neutral: ${formatter(row["discuss"])}</button>
-            <button prefix="Disagree: " showApprox="true" approx="${formatter(row["disagree"])}" ratio="${percentFormatter(row["disagree"]/row["total"])}" class="idx-${idx} btn btn-outline-danger disabled">Refute: ${formatter(row["disagree"])}</button>
+            <button prefix="Support: " showApprox="true" approx="${formatter(row["agree"])}" ratio="${percentFormatter(row["agree"]/row["total"])}" class="idx-${idx} btn btn-outline-success disabled">Support: ${percentFormatter(row["agree"]/row["total"])}</button>
+            <button prefix="Discuss: " showApprox="true" approx="${formatter(row["discuss"])}" ratio="${percentFormatter(row["discuss"]/row["total"])}" class="idx-${idx} btn btn-outline-secondary disabled">Neutral: ${percentFormatter(row["discuss"]/row["total"])}</button>
+            <button prefix="Disagree: " showApprox="true" approx="${formatter(row["disagree"])}" ratio="${percentFormatter(row["disagree"]/row["total"])}" class="idx-${idx} btn btn-outline-danger disabled">Refute: ${percentFormatter(row["disagree"]/row["total"])}</button>
           </div>
           <script>
             var colors = ["#28a745", "#b0bec5", "#dc3545"];
@@ -574,15 +577,6 @@ var source_list = new Map([
                .attr("y", 15)
                .attr("class", "total-title")
                .text("Total:");
-            $("button.idx-${idx}").click(function(){
-              var showApprox = Boolean($(this).attr("showApprox").trim() == "true");
-              showApprox = !showApprox;
-              var prefix = $(this).attr("prefix");
-              var textToPut  = {true : prefix + $(this).attr("approx"),
-                                false: prefix + $(this).attr("ratio")};
-              $(this).text(textToPut[showApprox]);
-              $(this).attr("showApprox", String(showApprox));
-            });
           </script>
           <a target="_blank" class="btn btn-dark read-more center-me" href="${row["source"]}">
             Read More...
