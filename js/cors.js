@@ -10,7 +10,7 @@ function corsHTTP(url, callback) {
   };
 
   xhr.onerror = function() {
-    alert('There was an error making the request');
+    console.log('There was an error making the request');
   };
 
   xhr.send();
