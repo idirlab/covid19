@@ -518,7 +518,8 @@ var source_list = new Map([
                                            .reduce((a, b) => a + b)}));
       response = Array.from(response);
       function formatter (string) {
-        var formatteraux = d3.format(".2s");
+        var formatteraux = d3.format(".2s")(string);
+        console.log('dddd', formatteraux)
         return formatteraux.replace(".0", "");
       }
       var percentFormatter = d3.format(".1%");
