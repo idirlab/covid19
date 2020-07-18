@@ -6,7 +6,7 @@
 ![flask badge](https://img.shields.io/badge/flask-v1.1.1-blue)
 ![license](https://img.shields.io/badge/lisense-MIT-orange)
 
-[IDIR Lab](http://idir.uta.edu/)|[Online Dashboard]([https://idir.uta.edu/covid-19])|[Data API](https://idir.uta.edu/covid-19-api)
+[IDIR Lab](http://idir.uta.edu/)| [Online Dashboard](https://idir.uta.edu/covid-19) | [Data API](https://idir.uta.edu/covid-19-api)
 
 ## About
 
