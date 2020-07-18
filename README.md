@@ -10,7 +10,7 @@
 
 ## About
 
-Our project aims to understand the surveillance of, impact of and intervention on COVID-19 misinfodemic on Twitter. Specifically, it introduces a public dashboard which, in addition to displaying case counts in an interactive map and a navigational panel, also provides some unique features not found in other places. Particularly, the dashboard uses a curated catalog of COVID-19 related facts and debunks of misinformation, and it displays the most prevalent information from the catalog among Twitter users in user-selected U.S. geographic regions.
+[Our project](https://cokn.org/) aims to understand the surveillance of, impact of and intervention on [COVID-19 misinfodemic on Twitter](https://abcnews.go.com/US/spreading-covid-19-misinformation/story?id=70615995). Specifically, it introduces a public dashboard which, in addition to displaying case counts in an interactive map and a navigational panel, also provides some unique features not found in other places. Particularly, the dashboard uses a curated catalog of COVID-19 related facts and debunks of misinformation, and it displays the most prevalent information from the catalog among Twitter users in user-selected U.S. geographic regions.
 
 ## Data Source
 
