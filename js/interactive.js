@@ -74,7 +74,7 @@ $(document).ready(async function(){
   ["global", "country", "state", "county"].forEach(
     function(level){
       var url = queryURL.replace("{PLACEHOLDER}", level);
-      console.log(url);
+      // console.log(url);
       corsHTTP(url, parseSources(level));
     }
   );
@@ -161,7 +161,7 @@ $(document).ready(async function(){
 
   $(".btn-group-toggle input:radio").on('change', function() {
     let val = $(this).val();
-    console.log(val);
+    // console.log(val);
     chart.axis.types({
         y: val
     });
@@ -503,7 +503,7 @@ var source_list = new Map([
 
       });
 
-      console.log("place[name]: ", place[name])
+      // console.log("place[name]: ", place[name])
       return place[name];
     }
 
@@ -519,7 +519,6 @@ var source_list = new Map([
       response = Array.from(response);
       function formatter (string) {
         var formatteraux = d3.format(".2s")(string);
-        console.log('dddd', formatteraux)
         return formatteraux.replace(".0", "");
       }
       var percentFormatter = d3.format(".1%");
@@ -790,7 +789,7 @@ var source_list = new Map([
                                   placename.toUpperCase().includes("PARISH"));
           var node = is_county ? `${placename}-${$("span.selected-state.hidden").text().trim()}` : `${placename}`;
           var queryUrl = `${api_url}/api/v1/statquery_details?node=${node}&date=${selected_date().format("YYYY-MM-DD")}`;
-          console.log(queryUrl);
+          
           var t = this;
           function toggleVisibility() {
             $(t).parent().next().toggleClass("expanded");
@@ -876,7 +875,7 @@ var source_list = new Map([
                   }
                 }
                 var update_county_color = (data) => {
-                  console.log('mapquery_county: ', data)
+                  // console.log('mapquery_county: ', data)
                   try{
                     mymap.removeLayer(counties)
                   } catch(err) {
@@ -911,7 +910,7 @@ var source_list = new Map([
             try {
               var lastIndex = curr_place.lastIndexOf(" ");
               curr_county = curr_place.substring(0, lastIndex);
-              console.log('zz', layer.feature.properties.NAME.toLowerCase(), curr_county.toLowerCase())
+
               if(layer.feature.properties.NAME.toLowerCase() == curr_county.toLowerCase()) {
                 console.log("click find", curr_place)
                 mymap.fitBounds(layer._bounds, {maxZoom: 6});
@@ -940,7 +939,6 @@ var source_list = new Map([
       } else {
         queryURL = api_url + `/api/v1/statquery?node=${name}-${selected_state()}&date=${selected_date().format("YYYY-MM-DD")}&${default_sources_querystr}`
       }
-      console.log("qwer", queryURL)
 
       corsHTTP(encodeURI(queryURL), parseInfo)
 
@@ -992,11 +990,11 @@ var source_list = new Map([
         var county = name.toUpperCase().replace(" " + countyType, "");
 
         var queryURL = `https://services7.arcgis.com/LXCny1HyhQCUSueu/arcgis/rest/services/Definitive_Healthcare_USA_Hospital_Beds/FeatureServer/0/query?where=UPPER(STATE_NAME)%20like%20'%25${state.toUpperCase()}%25'%20AND%20UPPER(COUNTY_NAME)%20like%20'%25${county.toUpperCase()}%25'&outFields=*&outSR=4326&f=json`;
-        console.log("Retrieving hospital info for " + county + ", " + state);
-        console.log(queryURL);
+        // console.log("Retrieving hospital info for " + county + ", " + state);
+        // console.log(queryURL);
 
         var getHospitalHTML = (info) => {
-          console.log(info);
+          // console.log(info);
 
           info = info.features;
           var hospitalDOMs = `
@@ -1391,7 +1389,7 @@ var source_list = new Map([
       queryURL = api_url + `/api/v1/statquery_timeseries?node=${county}-${state}&dsrc=JHU&date_start=2020-01-23&date_end=${format_today}`
       corsHTTP(queryURL, update_county_Chart);
 
-      console.log('query_county_url: ' + queryURL)
+      // console.log('query_county_url: ' + queryURL)
     }
 
     // 3.2.3 reset the hightlighted feature when the mouse is out of its region.
