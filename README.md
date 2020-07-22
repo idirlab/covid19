@@ -21,10 +21,10 @@
 ## Contributors
 
 - [Josue Caraballo](https://github.com/v3nd3774)
-- [Kevin Meng](https://github.com/824zzy)
+- [Kevin Meng](https://github.com/kmeng01)
 - [Haojin Liao](https://github.com/YapheeetS)
 - [Zhengyuan Zhu](https://github.com/824zzy)
 
 ## License
 
-[@MIT](./LICENSE)
+The work in this repository is released under the [GNU General Public License v3.0](./LICENSE).
