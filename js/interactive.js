@@ -224,7 +224,7 @@ $(document).ready(async function(){
       if (element.name == 'United States') {
         continue;
       }
-      radius = radius*1.3+20000
+      radius = radius*0.1+100000
 
       var lower_name = element.name.toLowerCase().trim()
       var circle = new country_state_circle([element.lat, element.long], radius, {
@@ -243,7 +243,7 @@ $(document).ready(async function(){
       if (!radius) {
         radius = 0
       }
-      radius = radius*1.3+20000
+      radius = radius*0.1+100000
 
       var lower_name = element.name.toLowerCase().trim()
       var circle = new country_state_circle([element.lat, element.long], radius, {
