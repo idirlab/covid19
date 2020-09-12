@@ -286,14 +286,9 @@ $(document).ready(async function(){
   }
 
   Promise.all([
-    d3.csv('assets/virus.csv'),
     d3.json("assets/all-topo-15.json"),
-    d3.csv('assets/communities.csv'),
-    d3.csv('assets/timestamp.txt'),
-    d3.csv('assets/cases.csv'),
     d3.csv('assets/united-states.txt'),
     d3.csv('assets/canada-city.txt'),
-    d3.csv('assets/old-name.csv'),
     d3.json("assets/counties.json"),
     d3.json("assets/num2state.json")
   ]).then(function(datasets) {
@@ -360,7 +355,7 @@ var source_list = new Map([
     }
     function selected_date() { return moment($("div.info-header > div.info-header-element#pos-3").text().trim(), globalDateFormat); }
 
-    $("#date").text("Last update: " + datasets[3][0].timestamp.split(".")[0] + " PST");
+    $("#date").text("Last update: 2020.9.11 PST");
 
     var places = {};
 
@@ -375,135 +370,6 @@ var source_list = new Map([
         'a': ['Active Confirmed']
       }
 
-      // data_str = JSON.stringify(datasets[0])
-      // console.log("virus.length: ", datasets[0].length)
-      // console.log("calPlace name: "+ name)
-      // console.log('datasets : '+ data_str)
-
-
-      datasets[0].forEach(function(d) {
-        var USTd = new Date(d["datetime"]);
-
-        place[name].t.push(USTd.setHours(USTd.getHours() + 8));
-
-        cf = 0, sp = 0, rc = 0, dd = 0, active = 0;
-        current = d;
-        delete current["datetime"];
-
-        if (name == "Global Trend") {
-
-          Object.values(current).forEach(function(d) {
-            if (d == undefined) {
-              d = "0"
-            };
-            items = d.split("-");
-            switch (items.length) {
-              case 4:
-                dd += +items[3];
-              case 3:
-                rc += +items[2];
-              case 2:
-                sp += +items[1];
-              case 1:
-                cf += +items[0];
-                break;
-            };
-            active = cf - dd - rc;
-          });
-
-          cf -= (tc(current["alabama"]) + tc(current["alaska"]) + tc(current["arizona"]) + tc(current["arkansas"]) + tc(current["california"]) + tc(current["colorado"]) + tc(current["connecticut"]) + tc(current["delaware"]) + tc(current[
-            "florida"]) + tc(current["georgia usa"]) + tc(current["hawaii"]) + tc(current["idaho"]) + tc(current["illinois"]) + tc(current["indiana"]) + tc(current["iowa"]) + tc(current["kansas"]) + tc(current["kentucky"]) + tc(current[
-              "louisiana"]) + tc(current["maine"]) + tc(current["maryland"]) + tc(current["massachusetts"]) + tc(current["michigan"]) + tc(current["minnesota"]) + tc(current["mississippi"]) + tc(current["missouri"]) + tc(current[
-                "montana"]) + tc(
-                  current["nebraska"]) + tc(current["nevada"]) + tc(current["new hampshire"]) + tc(current["new jersey"]) + tc(current["new mexico"]) + tc(current["new york"]) + tc(current["north carolina"]) + tc(current["north dakota"]) +
-            tc(current[
-              "ohio"]) + tc(current["oklahoma"]) + tc(current["oregon"]) + tc(current["pennsylvania"]) + tc(current["rhode island"]) + tc(current["south carolina"]) + tc(current["south dakota"]) + tc(current["tennessee"]) + tc(current[
-                "texas"]) +
-            tc(current["utah"]) + tc(current["vermont"]) + tc(current["virginia"]) + tc(current["washington"]) + tc(current["west virginia"]) + tc(current["canada"]));
-
-          rc -= (tr(current["alabama"]) + tr(current["alaska"]) + tr(current["arizona"]) + tr(current["arkansas"]) + tr(current["california"]) + tr(current["colorado"]) + tr(current["connecticut"]) + tr(current["delaware"]) + tr(current[
-            "florida"]) + tr(current["georgia usa"]) + tr(current["hawaii"]) + tr(current["idaho"]) + tr(current["illinois"]) + tr(current["indiana"]) + tr(current["iowa"]) + tr(current["kansas"]) + tr(current["kentucky"]) + tr(current[
-              "louisiana"]) + tr(current["maine"]) + tr(current["maryland"]) + tr(current["massachusetts"]) + tr(current["michigan"]) + tr(current["minnesota"]) + tr(current["mississippi"]) + tr(current["missouri"]) + tr(current[
-                "montana"]) + tc(
-                  current["nebraska"]) + tr(current["nevada"]) + tr(current["new hampshire"]) + tr(current["new jersey"]) + tr(current["new mexico"]) + tr(current["new york"]) + tr(current["north carolina"]) + tr(current["north dakota"]) +
-            tr(current[
-              "ohio"]) + tr(current["oklahoma"]) + tr(current["oregon"]) + tr(current["pennsylvania"]) + tr(current["rhode island"]) + tr(current["south carolina"]) + tr(current["south dakota"]) + tr(current["tennessee"]) + tr(current[
-                "texas"]) +
-            tr(current["utah"]) + tr(current["vermont"]) + tr(current["virginia"]) + tr(current["washington"]) + tr(current["west virginia"]) + tr(current["canada"]));
-
-          dd -= (td(current["alabama"]) + td(current["alaska"]) + td(current["arizona"]) + td(current["arkansas"]) + td(current["california"]) + td(current["colorado"]) + td(current["connecticut"]) + td(current["delaware"]) + td(current[
-            "florida"]) + td(current["georgia usa"]) + td(current["hawaii"]) + td(current["idaho"]) + td(current["illinois"]) + td(current["indiana"]) + td(current["iowa"]) + td(current["kansas"]) + td(current["kentucky"]) + td(current[
-              "louisiana"]) + td(current["maine"]) + td(current["maryland"]) + td(current["massachusetts"]) + td(current["michigan"]) + td(current["minnesota"]) + td(current["mississippi"]) + td(current["missouri"]) + td(current[
-                "montana"]) + tc(
-                  current["nebraska"]) + td(current["nevada"]) + td(current["new hampshire"]) + td(current["new jersey"]) + td(current["new mexico"]) + td(current["new york"]) + td(current["north carolina"]) + td(current["north dakota"]) +
-            td(current[
-              "ohio"]) + td(current["oklahoma"]) + td(current["oregon"]) + td(current["pennsylvania"]) + td(current["rhode island"]) + td(current["south carolina"]) + td(current["south dakota"]) + td(current["tennessee"]) + td(current[
-                "texas"]) +
-            td(current["utah"]) + td(current["vermont"]) + td(current["virginia"]) + td(current["washington"]) + td(current["west virginia"]) + td(current["canada"]));
-
-        } else if (name == "china") {
-
-
-          for (const [key, value] of Object.entries(current)) {
-
-            if (key == "anhui" || key == "beijing" || key == "chongqing" || key == "fujian" || key == "gansu" || key == "guangdong" ||
-              key == "guangxi" || key == "guizhou" || key == "hainan" || key == "hebei" || key == "heilongjiang" || key == "henan" || key == "hongkong" ||
-              key == "hubei" || key == "hunan" || key == "neimenggu" || key == "jiangsu" || key == "jiangxi" || key == "jilin" || key == "liaoning" ||
-              key == "macau" || key == "ningxia" || key == "qinghai" || key == "shaanxi" || key == "shandong" || key == "shanghai" || key == "shanxi" ||
-              key == "sichuan" || key == "taiwan" || key == "tianjin" || key == "xinjiang" || key == "yunnan" || key == "zhejiang" || key == "xizang") {
-
-              if (value == undefined) {
-                value = "0"
-              };
-              items = value.split("-");
-              switch (items.length) {
-                case 4:
-                  dd += +items[3];
-                case 3:
-                  rc += +items[2];
-                case 2:
-                  sp += +items[1];
-                case 1:
-                  cf += +items[0];
-                  break;
-              };
-              active = cf - dd - rc;
-            }
-          }
-
-
-        } else {
-
-
-          d = current[name];
-          if (d == undefined) {
-            d = "0"
-          };
-          items = d.split("-");
-          switch (items.length) {
-            case 4:
-              dd += +items[3];
-            case 3:
-              rc += +items[2];
-            case 2:
-              sp += +items[1];
-            case 1:
-              cf += +items[0];
-              break;
-          };
-          active = cf - dd - rc;
-
-        }
-        active = cf - dd - rc;
-        place[name].c.push(cf);
-        //place[name].s.push(sp);
-        place[name].r.push(rc);
-        place[name].d.push(dd);
-        place[name].a.push(active);
-
-      });
-
-      // console.log("place[name]: ", place[name])
       return place[name];
     }
 
@@ -886,7 +752,6 @@ var source_list = new Map([
                     // TODO: add
                     style: function(feature){
                       return {
-                        // fill: setFill(feature.properties.NAME),
                         fillColor: setColor(feature.properties.NAME, data),
                         fillOpacity: 0.3,
                         weight: 0.5,
@@ -1122,7 +987,7 @@ var source_list = new Map([
     });
 
     function setFill(enname) {
-      var pop = datasets[0][datasets[0].length - 1][enname];
+      pop = ""
       if (pop == "" || pop == undefined || pop.toString().split("-")[0] == "0") {
         return 'url(img/texture-s.png)'; //non-case country, 0 aggregate confirm
       } else {
@@ -1167,14 +1032,6 @@ var source_list = new Map([
         }
 
       }
-      // var pop = datasets[0][datasets[0].length - 1][enname];
-
-      // if (pop != undefined) {
-      //   pop = +pop.toString().split("-")[0] - +pop.toString().split("-")[2] - +pop.toString().split("-")[3]; // remaining confirmed
-      // } else {
-      //   pop = 0;
-      //   // return "#00000000";
-      // }
 
       if (pop >= 1000) {
         id = 5;
@@ -1194,22 +1051,6 @@ var source_list = new Map([
       }
       return colors[id];
     }
-
-
-    // function countyStyle(feature) {
-    //   console.log(feature.properties.NAME)
-    //   return {
-    //     fill: setFill(feature.properties.NAME),
-    //     fillColor: setColor(feature.properties.NAME),
-    //     fillOpacity: 0.1,
-    //     weight: 0.5,
-    //     opacity: 1,
-    //     color: '#DC143C',
-    //     // dashArray: '2'
-    //   };
-    // }
-
-
 
     function highlightCountyFeature(e) {
       // e indicates the current event
@@ -1280,10 +1121,8 @@ var source_list = new Map([
         }
 
         counties = new L.geoJSON(counties_feat, {
-          // TODO: add
           style: function(feature){
             return {
-              // fill: setFill(feature.properties.NAME),
               fillColor: setColor(feature.properties.NAME, data),
               fillOpacity: 0.3,
               weight: 0.5,
@@ -1437,7 +1276,7 @@ var source_list = new Map([
       });
     }
 
-    var areas = new L.TopoJSON(datasets[1], {
+    var areas = new L.TopoJSON(datasets[0], {
       style: style,
       onEachFeature: onEachStateFeature
     }).addTo(mymap);
