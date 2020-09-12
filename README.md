@@ -20,9 +20,10 @@
 
 ## Contributors
 
+- [Damian Jimenez](https://github.com/damianj)
+- [Haojin Liao](https://github.com/YapheeetS)
 - [Josue Caraballo](https://github.com/v3nd3774)
 - [Kevin Meng](https://github.com/kmeng01)
-- [Haojin Liao](https://github.com/YapheeetS)
 - [Zhengyuan Zhu](https://github.com/824zzy)
 
 ## License
