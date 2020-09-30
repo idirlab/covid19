@@ -172,5 +172,6 @@ $( document ).ready(function() {
 	
     if(browser == "Safari"){
       console.log( "safari detected!" );
+      $("div#floating-side-panel-info-container").addClass("mac-style-class-1");
     }
 });
