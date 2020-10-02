@@ -172,6 +172,13 @@ $( document ).ready(function() {
 	
     if(browser == "Safari"){
       console.log( "safari detected!" );
-      $("div#floating-side-panel-info-container").addClass("mac-style-class-1");
+      $("div#left-side-bar").addClass("mac-style-class-1");
+      $("div.info-header").addClass("mac-style-class-2");
+      $("div.bigger").addClass("mac-style-class-3");
+      $("div#floating-side-panel-info-container").addClass("mac-style-class-4");
+      $("div#twitter-info").addClass("mac-style-class-5");
+      $("div#misinformation-info").addClass("mac-style-class-6");
+      $("div#safaribool").text("true");
+      $("div#floating-side-panel-info-container").addClass("mac-style-class-7");
     }
 });
