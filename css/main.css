@@ -1274,6 +1274,14 @@ div.misinfo-block {
   background:white;
   text-align:left;
 }
+label{
+  font-weight: bolder;
+  margin-bottom: 0rem;
+}
+hr{
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+}
 .center-me {
   text-align:center;
 }

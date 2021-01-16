@@ -392,17 +392,19 @@ var source_list = new Map([
         `
         <div class="misinfo-block">
           <button class="btn btn-dark taxonomy center-me default">
-            ${row["taxonomy"]}
+            Fact category: ${row["taxonomy"]}
           </button>
           <div class="summary">
             ${row["summary"]}
           </div>
+          <hr class="solid">
+          <label>Twitter stance distribution:</label>
           <div class="metrics" id="idx-${idx}">
           </div>
           <div class="metrics">
-            <button prefix="Support: " showApprox="true" approx="${formatter(row["agree"])}" ratio="${percentFormatter(row["agree"]/row["total"])}" class="idx-${idx} btn btn-outline-success disabled">Support: ${percentFormatter(row["agree"]/row["total"])}</button>
-            <button prefix="Discuss: " showApprox="true" approx="${formatter(row["discuss"])}" ratio="${percentFormatter(row["discuss"]/row["total"])}" class="idx-${idx} btn btn-outline-secondary disabled">Neutral: ${percentFormatter(row["discuss"]/row["total"])}</button>
-            <button prefix="Disagree: " showApprox="true" approx="${formatter(row["disagree"])}" ratio="${percentFormatter(row["disagree"]/row["total"])}" class="idx-${idx} btn btn-outline-danger disabled">Refute: ${percentFormatter(row["disagree"]/row["total"])}</button>
+            <button prefix="Support: " showApprox="true" approx="${formatter(row["agree"])}" ratio="${percentFormatter(row["agree"]/row["total"])}" class="idx-${idx} btn btn-outline-success disabled">Agree: ${percentFormatter(row["agree"]/row["total"])}</button>
+            <button prefix="Discuss: " showApprox="true" approx="${formatter(row["discuss"])}" ratio="${percentFormatter(row["discuss"]/row["total"])}" class="idx-${idx} btn btn-outline-secondary disabled">Discuss: ${percentFormatter(row["discuss"]/row["total"])}</button>
+            <button prefix="Disagree: " showApprox="true" approx="${formatter(row["disagree"])}" ratio="${percentFormatter(row["disagree"]/row["total"])}" class="idx-${idx} btn btn-outline-danger disabled">Disagree: ${percentFormatter(row["disagree"]/row["total"])}</button>
           </div>
           <script>
             var colors = ["#28a745", "#b0bec5", "#dc3545"];
