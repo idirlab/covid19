@@ -665,7 +665,7 @@ var source_list = new Map([
                                   placename.toUpperCase().includes("PARISH"));
           var node = is_county ? `${placename}-${$("span.selected-state.hidden").text().trim()}` : `${placename}`;
           var queryUrl = `${api_url}/api/v1/statquery_details?node=${node}&date=${selected_date().format("YYYY-MM-DD")}`;
-          
+
           var t = this;
           function toggleVisibility() {
             $(t).parent().next().toggleClass("expanded");
@@ -960,28 +960,40 @@ var source_list = new Map([
       var selected_date = moment(new Date(date_str));
       var dates = ["pos-2", "pos-3", "pos-4"].map(id =>
         moment($(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${id}`).text(), globalDateFormat));
-      var new_dates = (arrow_position === "pos-1") || (arrow_position === "pos-2") ?
-                      dates.map(d => d.subtract(1, "days")) :
-                      dates.map(d => d.add(1, "days"));
+      var new_dates;
+      switch(arrow_position) {
+        case "pos-1":
+        case "pos-2":
+          new_dates = dates.map(d => d.subtract(1, "days"))
+          break
+        case "pos-4":
+        case "pos-5":
+          new_dates = dates.map(d => d.add(1, "days"))
+          break
+        case "pos-3":
+          new_dates = dates
+          break
+        default:
+          throw 'Arrow position must be 1-5!'
+      }
+      if (globalMaxDate.isBefore(new_dates[2])) {
+        $(`div.info-pane#aggregate-date-window > div.info-header > div#pos-4`).addClass('inactive')
+        $(`div.info-pane#aggregate-date-window > div.info-header > div#pos-5`).addClass('inactive')
+      } else {
+        $(`div.info-pane#aggregate-date-window > div.info-header > div#pos-4`).removeClass('inactive')
+        $(`div.info-pane#aggregate-date-window > div.info-header > div#pos-5`).removeClass('inactive')
+      }
+      if (globalMinDate.isAfter(new_dates[0])) {
+        $(`div.info-pane#aggregate-date-window > div.info-header > div#pos-1`).addClass('inactive')
+        $(`div.info-pane#aggregate-date-window > div.info-header > div#pos-2`).addClass('inactive')
+      } else {
+        $(`div.info-pane#aggregate-date-window > div.info-header > div#pos-1`).removeClass('inactive')
+        $(`div.info-pane#aggregate-date-window > div.info-header > div#pos-2`).removeClass('inactive')
+      }
       new_dates.forEach(function(new_date, idx){
         var pos_id = `pos-${idx + 2}`;
         var date_str = new_date.format(globalDateFormat);
         $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).text(date_str);
-        if (globalMaxDate.format(globalDateFormat) < date_str || date_str < globalMinDate.format(globalDateFormat)) {
-          $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).addClass('inactive')
-          if (idx == 0) {
-            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-1`).addClass('inactive')
-          } else if (idx == 2) {
-            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-5`).addClass('inactive')
-          }
-        } else {
-          $(`div.info-pane#aggregate-date-window > div.info-header > div.date-element#${pos_id}`).removeClass('inactive')
-          if (idx == 0) {
-            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-1`).removeClass('inactive')
-          } else if (idx == 2) {
-            $(`div.info-pane#aggregate-date-window > div.info-header > div.arrow.icon-container#pos-5`).removeClass('inactive')
-          }
-        }
       });
     });
     date_div.on('DOMSubtreeModified', function(){
