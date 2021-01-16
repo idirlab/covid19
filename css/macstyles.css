@@ -1,0 +1,25 @@
+.mac-style-class-1 {
+  width: 800px !important;
+}
+.mac-style-class-2 {
+  top: initial !important;
+  position: initial !important;
+}
+.mac-style-class-3 {
+  top: initial !important;
+  height: calc(100%) !important;
+}
+.mac-style-class-4 {
+  width: 440px !important;
+}
+.mac-style-class-5 {
+  top: calc(50% + 44px) !important;
+  height: calc(50% - 1 * 44px) !important;
+}
+.mac-style-class-6 {
+  top: initial !important;
+  height: calc(50%) !important;
+}
+.mac-style-class-7 {
+  background: none !important;
+}

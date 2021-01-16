@@ -111,6 +111,11 @@ function close_tw_info() {
 
 function closeBar() {
 
+
+  // handle mac
+  if(($("div#safaribool").text().trim() == "true") && ($("div#showplacebool").text().trim() == "true")){
+    $("div#left-side-bar").toggleClass("mac-style-class-1", !flag);
+  }
   var flagmap = {false:  "hidden",
                  true:   "visible"};
   $("div#hospital-info.hospital").attr("sidebarstatus",flagmap[!flag]);
@@ -134,7 +139,7 @@ function closeBar() {
     button.style.transform = 'rotate('+0+'deg)'
   }
   // flag -> true for open
-  // flag -> false for closed
+  // flag -> false for closedß
   $("div#floating-side-panel-info-container").css("display", flag ? "block" : "none")
   $("div#aggregate-date-window > div.info-header").css("display", flag ? "block" : "none")
   $("div#aggregate-date-window > div.variable-toggle").css("display", flag ? "block" : "none")
@@ -142,6 +147,9 @@ function closeBar() {
 
   // toggle the map to get wider to cover the closed area
   $("body > main > div#map").toggleClass("closed");
+
+  // store state
+  $("div#hiddenbool").text(flag);
 }
 
 // const picker = pickadate.create()

@@ -458,6 +458,14 @@ var source_list = new Map([
     }
 
     function showPlace(name, parent=null) {
+      if(($("div#showplacebool").text().trim() == "false") &&(name.toUpperCase()!="GLOBAL")) {
+        $("div#showplacebool").text("true");
+      }
+
+      // // handle mac
+      // if(($("div#safaribool").text().trim() == "true") && ($("div#showplacebool").text().trim() == "true")){
+      //   $("div#left-side-bar").toggleClass("mac-style-class-1", !flag);
+      // }
       // console.log(name)
       name = name.toLowerCase().toTitleCase();
       $("span.placename.hidden").text(name);
