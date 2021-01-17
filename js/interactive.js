@@ -394,6 +394,9 @@ var source_list = new Map([
           <button class="btn btn-dark taxonomy center-me default">
             Fact category: ${row["taxonomy"]}
           </button>
+          <div class="data-container" style="display: none;">
+            ${JSON.stringify(row)}
+          </div>
           <div class="summary">
             ${row["summary"]}
           </div>
@@ -456,6 +459,9 @@ var source_list = new Map([
         return `${acc}${ite}`;
       }
       $("div.misinfo-response-area").html(doms.reduce(red));
+      $("#misinformation-info > div.info.misinfo-response-area > div.misinfo-block > div.metrics").click(function() {
+        console.log("extract 'data-container' and parse here, then send 2 required parameters to /mtweets endpoint and render response here too.");
+      })
       return;
     }
 

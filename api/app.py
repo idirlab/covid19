@@ -383,8 +383,29 @@ def mquery_aux(node, date, entity_type):
 
     out = gg.apply(derive_object)
 
-    out_list = out.values.tolist()
+    translate_dict = {"Fact": "summary", "SourceUrl":"source", "Taxonomy":"taxonomy"}
+    passthru = ["agree", "disagree", "discuss"]
+
+    out_list = []
+    items = out.values.tolist()
+    for i in items:
+        it = dict(zip(out.columns, i))
+        d = {translate_dict[k]: v for k, v in it.items() if k in translate_dict}
+        for c in passthru:
+            d[c] = it[c]
+        out_list.append(d)
+
     return out_list
+
+@app.route('/api/v1/mtweets') # endpoint for user to query for tweet view
+def mquery():
+    if not all([x in request.args for x in ['sourceUrl', 'summary']]): #require these arguments
+        abort(400)
+
+    logging.info('Processing request...')
+
+    return jsonify({})
+
 
 @app.route('/api/v1/mquery')
 def mquery():
