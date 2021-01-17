@@ -1,4 +1,4 @@
-var local_testing = false;
+var local_testing = true;
 var api_url = null;
 
 jQuery.get('config.txt', function(data) {

@@ -28,7 +28,7 @@ source_list = {
     'NY Times': {
         'state': 'nyt_s.csv',  # state
         'county': 'nyt_c.csv',  # county
-    },   
+    },
     'JHU': {
         'country': 'jhu_g.csv',  # country and province
         'state': 'jhu_s.csv',  # state
@@ -376,10 +376,15 @@ def mquery_aux(node, date, entity_type):
                      "source":df.iloc[0]["SourceUrl"],
                      "taxonomy":df.iloc[0]["Taxonomy"]}
         out       = {**figures, **text_data}
-        return out
+
+        return pd.Series(out)
+
     gg = relevant_rows.groupby(["Fact","Taxonomy", "SourceUrl"], as_index=False)
-    out = gg.apply(derive_object).values.tolist()
-    return out
+
+    out = gg.apply(derive_object)
+
+    out_list = out.values.tolist()
+    return out_list
 
 @app.route('/api/v1/mquery')
 def mquery():
@@ -395,7 +400,8 @@ def mquery():
     ret = {}
     try:
         node, entity_type = preprocess_node(node)
-        ret = jsonify(mquery_aux(node, date, entity_type))
+        obj = mquery_aux(node, date, entity_type)
+        ret = jsonify(obj)
     except Exception as e:
         logging.info('Error: {}'.format(e))
         logging.info('Terminating process with code 500')
