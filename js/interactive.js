@@ -459,8 +459,18 @@ var source_list = new Map([
         return `${acc}${ite}`;
       }
       $("div.misinfo-response-area").html(doms.reduce(red));
+      function renderTwitterView (response) {
+        console.log("render response here");
+      }
       $("#misinformation-info > div.info.misinfo-response-area > div.misinfo-block > div.metrics").click(function() {
-        console.log("extract 'data-container' and parse here, then send 2 required parameters to /mtweets endpoint and render response here too.");
+        var siblings = Array.from($(this).siblings())
+        var target_sibling = siblings.filter( (it) => it.classList.contains("data-container") )[0]
+        var obj = JSON.parse(target_sibling.textContent.trim())
+        function sanitize (s) {
+          return encodeUri(s).replace(":", "%3A")
+        }
+        var mquery_endpoint_twitter_view_feature = `api/v1/mtweets?sourceUrl=${sanitize(obj['source'])}&summary=${sanitize(obj['summary'])}`
+        corsHTTP(`${api_url}/${mquery_endpoint_twitter_view_feature}`, renderTwitterView);
       })
       return;
     }

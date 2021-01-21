@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, render_template, Blueprint, abort
+from functools import reduce
 from flask_cors import CORS
+import pdb
 import glob
 import pandas as pd
 from threading import Timer
@@ -21,6 +23,9 @@ app = Flask(__name__)
 CORS(app)
 
 file_list = {}
+twitter_data_file_list = []
+twitter_data = None
+
 source_list_input_prefix = '../../covid19data/data_collection/data/input/'
 source_list_output_prefix = '../../covid19data/data_collection/data/out/'
 source_list = {
@@ -50,6 +55,8 @@ query_processes = []
 
 def clear_cached_data():
     file_list.clear()
+    twitter_data_file_list = []
+    twitter_data = None
 
 
 def daterange(start_date, end_date):
@@ -398,13 +405,19 @@ def mquery_aux(node, date, entity_type):
     return out_list
 
 @app.route('/api/v1/mtweets') # endpoint for user to query for tweet view
-def mquery():
+def mtweets():
     if not all([x in request.args for x in ['sourceUrl', 'summary']]): #require these arguments
         abort(400)
 
     logging.info('Processing request...')
+    desired_cols = ['TweetText', 'stance']
+    return_data = twitter_data.loc[
+        twitter_data.SourceUrl == request.args['sourceUrl'],
+        desired_cols
+    ].dropna(axis=0, how='any').drop_duplicates()
+    return_obj = [dict(zip(desired_cols, x)) for x in return_data.values.tolist()]
 
-    return jsonify({})
+    return jsonify(return_obj)
 
 
 @app.route('/api/v1/mquery')
@@ -680,13 +693,17 @@ def get_all_data(node, date, entity_type):
     return ret
 
 
+def get_delim(p):
+    delim = ','
+    with open(p, 'r') as f:
+        if '\t' in f.read():
+            delim = '\t'
+    return delim
+
 def prc(v):
     path = os.path.join(source_list_output_prefix, v)
 
-    delim = ','
-    with open(path, 'r') as f:
-        if '\t' in f.read():
-            delim = '\t'
+    delim = get_delim(path)
 
     logging.info('loading {}'.format(path))
 
@@ -700,7 +717,17 @@ def prc(v):
 
     return (df, dates)
 
+def locate_twitter_data():
+    files = []
+    for f in os.listdir(misinformation_panel_source):
+        if reduce(lambda acc, it: acc and it, map( lambda s: s in f, ['ennonrt', 'stnc_dtctn', '.csv'] )):
+          p = os.path.join(misinformation_panel_source, f)
+          logging.info(f"Located twitter data file [{p}]")
+          files.append(p)
+    return files
+
 def refresh_data_util():
+    global twitter_data, twitter_data_file_list
     for key, value in source_list.items():
         if key != 'JHU' and key != 'NY Times':
             file_list[key] = prc(value)
@@ -708,6 +735,14 @@ def refresh_data_util():
             file_list[key] = {}
             for subkey, subvalue in source_list[key].items():
                 file_list[key][subkey] = prc(subvalue)
+
+    twitter_data_file_list = locate_twitter_data()
+    def read_data(p):
+        delim = get_delim(p)
+        logging.info('loading {}'.format(p))
+        return pd.read_csv(p, sep=delim)
+    twitter_data = pd.concat([read_data(p) for p in twitter_data_file_list])
+    print("ok")
 
 
 def refresh_data():
