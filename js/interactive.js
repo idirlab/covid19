@@ -460,14 +460,49 @@ var source_list = new Map([
       }
       $("div.misinfo-response-area").html(doms.reduce(red));
       function renderTwitterView (response) {
-        console.log("render response here");
+        var dom_rt = $("div#root-twitter-view-dom-here")
+        var modal_trigger_target = $("div#twitter-view-modal")
+        var articles = Array.from(response).map( (tweet, idx) => {
+          var stanceDict = {
+            0: 'Agree',
+            1: 'Discuss',
+            2: 'Disagree'
+          }
+          var colorDict = {
+            'Agree': 'green',
+            'Discuss': 'yellow',
+            'Disagree': 'red'
+          }
+          var article = `
+             <article class="wall-post wall-post-${idx} color-me-${colorDict[stanceDict[tweet['stance']]]}">
+               <header class="wall-post-header">
+                 ${stanceDict[tweet['stance']]}
+               </header>
+               <div class="wall-post-content">
+                 ${tweet['TweetText']}
+               </div>
+             </article>
+          `
+          return article
+        })
+
+        var dom = `
+          <div id='twitter-view-rt' class="wall" contenteditable>
+            ${articles.join('\n')}
+          </div>
+        `
+        dom_rt.html(dom)
+        var opts = {
+          'show': true
+        }
+        modal_trigger_target.modal(opts)
       }
       $("#misinformation-info > div.info.misinfo-response-area > div.misinfo-block > div.metrics").click(function() {
         var siblings = Array.from($(this).siblings())
         var target_sibling = siblings.filter( (it) => it.classList.contains("data-container") )[0]
         var obj = JSON.parse(target_sibling.textContent.trim())
         function sanitize (s) {
-          return encodeUri(s).replace(":", "%3A")
+          return encodeURI(s).replace(":", "%3A");
         }
         var mquery_endpoint_twitter_view_feature = `api/v1/mtweets?sourceUrl=${sanitize(obj['source'])}&summary=${sanitize(obj['summary'])}`
         corsHTTP(`${api_url}/${mquery_endpoint_twitter_view_feature}`, renderTwitterView);
