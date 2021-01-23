@@ -390,7 +390,17 @@ def mquery_aux(node, date, entity_type):
 
     out = gg.apply(derive_object)
 
-    translate_dict = {"Fact": "summary", "SourceUrl":"source", "Taxonomy":"taxonomy"}
+    translate_dict = {
+        "Fact": "summary",
+        "SourceUrl":"source",
+        "Taxonomy":"taxonomy"
+    }
+    targets = ["summary", "source", "taxonomy"]
+    sources = ["Fact", "SourceUrl", "Taxonomy"]
+    translate_dict = dict(zip(sources, targets))
+    intermed_dict = dict(zip(targets, targets))
+    translate_dict = {**translate_dict, **intermed_dict}
+
     passthru = ["agree", "disagree", "discuss"]
 
     out_list = []
