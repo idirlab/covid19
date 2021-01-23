@@ -6,8 +6,7 @@
   -webkit-column-count: 10;
   -webkit-column-width: 20ch;
   -webkit-column-gap: 1rem;
-  max-width: 800px;
-  width: 1300px;
+  width: 1100px;
   overflow-x:hidden;
   margin: 0 auto;
 }
