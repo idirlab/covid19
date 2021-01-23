@@ -474,7 +474,7 @@ var source_list = new Map([
             'Disagree': 'red'
           }
           var article = `
-             <article class="wall-post wall-post-${idx} color-me-${colorDict[stanceDict[tweet['stance']]]}">
+             <article class="wall-post large-post wall-post-${idx} color-me-${colorDict[stanceDict[tweet['stance']]]}">
                <header class="wall-post-header">
                  ${stanceDict[tweet['stance']]}
                </header>

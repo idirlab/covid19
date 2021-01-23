@@ -426,6 +426,8 @@ def mtweets():
         desired_cols
     ].dropna(axis=0, how='any').drop_duplicates()
     return_obj = [dict(zip(desired_cols, x)) for x in return_data.values.tolist()]
+    limit = 100
+    return_obj = return_obj[:limit]
 
     return jsonify(return_obj)
 
