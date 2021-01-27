@@ -1468,11 +1468,10 @@ var source_list = new Map([
 
         const element = data[index];
         if (element['stats'].length == 0) {
-          break
-        }
-        if (element['stats'][2] == -1) {
+          continue
+        } else if (element['stats'][2] == -1) {
             element['stats'][2] = 0
-          }
+        }
 
         date_list.push(element['date'])
         total_list.push(element['stats'][0])
