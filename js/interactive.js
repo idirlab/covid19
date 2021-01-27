@@ -401,7 +401,7 @@ var source_list = new Map([
             ${row["summary"]}
           </div>
           <hr class="solid">
-          <label>Twitter stance distribution:</label>
+          <label class="labeltwo">Twitter stance distribution:</label>
           <div class="metrics" id="idx-${idx}">
           </div>
           <div class="metrics">

@@ -1278,6 +1278,10 @@ label{
   font-weight: bolder;
   margin-bottom: 0rem;
 }
+.labeltwo{
+  width:100%;
+  text-align:center;
+}
 hr{
   margin-top: 0.2rem;
   margin-bottom: 0.2rem;
