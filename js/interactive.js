@@ -449,9 +449,20 @@ var source_list = new Map([
                .attr("class", "total-title")
                .text("Total:");
           </script>
-          <a target="_blank" class="btn btn-dark read-more center-me" href="${row["source"]}">
-            Read More...
-          </a>
+          <div class="container row-container">
+            <div class="row justify-content-md-center">
+              <div class="col-md-auto fact-pairs-trigger-container">
+                <a class="btn btn-dark read-more fact-pairs-trigger center-me" href="javascript: void(0)">
+                  All matched tweet-fact pairs
+                </a>
+              </div>
+              <div class="col-md-auto">
+                <a target="_blank" class="btn btn-dark read-more center-me" href="${row["source"]}">
+                  Read More...
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
         `
       );
@@ -497,8 +508,8 @@ var source_list = new Map([
         }
         modal_trigger_target.modal(opts)
       }
-      $("#misinformation-info > div.info.misinfo-response-area > div.misinfo-block > div.metrics").click(function() {
-        var siblings = Array.from($(this).siblings())
+      $("#misinformation-info > div.info.misinfo-response-area > div.misinfo-block > div.container > div.row > div.fact-pairs-trigger-container > a.fact-pairs-trigger ").click(function() {
+        var siblings = Array.from($(Array.from($(this).parents()).filter((it) => it.classList.contains("container"))[0]).siblings())
         var target_sibling = siblings.filter( (it) => it.classList.contains("data-container") )[0]
         var obj = JSON.parse(target_sibling.textContent.trim())
         function sanitize (s) {
