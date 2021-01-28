@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="css/classic.date.css" id="theme_base">
   <link rel="stylesheet" href="css/sidebar/hospital.css">
   <link rel="stylesheet" href="css/sidebar/twitter.css">
+  <link rel="stylesheet" href="css/tweet-view-feature.css" />
 
   <script src="js/popper.min.js"></script>
   <script src="js/to-title-case.js"></script>
@@ -286,6 +287,20 @@
             </p>
             <p class="contrib">For more information about the contributors, including their contact links and personal web-pages, please visit The Innovative Data Intelligence Research Laboratory directory at: <a href="https://idir.uta.edu/src/team.html" class="decorate-me">https://idir.uta.edu/src/team.html</a></p>
             <!-- Should anything else go here?-->
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="twitter-view-modal" tabindex="-1" role="dialog" aria-labelledby="twitter-view-modal" aria-hidden="true" style="left:10%;">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Tweets from fact-tweet pairs:</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="root-twitter-view-dom-here">
         </div>
       </div>
     </div>

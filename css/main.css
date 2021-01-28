@@ -1278,6 +1278,10 @@ label{
   font-weight: bolder;
   margin-bottom: 0rem;
 }
+.labeltwo{
+  width:100%;
+  text-align:center;
+}
 hr{
   margin-top: 0.2rem;
   margin-bottom: 0.2rem;
@@ -1290,9 +1294,10 @@ button.taxonomy {
   display:block;
 }
 a.read-more {
-  margin: 12px auto;
+  margin: 4px auto;
   display:block;
-  width:128px;
+  width:120px;
+  font-size:smaller;
 }
 div.summary {
   margin: 12px 12px 0px 12px;

@@ -394,11 +394,14 @@ var source_list = new Map([
           <button class="btn btn-dark taxonomy center-me default">
             Fact category: ${row["taxonomy"]}
           </button>
+          <div class="data-container" style="display: none;">
+            ${JSON.stringify(row)}
+          </div>
           <div class="summary">
             ${row["summary"]}
           </div>
           <hr class="solid">
-          <label>Twitter stance distribution:</label>
+          <label class="labeltwo">Twitter stance distribution:</label>
           <div class="metrics" id="idx-${idx}">
           </div>
           <div class="metrics">
@@ -446,9 +449,20 @@ var source_list = new Map([
                .attr("class", "total-title")
                .text("Total:");
           </script>
-          <a target="_blank" class="btn btn-dark read-more center-me" href="${row["source"]}">
-            Read More...
-          </a>
+          <div class="container row-container">
+            <div class="row justify-content-md-center">
+              <div class="col-md-auto fact-pairs-trigger-container">
+                <a class="btn btn-dark read-more fact-pairs-trigger center-me" href="javascript: void(0)">
+                  All matched tweet-fact pairs
+                </a>
+              </div>
+              <div class="col-md-auto">
+                <a target="_blank" class="btn btn-dark read-more center-me" href="${row["source"]}">
+                  Read More...
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
         `
       );
@@ -456,6 +470,54 @@ var source_list = new Map([
         return `${acc}${ite}`;
       }
       $("div.misinfo-response-area").html(doms.reduce(red));
+      function renderTwitterView (response) {
+        var dom_rt = $("div#root-twitter-view-dom-here")
+        var modal_trigger_target = $("div#twitter-view-modal")
+        var articles = Array.from(response).map( (tweet, idx) => {
+          var stanceDict = {
+            0: 'Agree',
+            1: 'Discuss',
+            2: 'Disagree'
+          }
+          var colorDict = {
+            'Agree': 'green',
+            'Discuss': 'yellow',
+            'Disagree': 'red'
+          }
+          var article = `
+             <article class="wall-post large-post wall-post-${idx} color-me-${colorDict[stanceDict[tweet['stance']]]}">
+               <header class="wall-post-header">
+                 ${stanceDict[tweet['stance']]}
+               </header>
+               <div class="wall-post-content">
+                 ${tweet['TweetText']}
+               </div>
+             </article>
+          `
+          return article
+        })
+
+        var dom = `
+          <div id='twitter-view-rt' class="wall" contenteditable>
+            ${articles.join('\n')}
+          </div>
+        `
+        dom_rt.html(dom)
+        var opts = {
+          'show': true
+        }
+        modal_trigger_target.modal(opts)
+      }
+      $("#misinformation-info > div.info.misinfo-response-area > div.misinfo-block > div.container > div.row > div.fact-pairs-trigger-container > a.fact-pairs-trigger ").click(function() {
+        var siblings = Array.from($(Array.from($(this).parents()).filter((it) => it.classList.contains("container"))[0]).siblings())
+        var target_sibling = siblings.filter( (it) => it.classList.contains("data-container") )[0]
+        var obj = JSON.parse(target_sibling.textContent.trim())
+        function sanitize (s) {
+          return encodeURI(s).replace(":", "%3A");
+        }
+        var mquery_endpoint_twitter_view_feature = `api/v1/mtweets?sourceUrl=${sanitize(obj['source'])}&summary=${sanitize(obj['summary'])}`
+        corsHTTP(`${api_url}/${mquery_endpoint_twitter_view_feature}`, renderTwitterView);
+      })
       return;
     }
 
@@ -1406,11 +1468,10 @@ var source_list = new Map([
 
         const element = data[index];
         if (element['stats'].length == 0) {
-          break
-        }
-        if (element['stats'][2] == -1) {
+          continue
+        } else if (element['stats'][2] == -1) {
             element['stats'][2] = 0
-          }
+        }
 
         date_list.push(element['date'])
         total_list.push(element['stats'][0])
