@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, render_template, Blueprint, abort
+from functools import reduce
 from flask_cors import CORS
+import pdb
 import glob
 import pandas as pd
 from threading import Timer
@@ -21,6 +23,9 @@ app = Flask(__name__)
 CORS(app)
 
 file_list = {}
+twitter_data_file_list = []
+twitter_data = None
+
 source_list_input_prefix = '../../covid19data/data_collection/data/input/'
 source_list_output_prefix = '../../covid19data/data_collection/data/out/'
 source_list = {
@@ -28,7 +33,7 @@ source_list = {
     'NY Times': {
         'state': 'nyt_s.csv',  # state
         'county': 'nyt_c.csv',  # county
-    },   
+    },
     'JHU': {
         'country': 'jhu_g.csv',  # country and province
         'state': 'jhu_s.csv',  # state
@@ -50,6 +55,8 @@ query_processes = []
 
 def clear_cached_data():
     file_list.clear()
+    twitter_data_file_list = []
+    twitter_data = None
 
 
 def daterange(start_date, end_date):
@@ -376,10 +383,54 @@ def mquery_aux(node, date, entity_type):
                      "source":df.iloc[0]["SourceUrl"],
                      "taxonomy":df.iloc[0]["Taxonomy"]}
         out       = {**figures, **text_data}
-        return out
+
+        return pd.Series(out)
+
     gg = relevant_rows.groupby(["Fact","Taxonomy", "SourceUrl"], as_index=False)
-    out = gg.apply(derive_object).values.tolist()
-    return out
+
+    out = gg.apply(derive_object)
+
+    translate_dict = {
+        "Fact": "summary",
+        "SourceUrl":"source",
+        "Taxonomy":"taxonomy"
+    }
+    targets = ["summary", "source", "taxonomy"]
+    sources = ["Fact", "SourceUrl", "Taxonomy"]
+    translate_dict = dict(zip(sources, targets))
+    intermed_dict = dict(zip(targets, targets))
+    translate_dict = {**translate_dict, **intermed_dict}
+
+    passthru = ["agree", "disagree", "discuss"]
+
+    out_list = []
+    items = out.values.tolist()
+    for i in items:
+        it = dict(zip(out.columns, i))
+        d = {translate_dict[k]: v for k, v in it.items() if k in translate_dict}
+        for c in passthru:
+            d[c] = it[c]
+        out_list.append(d)
+
+    return out_list
+
+@app.route('/api/v1/mtweets') # endpoint for user to query for tweet view
+def mtweets():
+    if not all([x in request.args for x in ['sourceUrl', 'summary']]): #require these arguments
+        abort(400)
+
+    logging.info('Processing request...')
+    desired_cols = ['TweetText', 'stance']
+    return_data = twitter_data.loc[
+        twitter_data.SourceUrl == request.args['sourceUrl'],
+        desired_cols
+    ].dropna(axis=0, how='any').drop_duplicates()
+    return_obj = [dict(zip(desired_cols, x)) for x in return_data.values.tolist()]
+    limit = 100
+    return_obj = return_obj[:limit]
+
+    return jsonify(return_obj)
+
 
 @app.route('/api/v1/mquery')
 def mquery():
@@ -395,7 +446,8 @@ def mquery():
     ret = {}
     try:
         node, entity_type = preprocess_node(node)
-        ret = jsonify(mquery_aux(node, date, entity_type))
+        obj = mquery_aux(node, date, entity_type)
+        ret = jsonify(obj)
     except Exception as e:
         logging.info('Error: {}'.format(e))
         logging.info('Terminating process with code 500')
@@ -653,13 +705,17 @@ def get_all_data(node, date, entity_type):
     return ret
 
 
+def get_delim(p):
+    delim = ','
+    with open(p, 'r') as f:
+        if '\t' in f.read():
+            delim = '\t'
+    return delim
+
 def prc(v):
     path = os.path.join(source_list_output_prefix, v)
 
-    delim = ','
-    with open(path, 'r') as f:
-        if '\t' in f.read():
-            delim = '\t'
+    delim = get_delim(path)
 
     logging.info('loading {}'.format(path))
 
@@ -673,7 +729,17 @@ def prc(v):
 
     return (df, dates)
 
+def locate_twitter_data():
+    files = []
+    for f in os.listdir(misinformation_panel_source):
+        if reduce(lambda acc, it: acc and it, map( lambda s: s in f, ['ennonrt', 'stnc_dtctn', '.csv'] )):
+          p = os.path.join(misinformation_panel_source, f)
+          logging.info(f"Located twitter data file [{p}]")
+          files.append(p)
+    return files
+
 def refresh_data_util():
+    global twitter_data, twitter_data_file_list
     for key, value in source_list.items():
         if key != 'JHU' and key != 'NY Times':
             file_list[key] = prc(value)
@@ -681,6 +747,14 @@ def refresh_data_util():
             file_list[key] = {}
             for subkey, subvalue in source_list[key].items():
                 file_list[key][subkey] = prc(subvalue)
+
+    twitter_data_file_list = locate_twitter_data()
+    def read_data(p):
+        delim = get_delim(p)
+        logging.info('loading {}'.format(p))
+        return pd.read_csv(p, sep=delim)
+    twitter_data = pd.concat([read_data(p) for p in twitter_data_file_list])
+    print("ok")
 
 
 def refresh_data():
