@@ -72,7 +72,7 @@
 
     <div class="chart_panel">
       <div class="idir-total-chart-bar">
-        <button class="btn_close_chart" onclick="close_chart()">
+        <button aria-label="Close" class="btn_close_chart" onclick="close_chart()">
           <i class="fas fa-times-circle" style="font-size: 24px;"></i>
         </button>
       </div>
@@ -116,7 +116,7 @@
     </div>
     <div id="aggregate-date-window" class="info-pane top">
       <div class="info-header">
-        <button id="datepicker" class="date-pick" onclick="pickDate()">
+        <button aria-label="date-picker" id="datepicker" class="date-pick" onclick="pickDate()">
           <i class="far fa-calendar-alt" style="font-size: 24px;"></i>
         </button>
         <div id="pos-1" class="info-header-element arrow icon-container">
@@ -164,7 +164,7 @@
         <div class="info-header smaller bottom-header unset-height">
           <i class="fas fa-hospital"></i>
           <span class="titile_info">LOCAL HOSPITAL INFO</span>
-          <button class="close_hos_info" onclick="close_hos_info()">
+          <button aria-label="Close" class="close_hos_info" onclick="close_hos_info()">
             <i class="fas fa-times-circle" style="font-size: 24px;"></i>
           </button>
         </div>
@@ -184,7 +184,7 @@
     <div id="juji_html", class="juji">
       <iframe title="Jennifer chatbot" width="100%" height="100%" name="htmlComp-iframe" scrolling="auto" src="https://bit.ly/JenniferAI"></iframe>
     </div>
-    <button id="btn_chatbot" class="chatbot" onclick="open_chatbot()"></button>
+    <button aria-label="chatbot" id="btn_chatbot" class="chatbot" onclick="open_chatbot()"></button>
   </main>
   <script src="js/cors.js"></script>
   <script src="js/main.js"></script>
